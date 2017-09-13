@@ -15,6 +15,7 @@
     "carbon-components-react": "^3.10.3",
     "carbon-icons": "^6.1.0",
     "classnames": "^2.2.5",
+    "d3": "^4.10.2",
     "markdown-it": "^8.3.1",
     "markdown-it-sup": "^1.0.0"
   },
