@@ -4,7 +4,10 @@
   "description": "Carbon Data Visualization",
   "main": "cjs/index.js",
   "module": "es/index.js",
-  "repository": "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git"
+  },
   "author": "tw15egan <tw15egan@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
