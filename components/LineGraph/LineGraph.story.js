@@ -24,7 +24,7 @@ const props = {
   margin: {
     top: 30,
     right: 20,
-    bottom: 60,
+    bottom: 70,
     left: 65,
   },
   height: 300,
@@ -39,5 +39,5 @@ storiesOf('LineGraph', module).addWithInfo(
   `
       Line Graph.
     `,
-  () => <LineGraph {...props} />
+  () => <LineGraph onHover={action('Hover')} {...props} />
 );
