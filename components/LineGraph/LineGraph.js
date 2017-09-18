@@ -4,14 +4,21 @@ import classnames from 'classnames';
 import * as d3 from 'd3';
 
 const propTypes = {
-  children: PropTypes.node,
-  className: PropTypes.string,
+  data: PropTypes.array,
+  height: PropTypes.number,
+  width: PropTypes.number,
+  margin: PropTypes.object,
+  labelOffset: PropTypes.number,
+  axisOffset: PropTypes.number,
+  timeFormat: PropTypes.string,
+  xAxisLabel: PropTypes.string,
+  yAxisLabel: PropTypes.string,
 };
 
 const defaultProps = {
   data: [[100, 10], [50, 20]],
-  height: 800,
-  width: 300,
+  height: 300,
+  width: 800,
   margin: {
     top: 30,
     right: 20,
@@ -21,6 +28,8 @@ const defaultProps = {
   labelOffset: 55,
   axisOffset: 16,
   timeFormat: '%I:%M:%S',
+  xAxisLabel: 'X Axis',
+  yAxisLabel: 'Y Axis',
 };
 
 class LineGraph extends Component {
@@ -32,6 +41,8 @@ class LineGraph extends Component {
     labelOffset: this.props.labelOffset,
     axisOffset: this.props.axisOffset,
     timeFormat: this.props.timeFormat,
+    xAxisLabel: this.props.xAxisLabel,
+    yAxisLabel: this.props.yAxisLabel,
   };
 
   componentDidMount() {
@@ -104,12 +115,12 @@ class LineGraph extends Component {
   }
 
   renderLabels() {
-    const { labelOffset, height, width } = this.state;
+    const { labelOffset, xAxisLabel, yAxisLabel, height, width } = this.state;
 
     const yLabel = this.svg
       .select('.bx--axis--y')
       .append('text')
-      .text('CPU %')
+      .text(`${yAxisLabel}`)
       .attr('class', 'bx--graph-label')
       .attr(
         'transform',
@@ -119,7 +130,7 @@ class LineGraph extends Component {
     const xLabel = this.svg
       .select('.bx--axis--x')
       .append('text')
-      .text('TIME')
+      .text(`${xAxisLabel}`)
       .attr('class', 'bx--graph-label')
       .attr('transform', `translate(${width / 2}, ${labelOffset})`);
   }
@@ -181,5 +192,6 @@ class LineGraph extends Component {
 }
 
 LineGraph.propTypes = propTypes;
+LineGraph.defaultProps = defaultProps;
 
 export default LineGraph;
