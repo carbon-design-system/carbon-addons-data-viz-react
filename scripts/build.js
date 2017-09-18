@@ -10,7 +10,7 @@ const sass = require('node-sass');
 if (inInstall()) process.exit(0);
 
 const babelPath = path.resolve(__dirname, '../node_modules/.bin/babel');
-const dirs = ['components', 'internal'];
+const dirs = ['components'];
 const outputs = ['cjs', 'es'];
 const rootDir = path.resolve(__dirname, '../');
 
@@ -35,16 +35,13 @@ const compile = (dirs, type) => {
 const copySass = () => {
   const allCopy = [];
 
-  globby([
-    `${rootDir}/{components,internal,/**/*.scss`,
-    'index.scss',
-  ]).then(paths => {
+  globby([`${rootDir}/{components}/**/*.scss`, 'index.scss']).then(paths => {
     paths.forEach(path => {
       if (path.includes('index.scss')) {
         const newLocation = path.replace('index.scss', 'scss/index.scss');
         allCopy.push(fs.copy(path, newLocation));
       } else {
-        const regex = new RegExp('(components|internal)');
+        const regex = new RegExp('(components)');
         const newLocation = path.replace(regex, 'scss/$1');
         allCopy.push(fs.copy(path, newLocation));
       }
