@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import classnames from 'classnames';
+import styles from '../../scss/index.scss';
 import * as d3 from 'd3';
 
 const propTypes = {
@@ -8,7 +9,8 @@ const propTypes = {
   height: PropTypes.number,
   width: PropTypes.number,
   margin: PropTypes.object,
-  labelOffset: PropTypes.number,
+  labelOffsetX: PropTypes.number,
+  labelOffsetY: PropTypes.number,
   axisOffset: PropTypes.number,
   timeFormat: PropTypes.string,
   xAxisLabel: PropTypes.string,
@@ -25,7 +27,8 @@ const defaultProps = {
     bottom: 70,
     left: 65,
   },
-  labelOffset: 55,
+  labelOffsetX: 65,
+  labelOffsetY: 55,
   axisOffset: 16,
   timeFormat: '%I:%M:%S',
   xAxisLabel: 'X Axis',
@@ -38,7 +41,8 @@ class LineGraph extends Component {
     height: this.props.height,
     width: this.props.width,
     margin: this.props.margin,
-    labelOffset: this.props.labelOffset,
+    labelOffsetX: this.props.labelOffsetX,
+    labelOffsetY: this.props.labelOffsetY,
     axisOffset: this.props.axisOffset,
     timeFormat: this.props.timeFormat,
     xAxisLabel: this.props.xAxisLabel,
@@ -115,8 +119,15 @@ class LineGraph extends Component {
   }
 
   renderLabels() {
-    const { labelOffset, xAxisLabel, yAxisLabel, height, width } = this.state;
-
+    const {
+      labelOffsetY,
+      labelOffsetX,
+      xAxisLabel,
+      yAxisLabel,
+      height,
+      width,
+    } = this.state;
+    console.log(labelOffsetX, labelOffsetY);
     const yLabel = this.svg
       .select('.bx--axis--y')
       .append('text')
@@ -124,7 +135,7 @@ class LineGraph extends Component {
       .attr('class', 'bx--graph-label')
       .attr(
         'transform',
-        `translate(${-labelOffset}, ${height / 2}) rotate(-90)`
+        `translate(${-labelOffsetY}, ${height / 2}) rotate(-90)`
       );
 
     const xLabel = this.svg
@@ -132,7 +143,7 @@ class LineGraph extends Component {
       .append('text')
       .text(`${xAxisLabel}`)
       .attr('class', 'bx--graph-label')
-      .attr('transform', `translate(${width / 2}, ${labelOffset})`);
+      .attr('transform', `translate(${width / 2}, ${labelOffsetX})`);
   }
 
   renderLine() {

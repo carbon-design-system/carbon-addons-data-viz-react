@@ -48,8 +48,8 @@
   "peerDependencies": {
     "carbon-components": "^7.12.1",
     "carbon-components-react": "^3.4.6",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1"
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
   },
   "scripts": {
     "prepublish": "npm run build",

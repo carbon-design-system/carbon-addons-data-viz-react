@@ -19,17 +19,19 @@ function createData(num) {
 let data = createData(12).sort(function(a, b) {
   return a[1] - b[1];
 });
+
 const props = {
   data: data,
   margin: {
     top: 30,
     right: 20,
-    bottom: 70,
+    bottom: 75,
     left: 65,
   },
   height: 300,
   width: 800,
-  labelOffset: 55,
+  labelOffsetY: 55,
+  labelOffsetX: 65,
   axisOffset: 16,
   timeFormat: '%I:%M:%S',
 };
