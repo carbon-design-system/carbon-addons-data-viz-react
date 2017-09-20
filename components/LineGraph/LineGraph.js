@@ -1,7 +1,6 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import classnames from 'classnames';
-import styles from '../../scss/index.scss';
 import * as d3 from 'd3';
 
 const propTypes = {
@@ -116,6 +115,11 @@ class LineGraph extends Component {
       .attr('y', axisOffset)
       .style('text-anchor', 'end')
       .attr('transform', `rotate(-65)`);
+
+    this.svg.selectAll('.bx--axis--y path').style('display', 'none');
+    this.svg.selectAll('.bx--axis path').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick line').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick text').attr('fill', '#5A6872');
   }
 
   renderLabels() {
@@ -127,7 +131,7 @@ class LineGraph extends Component {
       height,
       width,
     } = this.state;
-    console.log(labelOffsetX, labelOffsetY);
+
     const yLabel = this.svg
       .select('.bx--axis--y')
       .append('text')
@@ -144,6 +148,13 @@ class LineGraph extends Component {
       .text(`${xAxisLabel}`)
       .attr('class', 'bx--graph-label')
       .attr('transform', `translate(${width / 2}, ${labelOffsetX})`);
+
+    this.svg
+      .selectAll('.bx--graph-label')
+      .attr('font-size', '10')
+      .attr('font-weight', '700')
+      .attr('fill', '#5A6872')
+      .attr('text-anchor', 'middle');
   }
 
   renderLine() {
@@ -155,6 +166,10 @@ class LineGraph extends Component {
       .datum(data)
       .append('path')
       .attr('class', 'bx--line')
+      .attr('stroke', '#00a69f')
+      .attr('stroke-width', 2)
+      .attr('fill', 'none')
+      .attr('pointer-events', 'none')
       .attr('d', line);
 
     var totalLength = path.node().getTotalLength();
