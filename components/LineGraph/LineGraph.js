@@ -8,7 +8,8 @@ const propTypes = {
   height: PropTypes.number,
   width: PropTypes.number,
   margin: PropTypes.object,
-  labelOffset: PropTypes.number,
+  labelOffsetX: PropTypes.number,
+  labelOffsetY: PropTypes.number,
   axisOffset: PropTypes.number,
   timeFormat: PropTypes.string,
   xAxisLabel: PropTypes.string,
@@ -25,7 +26,8 @@ const defaultProps = {
     bottom: 70,
     left: 65,
   },
-  labelOffset: 55,
+  labelOffsetX: 65,
+  labelOffsetY: 55,
   axisOffset: 16,
   timeFormat: '%I:%M:%S',
   xAxisLabel: 'X Axis',
@@ -38,7 +40,8 @@ class LineGraph extends Component {
     height: this.props.height,
     width: this.props.width,
     margin: this.props.margin,
-    labelOffset: this.props.labelOffset,
+    labelOffsetX: this.props.labelOffsetX,
+    labelOffsetY: this.props.labelOffsetY,
     axisOffset: this.props.axisOffset,
     timeFormat: this.props.timeFormat,
     xAxisLabel: this.props.xAxisLabel,
@@ -112,10 +115,22 @@ class LineGraph extends Component {
       .attr('y', axisOffset)
       .style('text-anchor', 'end')
       .attr('transform', `rotate(-65)`);
+
+    this.svg.selectAll('.bx--axis--y path').style('display', 'none');
+    this.svg.selectAll('.bx--axis path').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick line').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick text').attr('fill', '#5A6872');
   }
 
   renderLabels() {
-    const { labelOffset, xAxisLabel, yAxisLabel, height, width } = this.state;
+    const {
+      labelOffsetY,
+      labelOffsetX,
+      xAxisLabel,
+      yAxisLabel,
+      height,
+      width,
+    } = this.state;
 
     const yLabel = this.svg
       .select('.bx--axis--y')
@@ -124,7 +139,7 @@ class LineGraph extends Component {
       .attr('class', 'bx--graph-label')
       .attr(
         'transform',
-        `translate(${-labelOffset}, ${height / 2}) rotate(-90)`
+        `translate(${-labelOffsetY}, ${height / 2}) rotate(-90)`
       );
 
     const xLabel = this.svg
@@ -132,7 +147,14 @@ class LineGraph extends Component {
       .append('text')
       .text(`${xAxisLabel}`)
       .attr('class', 'bx--graph-label')
-      .attr('transform', `translate(${width / 2}, ${labelOffset})`);
+      .attr('transform', `translate(${width / 2}, ${labelOffsetX})`);
+
+    this.svg
+      .selectAll('.bx--graph-label')
+      .attr('font-size', '10')
+      .attr('font-weight', '700')
+      .attr('fill', '#5A6872')
+      .attr('text-anchor', 'middle');
   }
 
   renderLine() {
@@ -144,6 +166,10 @@ class LineGraph extends Component {
       .datum(data)
       .append('path')
       .attr('class', 'bx--line')
+      .attr('stroke', '#00a69f')
+      .attr('stroke-width', 2)
+      .attr('fill', 'none')
+      .attr('pointer-events', 'none')
       .attr('d', line);
 
     var totalLength = path.node().getTotalLength();

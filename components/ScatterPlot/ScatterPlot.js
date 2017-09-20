@@ -109,6 +109,11 @@ class ScatterPlot extends Component {
       .attr('y', axisOffset)
       .style('text-anchor', 'end')
       .attr('transform', `rotate(-65)`);
+
+    this.svg.selectAll('.bx--axis--y path').style('display', 'none');
+    this.svg.selectAll('.bx--axis path').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick line').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick text').attr('fill', '#5A6872');
   }
 
   renderLabels() {
@@ -130,6 +135,13 @@ class ScatterPlot extends Component {
       .text(`${xAxisLabel}`)
       .attr('class', 'bx--graph-label')
       .attr('transform', `translate(${width / 2}, ${labelOffset})`);
+
+    this.svg
+      .selectAll('.bx--graph-label')
+      .attr('font-size', '10')
+      .attr('font-weight', '700')
+      .attr('fill', '#5A6872')
+      .attr('text-anchor', 'middle');
   }
 
   renderPoints() {

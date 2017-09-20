@@ -39,8 +39,6 @@ class GaugeGraph extends Component {
   }
 
   initialRender() {
-    console.log(this.state);
-
     this.renderSVG();
   }
 
