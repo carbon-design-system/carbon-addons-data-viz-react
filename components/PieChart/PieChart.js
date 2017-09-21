@@ -73,12 +73,12 @@ class PieChart extends Component {
           .style('cursor', 'pointer')
           .attr('d', pathTwo);
 
-        d3.select('.tooltip').style('display', 'inherit');
-        d3.select('.key').text(`${d.data[0]}`);
-        d3.select('.value').text(`${d.data[1]}`);
+        d3.select('.bx--pie-tooltip').style('display', 'inherit');
+        d3.select('.bx--pie-key').text(`${d.data[0]}`);
+        d3.select('.bx--pie-value').text(`${d.data[1]}`);
       })
       .on('mouseout', function(d) {
-        d3.select('.tooltip').style('display', 'none');
+        d3.select('.bx--pie-tooltip').style('display', 'none');
         d3.select(this).transition().attr('d', path);
       });
   }
@@ -109,9 +109,9 @@ class PieChart extends Component {
     return (
       <div className="bx--graph-container" style={{ position: 'relative' }}>
         <svg ref="container" />
-        <div className="tooltip" style={tooltipStyles}>
-          <p className="value" style={valueStyles} />
-          <p className="key" style={keyStyles} />
+        <div className="bx--pie-tooltip" style={tooltipStyles}>
+          <p className="bx--pie-value" style={valueStyles} />
+          <p className="bx--pie-key" style={keyStyles} />
         </div>
       </div>
     );

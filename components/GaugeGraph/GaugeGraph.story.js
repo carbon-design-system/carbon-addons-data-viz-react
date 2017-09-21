@@ -9,10 +9,29 @@ const props = {
   total: 100,
 };
 
-storiesOf('GaugeGraph', module).addWithInfo(
-  'Default',
-  `
+const halfGaugeProps = {
+  gaugePercentages: [50, 75],
+  size: 'half',
+  radius: 80,
+  padding: 30,
+  amount: 25,
+  total: 100,
+  valueText: '25%',
+  labelText: '25 out of 100GB',
+};
+
+storiesOf('GaugeGraph', module)
+  .addWithInfo(
+    'Default',
+    `
       Gauge Graph.
     `,
-  () => <GaugeGraph {...props} />
-);
+    () => <GaugeGraph {...props} />
+  )
+  .addWithInfo(
+    'Half',
+    `
+      Gauge Graph.
+    `,
+    () => <GaugeGraph {...halfGaugeProps} />
+  );
