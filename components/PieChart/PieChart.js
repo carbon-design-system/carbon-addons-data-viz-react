@@ -6,11 +6,13 @@ import * as d3 from 'd3';
 const propTypes = {
   data: PropTypes.array,
   radius: PropTypes.number,
+  formatFunction: PropTypes.func,
 };
 
 const defaultProps = {
   data: [['Gryffindor', 100]],
   radius: 96,
+  formatFunction: value => value,
   color: ['#3b1a40', '#473793', '#3c6df0', '#00a68f', '#56D2BB'],
 };
 
@@ -18,6 +20,7 @@ class PieChart extends Component {
   state = {
     data: this.props.data,
     radius: this.props.radius,
+    formatFunction: this.props.formatFunction,
     color: d3.scaleOrdinal(this.props.color),
   };
 
@@ -37,7 +40,7 @@ class PieChart extends Component {
   }
 
   renderSVG() {
-    const { data, radius, height, width, color } = this.state;
+    const { data, radius, height, width, color, formatFunction } = this.state;
 
     this.svg = d3
       .select(this.refs.container)
@@ -75,7 +78,7 @@ class PieChart extends Component {
 
         d3.select('.bx--pie-tooltip').style('display', 'inherit');
         d3.select('.bx--pie-key').text(`${d.data[0]}`);
-        d3.select('.bx--pie-value').text(`${d.data[1]}`);
+        d3.select('.bx--pie-value').text(`${formatFunction(d.data[1])}`);
       })
       .on('mouseout', function(d) {
         d3.select('.bx--pie-tooltip').style('display', 'none');
