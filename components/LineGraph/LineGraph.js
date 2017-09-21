@@ -173,6 +173,7 @@ class LineGraph extends Component {
       .attr('d', line);
 
     var totalLength = path.node().getTotalLength();
+
     path
       .attr('stroke-dasharray', 0 + ' ' + totalLength)
       .transition()
@@ -208,8 +209,7 @@ class LineGraph extends Component {
     const d0 = data[index - 1];
     const d1 = data[index];
     const d = timestamp - d0[1] > d1[1] - timestamp ? d1 : d0;
-
-    this.props.onHover(d);
+    this.props.onHover(d, d3.event.pageX, d3.event.pageY);
   }
 
   render() {
