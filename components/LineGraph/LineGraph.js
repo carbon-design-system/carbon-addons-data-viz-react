@@ -60,16 +60,73 @@ class LineGraph extends Component {
       .attr('class', 'bx--group-container')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-    this.setState(() => {
-      return {
-        width: width - (margin.left + margin.right),
-        height: height - (margin.top + margin.bottom),
-      };
-    }, this.initialRender);
+    this.setState(
+      () => {
+        return {
+          width: width - (margin.left + margin.right),
+          height: height - (margin.top + margin.bottom),
+        };
+      },
+      () => this.initialRender()
+    );
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps !== this.props) {
+      this.setState({
+        data: nextProps.data,
+      });
+    }
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (this.x) {
+      this.x.domain(d3.extent(nextState.data, d => d[1]));
+      this.y.domain([0, d3.max(nextState.data, d => d[0])]);
+
+      this.updateData(nextState.data);
+    }
+  }
+
+  updateData(data) {
+    const { axisOffset } = this.state;
+
+    const path = this.svg
+      .selectAll('.bx--line')
+      .datum(data)
+      .transition()
+      .attr('d', this.line);
+
+    this.svg
+      .select('.bx--axis--y')
+      .transition()
+      .call(this.yAxis)
+      .selectAll('text')
+      .attr('x', -axisOffset);
+
+    this.svg
+      .select('.bx--axis--x')
+      .transition()
+      .call(this.xAxis)
+      .selectAll('.bx--axis--x .tick text')
+      .attr('y', axisOffset)
+      .style('text-anchor', 'end')
+      .attr('transform', `rotate(-65)`);
+
+    this.updateStyles();
+  }
+
+  updateStyles() {
+    const { axisOffset } = this.state;
+
+    this.svg.selectAll('.bx--axis--y path').style('display', 'none');
+    this.svg.selectAll('.bx--axis path').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick line').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick text').attr('fill', '#5A6872');
   }
 
   initialRender() {
-    const { data, width, height } = this.state;
+    const { data, width, height, timeFormat } = this.state;
 
     this.x = d3
       .scaleTime()
@@ -81,28 +138,29 @@ class LineGraph extends Component {
       .range([height, 0])
       .domain([0, d3.max(data, d => d[0])]);
 
+    this.line = d3.line().x(d => this.x(d[1])).y(d => this.y(d[0]));
+
+    this.xAxis = d3
+      .axisBottom()
+      .scale(this.x)
+      .tickSize(0)
+      .tickFormat(d3.timeFormat(timeFormat));
+
+    this.yAxis = d3.axisLeft().ticks(4).tickSize(-width).scale(this.y.nice());
+
     this.renderAxes();
     this.renderLabels();
-    this.renderLine();
     this.renderOverlay();
   }
 
   renderAxes() {
     const { data, width, height, axisOffset, timeFormat } = this.state;
 
-    const xAxis = d3
-      .axisBottom()
-      .scale(this.x)
-      .tickSize(0)
-      .tickFormat(d3.timeFormat(timeFormat));
-
-    const yAxis = d3.axisLeft().ticks(4).tickSize(-width).scale(this.y.nice());
-
     this.svg
       .append('g')
       .attr('class', 'bx--axis bx--axis--y')
       .attr('stroke-dasharray', '4')
-      .call(yAxis)
+      .call(this.yAxis)
       .selectAll('text')
       .attr('x', -axisOffset);
 
@@ -110,16 +168,13 @@ class LineGraph extends Component {
       .append('g')
       .attr('class', 'bx--axis bx--axis--x')
       .attr('transform', `translate(0, ${height})`)
-      .call(xAxis)
+      .call(this.xAxis)
       .selectAll('text')
       .attr('y', axisOffset)
       .style('text-anchor', 'end')
       .attr('transform', `rotate(-65)`);
 
-    this.svg.selectAll('.bx--axis--y path').style('display', 'none');
-    this.svg.selectAll('.bx--axis path').attr('stroke', '#5A6872');
-    this.svg.selectAll('.tick line').attr('stroke', '#5A6872');
-    this.svg.selectAll('.tick text').attr('fill', '#5A6872');
+    this.updateStyles();
   }
 
   renderLabels() {
@@ -159,7 +214,6 @@ class LineGraph extends Component {
 
   renderLine() {
     const { data } = this.state;
-    const line = d3.line().x(d => this.x(d[1])).y(d => this.y(d[0]));
 
     const path = this.svg
       .append('g')
@@ -170,7 +224,7 @@ class LineGraph extends Component {
       .attr('stroke-width', 2)
       .attr('fill', 'none')
       .attr('pointer-events', 'none')
-      .attr('d', line);
+      .attr('d', this.line);
 
     var totalLength = path.node().getTotalLength();
 
@@ -213,6 +267,10 @@ class LineGraph extends Component {
   }
 
   render() {
+    if (this.x) {
+      this.renderLine();
+    }
+
     return <svg ref="container" />;
   }
 }
