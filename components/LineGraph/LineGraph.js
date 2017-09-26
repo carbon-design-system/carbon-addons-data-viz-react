@@ -72,11 +72,8 @@ class LineGraph extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps !== this.props) {
-      this.setState({
-        data: nextProps.data,
-      });
-    }
+    const newState = Object.assign(this.state, nextProps);
+    this.setState({ newState });
   }
 
   componentWillUpdate(nextProps, nextState) {
@@ -89,7 +86,7 @@ class LineGraph extends Component {
   }
 
   updateData(data) {
-    const { axisOffset } = this.state;
+    const { axisOffset, xAxisLabel, yAxisLabel } = this.state;
 
     const path = this.svg
       .selectAll('.bx--line')
@@ -104,6 +101,8 @@ class LineGraph extends Component {
       .selectAll('text')
       .attr('x', -axisOffset);
 
+    this.svg.select('.bx--axis--y .bx--graph-label').text(yAxisLabel);
+
     this.svg
       .select('.bx--axis--x')
       .transition()
@@ -112,6 +111,8 @@ class LineGraph extends Component {
       .attr('y', axisOffset)
       .style('text-anchor', 'end')
       .attr('transform', `rotate(-65)`);
+
+    this.svg.select('.bx--axis--x .bx--graph-label').text(xAxisLabel);
 
     this.updateStyles();
   }

@@ -31,12 +31,14 @@ class LineGraphContainer extends Component {
 
   updateData() {
     let randomNumber = Math.floor(Math.random() * 20) + 10;
-    let data = this.createData(randomNumber).sort(function(a, b) {
+    let data = this.createData(12).sort(function(a, b) {
       return a[1] - b[1];
     });
 
     this.setState({
       data,
+      xAxisLabel: `${randomNumber / 2}`,
+      yAxisLabel: `${randomNumber * 2}`,
     });
   }
 
@@ -54,6 +56,8 @@ class LineGraphContainer extends Component {
       labelOffsetX: 65,
       axisOffset: 16,
       timeFormat: '%I:%M:%S',
+      yAxisLabel: this.state.yAxisLabel,
+      xAxisLabel: this.state.xAxisLabel,
       data: this.state.data,
       onHover: action('Hover'),
     };
