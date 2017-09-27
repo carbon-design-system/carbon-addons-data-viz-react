@@ -10,6 +10,7 @@ const propTypes = {
   total: PropTypes.number,
   size: PropTypes.string,
   gaugePercentages: PropTypes.array,
+  id: PropTypes.string,
 };
 
 const defaultProps = {
@@ -22,23 +23,17 @@ const defaultProps = {
   labelText: '75 out of 100GB',
   size: 'full',
   gaugePercentages: [50, 75],
+  id: 'container',
 };
 
 class GaugeGraph extends Component {
   state = {
-    tau: this.props.tau,
-    radius: this.props.radius,
-    padding: this.props.padding,
-    amount: this.props.amount,
-    total: this.props.total,
-    valueText: this.props.valueText,
-    labelText: this.props.labelText,
-    size: this.props.size,
-    gaugePercentages: this.props.gaugePercentages,
+    boxSize: 0,
+    ratio: 0,
   };
 
   componentDidMount() {
-    const { radius, padding, amount, total } = this.state;
+    const { radius, padding, amount, total } = this.props;
 
     this.setState(() => {
       return {
@@ -49,20 +44,23 @@ class GaugeGraph extends Component {
   }
 
   initialRender() {
+    const { boxSize } = this.state;
+    const { size, padding, id } = this.props;
+
+    this.svg = d3
+      .select(this.refs[`${id}`])
+      .attr('width', boxSize)
+      .attr('height', size === 'half' ? boxSize / 2 + padding : boxSize)
+      .append('g')
+      .attr('transform', `translate(${boxSize / 2}, ${boxSize / 2})`);
+
     this.renderSVG();
     this.renderLabels();
   }
 
   renderSVG() {
-    const {
-      tau,
-      radius,
-      padding,
-      boxSize,
-      ratio,
-      size,
-      gaugePercentages,
-    } = this.state;
+    const { tau, radius, padding, size, gaugePercentages, id } = this.props;
+    const { boxSize, ratio } = this.state;
 
     // Transition function
     const arcTween = function(newAngle) {
@@ -71,7 +69,7 @@ class GaugeGraph extends Component {
         if (size === 'half') {
           interpolate = d3.interpolate(d.endAngle, Math.PI * (newAngle / tau));
 
-          const line = d3.select('.bx--gauge-line');
+          const line = d3.select(`#${id} .bx--gauge-line`);
           const percent = newAngle / tau * 100;
 
           line.style('fill', d => {
@@ -85,7 +83,6 @@ class GaugeGraph extends Component {
               return '#FF5050';
             }
           });
-          console.log(percent);
         } else {
           interpolate = d3.interpolate(d.endAngle, newAngle);
         }
@@ -102,13 +99,6 @@ class GaugeGraph extends Component {
       .innerRadius(radius)
       .outerRadius(radius - 10)
       .startAngle(0);
-
-    this.svg = d3
-      .select(this.refs.container)
-      .attr('width', boxSize)
-      .attr('height', boxSize)
-      .append('g')
-      .attr('transform', `translate(${boxSize / 2}, ${boxSize / 2})`);
 
     this.svg
       .append('path')
@@ -130,10 +120,10 @@ class GaugeGraph extends Component {
   }
 
   renderLabels() {
-    const { valueText, labelText } = this.state;
+    const { valueText, labelText, id } = this.props;
 
     d3
-      .select('.bx--gauge-amount')
+      .select(`#${id} .bx--gauge-amount`)
       .style('opacity', 0)
       .transition()
       .duration(1000)
@@ -142,7 +132,7 @@ class GaugeGraph extends Component {
       .text(`${valueText}`);
 
     d3
-      .select('.bx--gauge-total')
+      .select(`#${id} .bx--gauge-total`)
       .style('opacity', 0)
       .transition()
       .duration(1000)
@@ -152,10 +142,10 @@ class GaugeGraph extends Component {
   }
 
   render() {
-    const { size } = this.state;
+    const { size, id } = this.props;
     const tooltipStyles = {
       position: 'absolute',
-      top: `${size === 'half' ? '40%' : '50%'}`,
+      top: `${size === 'half' ? '60%' : '50%'}`,
       left: '50%',
       transform: 'translate(-50%, -50%)',
     };
@@ -164,18 +154,22 @@ class GaugeGraph extends Component {
       textAlign: 'center',
       fontSize: '30px',
       fontWeight: '600',
+      lineHeight: '1',
       margin: '0',
+      marginBottom: '.25rem',
     };
 
     const totalStyles = {
       fontSize: '14px',
       margin: '0',
+      lineHeight: '1',
+      whiteSpace: 'nowrap',
     };
 
     return (
       <div className="bx--graph-container" style={{ position: 'relative' }}>
-        <svg ref="container" />
-        <div className="bx--gauge-tooltip" style={tooltipStyles}>
+        <svg id={id} ref={id} />
+        <div className="bx--gauge-tooltip" id={id} style={tooltipStyles}>
           <p className="bx--gauge-amount" style={amountStyles}>Place</p>
           <p className="bx--gauge-total" style={totalStyles}>Holder</p>
         </div>
