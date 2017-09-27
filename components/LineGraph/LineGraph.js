@@ -7,6 +7,7 @@ const propTypes = {
   data: PropTypes.array,
   height: PropTypes.number,
   width: PropTypes.number,
+  id: PropTypes.string,
   margin: PropTypes.object,
   labelOffsetX: PropTypes.number,
   labelOffsetY: PropTypes.number,
@@ -14,12 +15,14 @@ const propTypes = {
   timeFormat: PropTypes.string,
   xAxisLabel: PropTypes.string,
   yAxisLabel: PropTypes.string,
+  onHover: PropTypes.func,
 };
 
 const defaultProps = {
   data: [[100, 10], [50, 20]],
   height: 300,
   width: 800,
+  id: 'container',
   margin: {
     top: 30,
     right: 20,
@@ -32,27 +35,20 @@ const defaultProps = {
   timeFormat: '%I:%M:%S',
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
+  onHover: () => {},
 };
 
 class LineGraph extends Component {
   state = {
-    data: this.props.data,
     height: this.props.height,
     width: this.props.width,
-    margin: this.props.margin,
-    labelOffsetX: this.props.labelOffsetX,
-    labelOffsetY: this.props.labelOffsetY,
-    axisOffset: this.props.axisOffset,
-    timeFormat: this.props.timeFormat,
-    xAxisLabel: this.props.xAxisLabel,
-    yAxisLabel: this.props.yAxisLabel,
   };
 
   componentDidMount() {
-    const { data, width, height, margin } = this.state;
+    const { data, width, height, margin, id } = this.props;
 
     this.svg = d3
-      .select(this.refs.container)
+      .select(this.refs[`${id}`])
       .attr('class', 'bx--graph')
       .attr('width', width)
       .attr('height', height)
@@ -72,21 +68,16 @@ class LineGraph extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const newState = Object.assign(this.state, nextProps);
-    this.setState({ newState });
-  }
-
-  componentWillUpdate(nextProps, nextState) {
     if (this.x) {
-      this.x.domain(d3.extent(nextState.data, d => d[1]));
-      this.y.domain([0, d3.max(nextState.data, d => d[0])]);
+      this.x.domain(d3.extent(nextProps.data, d => d[1]));
+      this.y.domain([0, d3.max(nextProps.data, d => d[0])]);
 
-      this.updateData(nextState.data);
+      this.updateData(nextProps);
     }
   }
 
-  updateData(data) {
-    const { axisOffset, xAxisLabel, yAxisLabel } = this.state;
+  updateData(nextProps) {
+    const { data, axisOffset, xAxisLabel, yAxisLabel } = nextProps;
 
     const path = this.svg
       .selectAll('.bx--line')
@@ -118,8 +109,6 @@ class LineGraph extends Component {
   }
 
   updateStyles() {
-    const { axisOffset } = this.state;
-
     this.svg.selectAll('.bx--axis--y path').style('display', 'none');
     this.svg.selectAll('.bx--axis path').attr('stroke', '#5A6872');
     this.svg.selectAll('.tick line').attr('stroke', '#5A6872');
@@ -127,7 +116,8 @@ class LineGraph extends Component {
   }
 
   initialRender() {
-    const { data, width, height, timeFormat } = this.state;
+    const { height, width } = this.state;
+    const { data, timeFormat } = this.props;
 
     this.x = d3
       .scaleTime()
@@ -155,7 +145,8 @@ class LineGraph extends Component {
   }
 
   renderAxes() {
-    const { data, width, height, axisOffset, timeFormat } = this.state;
+    const { width, height } = this.state;
+    const { data, axisOffset, timeFormat } = this.props;
 
     this.svg
       .append('g')
@@ -179,14 +170,8 @@ class LineGraph extends Component {
   }
 
   renderLabels() {
-    const {
-      labelOffsetY,
-      labelOffsetX,
-      xAxisLabel,
-      yAxisLabel,
-      height,
-      width,
-    } = this.state;
+    const { height, width } = this.state;
+    const { labelOffsetY, labelOffsetX, xAxisLabel, yAxisLabel } = this.props;
 
     const yLabel = this.svg
       .select('.bx--axis--y')
@@ -214,7 +199,7 @@ class LineGraph extends Component {
   }
 
   renderLine() {
-    const { data } = this.state;
+    const { data } = this.props;
 
     const path = this.svg
       .append('g')
@@ -238,7 +223,8 @@ class LineGraph extends Component {
   }
 
   renderOverlay() {
-    const { width, height, data } = this.state;
+    const { data } = this.props;
+    const { width, height } = this.state;
 
     const overlay = this.svg
       .append('rect')
@@ -253,12 +239,12 @@ class LineGraph extends Component {
   }
 
   onMouseMove(data) {
-    const { margin } = this.state;
+    const { margin, id } = this.props;
     const bisectDate = d3.bisector(function(d) {
       return d[1];
     }).right;
 
-    const mouse = d3.mouse(this.refs.container)[0] - margin.left;
+    const mouse = d3.mouse(id)[0] - margin.left;
     const timestamp = this.x.invert(mouse);
     const index = bisectDate(data, timestamp);
     const d0 = data[index - 1];
@@ -268,11 +254,12 @@ class LineGraph extends Component {
   }
 
   render() {
+    const { id } = this.props;
     if (this.x) {
       this.renderLine();
     }
 
-    return <svg ref="container" />;
+    return <svg ref={id} />;
   }
 }
 

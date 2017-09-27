@@ -10,8 +10,10 @@ class LineGraphContainer extends Component {
   };
 
   componentDidMount() {
+    let i = 0;
     setInterval(() => {
-      this.updateData();
+      this.updateData(i);
+      i++;
     }, 5000);
   }
 
@@ -29,7 +31,7 @@ class LineGraphContainer extends Component {
     return data;
   }
 
-  updateData() {
+  updateData(i) {
     let randomNumber = Math.floor(Math.random() * 20) + 10;
     let data = this.createData(12).sort(function(a, b) {
       return a[1] - b[1];
@@ -37,8 +39,8 @@ class LineGraphContainer extends Component {
 
     this.setState({
       data,
-      xAxisLabel: `${randomNumber / 2}`,
-      yAxisLabel: `${randomNumber * 2}`,
+      xAxisLabel: `${i}`,
+      yAxisLabel: `${i}`,
     });
   }
 
@@ -66,10 +68,12 @@ class LineGraphContainer extends Component {
   }
 }
 
-storiesOf('LineGraph', module).addWithInfo(
-  'Default',
-  `
+storiesOf('LineGraph', module)
+  .addWithInfo(
+    'Updating',
+    `
       Line Graph.
     `,
-  () => <LineGraphContainer />
-);
+    () => <LineGraphContainer />
+  )
+  .addWithInfo('Default', ` Static Example. `, () => <LineGraph />);
