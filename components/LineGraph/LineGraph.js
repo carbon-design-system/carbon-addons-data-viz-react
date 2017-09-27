@@ -7,6 +7,7 @@ const propTypes = {
   data: PropTypes.array,
   height: PropTypes.number,
   width: PropTypes.number,
+  id: PropTypes.string,
   margin: PropTypes.object,
   labelOffsetX: PropTypes.number,
   labelOffsetY: PropTypes.number,
@@ -14,12 +15,14 @@ const propTypes = {
   timeFormat: PropTypes.string,
   xAxisLabel: PropTypes.string,
   yAxisLabel: PropTypes.string,
+  onHover: PropTypes.func,
 };
 
 const defaultProps = {
   data: [[100, 10], [50, 20]],
   height: 300,
   width: 800,
+  id: 'container',
   margin: {
     top: 30,
     right: 20,
@@ -32,27 +35,20 @@ const defaultProps = {
   timeFormat: '%I:%M:%S',
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
+  onHover: () => {},
 };
 
 class LineGraph extends Component {
   state = {
-    data: this.props.data,
     height: this.props.height,
     width: this.props.width,
-    margin: this.props.margin,
-    labelOffsetX: this.props.labelOffsetX,
-    labelOffsetY: this.props.labelOffsetY,
-    axisOffset: this.props.axisOffset,
-    timeFormat: this.props.timeFormat,
-    xAxisLabel: this.props.xAxisLabel,
-    yAxisLabel: this.props.yAxisLabel,
   };
 
   componentDidMount() {
-    const { data, width, height, margin } = this.state;
+    const { data, width, height, margin, id } = this.props;
 
     this.svg = d3
-      .select(this.refs.container)
+      .select(this.refs[`${id}`])
       .attr('class', 'bx--graph')
       .attr('width', width)
       .attr('height', height)
@@ -60,16 +56,68 @@ class LineGraph extends Component {
       .attr('class', 'bx--group-container')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-    this.setState(() => {
-      return {
-        width: width - (margin.left + margin.right),
-        height: height - (margin.top + margin.bottom),
-      };
-    }, this.initialRender);
+    this.setState(
+      () => {
+        return {
+          width: width - (margin.left + margin.right),
+          height: height - (margin.top + margin.bottom),
+        };
+      },
+      () => this.initialRender()
+    );
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (this.x) {
+      this.x.domain(d3.extent(nextProps.data, d => d[1]));
+      this.y.domain([0, d3.max(nextProps.data, d => d[0])]);
+
+      this.updateData(nextProps);
+    }
+  }
+
+  updateData(nextProps) {
+    const { data, axisOffset, xAxisLabel, yAxisLabel } = nextProps;
+
+    const path = this.svg
+      .selectAll('.bx--line')
+      .datum(data)
+      .transition()
+      .attr('d', this.line);
+
+    this.svg
+      .select('.bx--axis--y')
+      .transition()
+      .call(this.yAxis)
+      .selectAll('text')
+      .attr('x', -axisOffset);
+
+    this.svg.select('.bx--axis--y .bx--graph-label').text(yAxisLabel);
+
+    this.svg
+      .select('.bx--axis--x')
+      .transition()
+      .call(this.xAxis)
+      .selectAll('.bx--axis--x .tick text')
+      .attr('y', axisOffset)
+      .style('text-anchor', 'end')
+      .attr('transform', `rotate(-65)`);
+
+    this.svg.select('.bx--axis--x .bx--graph-label').text(xAxisLabel);
+
+    this.updateStyles();
+  }
+
+  updateStyles() {
+    this.svg.selectAll('.bx--axis--y path').style('display', 'none');
+    this.svg.selectAll('.bx--axis path').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick line').attr('stroke', '#5A6872');
+    this.svg.selectAll('.tick text').attr('fill', '#5A6872');
   }
 
   initialRender() {
-    const { data, width, height } = this.state;
+    const { height, width } = this.state;
+    const { data, timeFormat } = this.props;
 
     this.x = d3
       .scaleTime()
@@ -81,28 +129,30 @@ class LineGraph extends Component {
       .range([height, 0])
       .domain([0, d3.max(data, d => d[0])]);
 
-    this.renderAxes();
-    this.renderLabels();
-    this.renderLine();
-    this.renderOverlay();
-  }
+    this.line = d3.line().x(d => this.x(d[1])).y(d => this.y(d[0]));
 
-  renderAxes() {
-    const { data, width, height, axisOffset, timeFormat } = this.state;
-
-    const xAxis = d3
+    this.xAxis = d3
       .axisBottom()
       .scale(this.x)
       .tickSize(0)
       .tickFormat(d3.timeFormat(timeFormat));
 
-    const yAxis = d3.axisLeft().ticks(4).tickSize(-width).scale(this.y.nice());
+    this.yAxis = d3.axisLeft().ticks(4).tickSize(-width).scale(this.y.nice());
+
+    this.renderAxes();
+    this.renderLabels();
+    this.renderOverlay();
+  }
+
+  renderAxes() {
+    const { width, height } = this.state;
+    const { data, axisOffset, timeFormat } = this.props;
 
     this.svg
       .append('g')
       .attr('class', 'bx--axis bx--axis--y')
       .attr('stroke-dasharray', '4')
-      .call(yAxis)
+      .call(this.yAxis)
       .selectAll('text')
       .attr('x', -axisOffset);
 
@@ -110,27 +160,18 @@ class LineGraph extends Component {
       .append('g')
       .attr('class', 'bx--axis bx--axis--x')
       .attr('transform', `translate(0, ${height})`)
-      .call(xAxis)
+      .call(this.xAxis)
       .selectAll('text')
       .attr('y', axisOffset)
       .style('text-anchor', 'end')
       .attr('transform', `rotate(-65)`);
 
-    this.svg.selectAll('.bx--axis--y path').style('display', 'none');
-    this.svg.selectAll('.bx--axis path').attr('stroke', '#5A6872');
-    this.svg.selectAll('.tick line').attr('stroke', '#5A6872');
-    this.svg.selectAll('.tick text').attr('fill', '#5A6872');
+    this.updateStyles();
   }
 
   renderLabels() {
-    const {
-      labelOffsetY,
-      labelOffsetX,
-      xAxisLabel,
-      yAxisLabel,
-      height,
-      width,
-    } = this.state;
+    const { height, width } = this.state;
+    const { labelOffsetY, labelOffsetX, xAxisLabel, yAxisLabel } = this.props;
 
     const yLabel = this.svg
       .select('.bx--axis--y')
@@ -158,8 +199,7 @@ class LineGraph extends Component {
   }
 
   renderLine() {
-    const { data } = this.state;
-    const line = d3.line().x(d => this.x(d[1])).y(d => this.y(d[0]));
+    const { data } = this.props;
 
     const path = this.svg
       .append('g')
@@ -170,7 +210,7 @@ class LineGraph extends Component {
       .attr('stroke-width', 2)
       .attr('fill', 'none')
       .attr('pointer-events', 'none')
-      .attr('d', line);
+      .attr('d', this.line);
 
     var totalLength = path.node().getTotalLength();
 
@@ -183,7 +223,8 @@ class LineGraph extends Component {
   }
 
   renderOverlay() {
-    const { width, height, data } = this.state;
+    const { data } = this.props;
+    const { width, height } = this.state;
 
     const overlay = this.svg
       .append('rect')
@@ -198,12 +239,12 @@ class LineGraph extends Component {
   }
 
   onMouseMove(data) {
-    const { margin } = this.state;
+    const { margin, id } = this.props;
     const bisectDate = d3.bisector(function(d) {
       return d[1];
     }).right;
 
-    const mouse = d3.mouse(this.refs.container)[0] - margin.left;
+    const mouse = d3.mouse(id)[0] - margin.left;
     const timestamp = this.x.invert(mouse);
     const index = bisectDate(data, timestamp);
     const d0 = data[index - 1];
@@ -213,7 +254,12 @@ class LineGraph extends Component {
   }
 
   render() {
-    return <svg ref="container" />;
+    const { id } = this.props;
+    if (this.x) {
+      this.renderLine();
+    }
+
+    return <svg ref={id} />;
   }
 }
 
