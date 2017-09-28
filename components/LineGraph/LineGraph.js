@@ -16,10 +16,11 @@ const propTypes = {
   xAxisLabel: PropTypes.string,
   yAxisLabel: PropTypes.string,
   onHover: PropTypes.func,
+  emptyText: PropTypes.string,
 };
 
 const defaultProps = {
-  data: [[100, 10], [50, 20]],
+  data: [],
   height: 300,
   width: 800,
   id: 'container',
@@ -36,6 +37,7 @@ const defaultProps = {
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
   onHover: () => {},
+  emptyText: 'There is currently no data available for the parameters selected. Please try a different combination.',
 };
 
 class LineGraph extends Component {
@@ -45,7 +47,16 @@ class LineGraph extends Component {
   };
 
   componentDidMount() {
-    const { data, width, height, margin, id } = this.props;
+    const { data, width, height, margin, id, emptyText } = this.props;
+
+    this.emptyContainer = d3
+      .select('.bx--line-graph-empty-text')
+      .text(emptyText)
+      .style('position', 'absolute')
+      .style('top', '50%')
+      .style('left', '50%')
+      .style('text-align', 'center')
+      .style('transform', 'translate(-50%, -50%)');
 
     this.svg = d3
       .select(this.refs[`${id}`])
@@ -72,7 +83,20 @@ class LineGraph extends Component {
       this.x.domain(d3.extent(nextProps.data, d => d[1]));
       this.y.domain([0, d3.max(nextProps.data, d => d[0])]);
 
+      this.updateEmptyState(nextProps.data);
       this.updateData(nextProps);
+    }
+  }
+
+  updateEmptyState(data) {
+    const { emptyText } = this.props;
+
+    if (data.length < 1) {
+      this.svg.style('opacity', '.3');
+      this.emptyContainer.style('display', 'inline-block');
+    } else {
+      this.svg.style('opacity', '1');
+      this.emptyContainer.style('display', 'none');
     }
   }
 
@@ -117,7 +141,9 @@ class LineGraph extends Component {
 
   initialRender() {
     const { height, width } = this.state;
-    const { data, timeFormat } = this.props;
+    const { data, timeFormat, xScale } = this.props;
+
+    this.updateEmptyState(data);
 
     this.x = d3
       .scaleTime()
@@ -259,7 +285,12 @@ class LineGraph extends Component {
       this.renderLine();
     }
 
-    return <svg ref={id} />;
+    return (
+      <div className="bx--graph-container" style={{ position: 'relative' }}>
+        <p className="bx--line-graph-empty-text" />
+        <svg ref={id} />
+      </div>
+    );
   }
 }
 
