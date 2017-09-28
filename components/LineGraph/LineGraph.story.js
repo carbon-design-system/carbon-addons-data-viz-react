@@ -4,9 +4,9 @@ import LineGraph from './LineGraph';
 
 class LineGraphContainer extends Component {
   state = {
-    data: this.createData(12).sort(function(a, b) {
-      return a[1] - b[1];
-    }),
+    // data: this.createData(12).sort(function(a, b) {
+    //   return a[1] - b[1];
+    // }),
   };
 
   componentDidMount() {
@@ -76,4 +76,4 @@ storiesOf('LineGraph', module)
     `,
     () => <LineGraphContainer />
   )
-  .addWithInfo('Default', ` Static Example. `, () => <LineGraph />);
+  .addWithInfo('Empty', ` Static Example. `, () => <LineGraph />);
