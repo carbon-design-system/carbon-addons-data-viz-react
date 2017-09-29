@@ -17,6 +17,7 @@ const propTypes = {
   yAxisLabel: PropTypes.string,
   onHover: PropTypes.func,
   emptyText: PropTypes.string,
+  isUTC: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -38,6 +39,7 @@ const defaultProps = {
   yAxisLabel: 'Y Axis',
   onHover: () => {},
   emptyText: 'There is currently no data available for the parameters selected. Please try a different combination.',
+  isUTC: false,
 };
 
 class LineGraph extends Component {
@@ -141,14 +143,21 @@ class LineGraph extends Component {
 
   initialRender() {
     const { height, width } = this.state;
-    const { data, timeFormat, xScale } = this.props;
+    const { data, timeFormat, xScale, isUTC } = this.props;
 
     this.updateEmptyState(data);
 
-    this.x = d3
-      .scaleTime()
-      .range([0, width])
-      .domain(d3.extent(data, d => d[1]));
+    if (isUTC) {
+      this.x = d3
+        .scaleUtc()
+        .range([0, width])
+        .domain(d3.extent(data, d => d[1]));
+    } else {
+      this.x = d3
+        .scaleTime()
+        .range([0, width])
+        .domain(d3.extent(data, d => d[1]));
+    }
 
     this.y = d3
       .scaleLinear()
@@ -260,22 +269,23 @@ class LineGraph extends Component {
       .style('fill', 'none')
       .style('pointer-events', 'all')
       .on('mousemove', () => {
-        this.onMouseMove(data);
+        this.onMouseMove();
       });
   }
 
-  onMouseMove(data) {
-    const { margin, id } = this.props;
+  onMouseMove() {
+    const { margin, id, data } = this.props;
     const bisectDate = d3.bisector(function(d) {
       return d[1];
     }).right;
 
-    const mouse = d3.mouse(id)[0] - margin.left;
+    const mouse = d3.mouse(this.refs[id])[0] - margin.left;
     const timestamp = this.x.invert(mouse);
     const index = bisectDate(data, timestamp);
     const d0 = data[index - 1];
     const d1 = data[index];
     const d = timestamp - d0[1] > d1[1] - timestamp ? d1 : d0;
+
     this.props.onHover(d, d3.event.pageX, d3.event.pageY);
   }
 
