@@ -167,7 +167,10 @@ class GaugeGraph extends Component {
     };
 
     return (
-      <div className="bx--graph-container" style={{ position: 'relative' }}>
+      <div
+        className="bx--graph-container"
+        style={{ position: 'relative', width: this.state.boxSize }}
+      >
         <svg id={id} ref={id} />
         <div className="bx--gauge-tooltip" id={id} style={tooltipStyles}>
           <p className="bx--gauge-amount" style={amountStyles}>Place</p>

@@ -110,7 +110,14 @@ class PieChart extends Component {
     };
 
     return (
-      <div className="bx--graph-container" style={{ position: 'relative' }}>
+      <div
+        className="bx--graph-container"
+        style={{
+          position: 'relative',
+          width: this.state.width,
+          height: this.state.height,
+        }}
+      >
         <svg ref="container" />
         <div className="bx--pie-tooltip" style={tooltipStyles}>
           <p className="bx--pie-value" style={valueStyles} />
