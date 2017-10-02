@@ -84,7 +84,7 @@ class LineGraph extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.x) {
-      this.x.domain(d3.extent(nextProps.data, d => d[1]));
+      this.x.domain(d3.extent(nextProps.data, d => d[d.length - 1]));
       this.y.domain([0, d3.max(nextProps.data, d => d[0])]);
 
       this.updateEmptyState(nextProps.data);
@@ -152,12 +152,12 @@ class LineGraph extends Component {
       this.x = d3
         .scaleUtc()
         .range([0, this.width])
-        .domain(d3.extent(data, d => d[1]));
+        .domain(d3.extent(data, d => d[d.length - 1]));
     } else {
       this.x = d3
         .scaleTime()
         .range([0, this.width])
-        .domain(d3.extent(data, d => d[1]));
+        .domain(d3.extent(data, d => d[d.length - 1]));
     }
 
     this.y = d3
@@ -165,7 +165,9 @@ class LineGraph extends Component {
       .range([this.height, 0])
       .domain([0, d3.max(data, d => d[0])]);
 
-    this.line = d3.line().x(d => this.x(d[1])).y(d => this.y(d[0]));
+    this.line = d3.line().x(d => this.x(d[d.length - 1])).y(d => {
+      return this.y(d[this.count]);
+    });
 
     this.xAxis = d3
       .axisBottom()
@@ -243,25 +245,32 @@ class LineGraph extends Component {
   renderLine() {
     const { data } = this.props;
 
-    const path = this.svg
-      .append('g')
-      .datum(data)
-      .append('path')
-      .attr('class', 'bx--line')
-      .attr('stroke', '#00a69f')
-      .attr('stroke-width', 2)
-      .attr('fill', 'none')
-      .attr('pointer-events', 'none')
-      .attr('d', this.line);
+    this.count = 0;
 
-    var totalLength = path.node().getTotalLength();
+    for (let i = 0; i < data[0].length - 1; i++) {
+      console.log(`loop: ${i}`);
+      const path = this.svg
+        .append('g')
+        .datum(data)
+        .append('path')
+        .attr('class', 'bx--line')
+        .attr('stroke', '#00a69f')
+        .attr('stroke-width', 2)
+        .attr('fill', 'none')
+        .attr('pointer-events', 'none')
+        .attr('d', this.line);
 
-    path
-      .attr('stroke-dasharray', 0 + ' ' + totalLength)
-      .transition()
-      .ease(d3.easeSin)
-      .duration(1000)
-      .attr('stroke-dasharray', totalLength + ' ' + 0);
+      var totalLength = path.node().getTotalLength();
+
+      path
+        .attr('stroke-dasharray', 0 + ' ' + totalLength)
+        .transition()
+        .ease(d3.easeSin)
+        .duration(1000)
+        .attr('stroke-dasharray', totalLength + ' ' + 0);
+
+      this.count++;
+    }
   }
 
   renderOverlay() {
@@ -289,7 +298,7 @@ class LineGraph extends Component {
   onMouseMove() {
     const { margin, id, data } = this.props;
     const bisectDate = d3.bisector(function(d) {
-      return d[1];
+      return d[d.length - 1];
     }).right;
 
     const mouse = d3.mouse(this.id)[0] - margin.left;
