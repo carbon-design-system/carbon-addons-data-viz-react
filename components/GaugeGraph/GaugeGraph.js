@@ -11,6 +11,7 @@ const propTypes = {
   size: PropTypes.string,
   gaugePercentages: PropTypes.array,
   id: PropTypes.string,
+  tooltipId: PropTypes.string,
 };
 
 const defaultProps = {
@@ -24,6 +25,7 @@ const defaultProps = {
   size: 'full',
   gaugePercentages: [50, 75],
   id: 'container',
+  tooltipId: 'tooltip-container',
 };
 
 class GaugeGraph extends Component {
@@ -120,10 +122,10 @@ class GaugeGraph extends Component {
   }
 
   renderLabels() {
-    const { valueText, labelText, id } = this.props;
+    const { valueText, labelText, id, tooltipId } = this.props;
 
     d3
-      .select(`#${id} .bx--gauge-amount`)
+      .select(`#${tooltipId} .bx--gauge-amount`)
       .style('opacity', 0)
       .transition()
       .duration(1000)
@@ -132,7 +134,7 @@ class GaugeGraph extends Component {
       .text(`${valueText}`);
 
     d3
-      .select(`#${id} .bx--gauge-total`)
+      .select(`#${tooltipId} .bx--gauge-total`)
       .style('opacity', 0)
       .transition()
       .duration(1000)
@@ -142,7 +144,7 @@ class GaugeGraph extends Component {
   }
 
   render() {
-    const { size, id } = this.props;
+    const { size, tooltipId, id } = this.props;
     const tooltipStyles = {
       position: 'absolute',
       top: `${size === 'half' ? '60%' : '50%'}`,
@@ -172,7 +174,7 @@ class GaugeGraph extends Component {
         style={{ position: 'relative', width: this.state.boxSize }}
       >
         <svg id={id} ref={id} />
-        <div className="bx--gauge-tooltip" id={id} style={tooltipStyles}>
+        <div className="bx--gauge-tooltip" id={tooltipId} style={tooltipStyles}>
           <p className="bx--gauge-amount" style={amountStyles}>Place</p>
           <p className="bx--gauge-total" style={totalStyles}>Holder</p>
         </div>
