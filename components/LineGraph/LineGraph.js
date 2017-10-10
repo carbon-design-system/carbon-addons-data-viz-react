@@ -8,6 +8,7 @@ const propTypes = {
   height: PropTypes.number,
   width: PropTypes.number,
   id: PropTypes.string,
+  containerId: PropTypes.string,
   margin: PropTypes.object,
   labelOffsetX: PropTypes.number,
   labelOffsetY: PropTypes.number,
@@ -25,6 +26,7 @@ const defaultProps = {
   height: 300,
   width: 800,
   id: 'container',
+  containerId: 'graph-container',
   margin: {
     top: 30,
     right: 20,
@@ -43,16 +45,19 @@ const defaultProps = {
 };
 
 class LineGraph extends Component {
-  state = {
-    height: this.props.height,
-    width: this.props.width,
-  };
-
   componentDidMount() {
-    const { data, width, height, margin, id, emptyText } = this.props;
+    const {
+      data,
+      width,
+      height,
+      margin,
+      id,
+      containerId,
+      emptyText,
+    } = this.props;
 
     this.emptyContainer = d3
-      .select('.bx--line-graph-empty-text')
+      .select(`#${containerId} .bx--line-graph-empty-text`)
       .text(emptyText)
       .style('position', 'absolute')
       .style('top', '50%')
@@ -61,7 +66,7 @@ class LineGraph extends Component {
       .style('transform', 'translate(-50%, -50%)');
 
     this.svg = d3
-      .select(this.refs[`${id}`])
+      .select(`#${containerId} svg`)
       .attr('class', 'bx--graph')
       .attr('width', width)
       .attr('height', height)
@@ -69,15 +74,10 @@ class LineGraph extends Component {
       .attr('class', 'bx--group-container')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-    this.setState(
-      () => {
-        return {
-          width: width - (margin.left + margin.right),
-          height: height - (margin.top + margin.bottom),
-        };
-      },
-      () => this.initialRender()
-    );
+    this.width = width - (margin.left + margin.right);
+    this.height = height - (margin.top + margin.bottom);
+
+    this.initialRender();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -142,7 +142,6 @@ class LineGraph extends Component {
   }
 
   initialRender() {
-    const { height, width } = this.state;
     const { data, timeFormat, xScale, isUTC } = this.props;
 
     this.updateEmptyState(data);
@@ -150,18 +149,18 @@ class LineGraph extends Component {
     if (isUTC) {
       this.x = d3
         .scaleUtc()
-        .range([0, width])
+        .range([0, this.width])
         .domain(d3.extent(data, d => d[1]));
     } else {
       this.x = d3
         .scaleTime()
-        .range([0, width])
+        .range([0, this.width])
         .domain(d3.extent(data, d => d[1]));
     }
 
     this.y = d3
       .scaleLinear()
-      .range([height, 0])
+      .range([this.height, 0])
       .domain([0, d3.max(data, d => d[0])]);
 
     this.line = d3.line().x(d => this.x(d[1])).y(d => this.y(d[0]));
@@ -172,7 +171,11 @@ class LineGraph extends Component {
       .tickSize(0)
       .tickFormat(d3.timeFormat(timeFormat));
 
-    this.yAxis = d3.axisLeft().ticks(4).tickSize(-width).scale(this.y.nice());
+    this.yAxis = d3
+      .axisLeft()
+      .ticks(4)
+      .tickSize(-this.width)
+      .scale(this.y.nice());
 
     this.renderAxes();
     this.renderLabels();
@@ -180,7 +183,6 @@ class LineGraph extends Component {
   }
 
   renderAxes() {
-    const { width, height } = this.state;
     const { data, axisOffset, timeFormat } = this.props;
 
     this.svg
@@ -194,7 +196,7 @@ class LineGraph extends Component {
     this.svg
       .append('g')
       .attr('class', 'bx--axis bx--axis--x')
-      .attr('transform', `translate(0, ${height})`)
+      .attr('transform', `translate(0, ${this.height})`)
       .call(this.xAxis)
       .selectAll('text')
       .attr('y', axisOffset)
@@ -205,7 +207,6 @@ class LineGraph extends Component {
   }
 
   renderLabels() {
-    const { height, width } = this.state;
     const { labelOffsetY, labelOffsetX, xAxisLabel, yAxisLabel } = this.props;
 
     const yLabel = this.svg
@@ -215,7 +216,7 @@ class LineGraph extends Component {
       .attr('class', 'bx--graph-label')
       .attr(
         'transform',
-        `translate(${-labelOffsetY}, ${height / 2}) rotate(-90)`
+        `translate(${-labelOffsetY}, ${this.height / 2}) rotate(-90)`
       );
 
     const xLabel = this.svg
@@ -223,7 +224,7 @@ class LineGraph extends Component {
       .append('text')
       .text(`${xAxisLabel}`)
       .attr('class', 'bx--graph-label')
-      .attr('transform', `translate(${width / 2}, ${labelOffsetX})`);
+      .attr('transform', `translate(${this.width / 2}, ${labelOffsetX})`);
 
     this.svg
       .selectAll('.bx--graph-label')
@@ -259,12 +260,11 @@ class LineGraph extends Component {
 
   renderOverlay() {
     const { data } = this.props;
-    const { width, height } = this.state;
 
     const overlay = this.svg
       .append('rect')
-      .attr('width', width)
-      .attr('height', height)
+      .attr('width', this.width)
+      .attr('height', this.height)
       .attr('class', 'overlay')
       .style('fill', 'none')
       .style('pointer-events', 'all')
@@ -279,26 +279,34 @@ class LineGraph extends Component {
       return d[1];
     }).right;
 
-    const mouse = d3.mouse(this.refs[id])[0] - margin.left;
+    const mouse = d3.mouse(this.id)[0] - margin.left;
     const timestamp = this.x.invert(mouse);
     const index = bisectDate(data, timestamp);
     const d0 = data[index - 1];
     const d1 = data[index];
-    const d = timestamp - d0[1] > d1[1] - timestamp ? d1 : d0;
+
+    let d;
+    if (d0 && d1) {
+      d = timestamp - d0[1] > d1[1] - timestamp ? d1 : d0;
+    }
 
     this.props.onHover(d, d3.event.pageX, d3.event.pageY);
   }
 
   render() {
-    const { id } = this.props;
+    const { id, containerId } = this.props;
     if (this.x) {
       this.renderLine();
     }
 
     return (
-      <div className="bx--graph-container" style={{ position: 'relative' }}>
+      <div
+        className="bx--graph-container"
+        id={containerId}
+        style={{ position: 'relative' }}
+      >
         <p className="bx--line-graph-empty-text" />
-        <svg ref={id} />
+        <svg id={id} ref={id => this.id = id} />
       </div>
     );
   }
