@@ -180,6 +180,10 @@ class LineGraph extends Component {
     this.renderAxes();
     this.renderLabels();
     this.renderOverlay();
+
+    if (this.x) {
+      this.renderLine();
+    }
   }
 
   renderAxes() {
