@@ -62,6 +62,8 @@ class LineGraphContainer extends Component {
       xAxisLabel: this.state.xAxisLabel,
       data: this.state.data,
       onHover: action('Hover'),
+      id: this.props.id,
+      containerId: this.props.containerId,
     };
 
     return <LineGraph {...props} />;
@@ -74,6 +76,20 @@ storiesOf('LineGraph', module)
     `
       Line Graph.
     `,
-    () => <LineGraphContainer />
+    () => (
+      <div>
+        <LineGraphContainer />
+        <LineGraphContainer id="two" containerId="test-two" />
+      </div>
+    )
   )
-  .addWithInfo('Empty', ` Static Example. `, () => <LineGraph />);
+  .addWithInfo('Static', ` Static Example. `, () => (
+    <LineGraph
+      data={[
+        [48.633333333333, 1507563000000],
+        [49.933333333333, 1507563900000],
+        [53.733333333333, 1507564800000],
+      ]}
+    />
+  ))
+  .addWithInfo('Empty', ` Empty Example. `, () => <LineGraph />);
