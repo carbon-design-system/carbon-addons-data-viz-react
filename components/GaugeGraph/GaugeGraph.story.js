@@ -18,6 +18,7 @@ const halfGaugeProps = {
   total: 100,
   valueText: '25%',
   labelText: '25 out of 100GB',
+  tooltipId: 'one-container',
 };
 
 const halfGaugePropsTwo = {
@@ -29,6 +30,7 @@ const halfGaugePropsTwo = {
   total: 100,
   valueText: '75%',
   labelText: '75 out of 100GB',
+  tooltipId: 'two-container',
 };
 
 storiesOf('GaugeGraph', module)
