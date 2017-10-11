@@ -7,53 +7,43 @@ const propTypes = {
   data: PropTypes.array,
   radius: PropTypes.number,
   formatFunction: PropTypes.func,
+  id: PropTypes.string,
 };
 
 const defaultProps = {
   data: [['Gryffindor', 100]],
   radius: 96,
   formatFunction: value => value,
-  color: ['#3b1a40', '#473793', '#3c6df0', '#00a68f', '#56D2BB'],
+  color: ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
+  id: 'graph-container',
 };
 
 class PieChart extends Component {
-  state = {
-    data: this.props.data,
-    radius: this.props.radius,
-    formatFunction: this.props.formatFunction,
-    color: d3.scaleOrdinal(this.props.color),
-  };
-
   componentDidMount() {
-    const { radius } = this.state;
+    this.width = this.props.radius * 2;
+    this.height = this.props.radius * 2 + 24;
 
-    this.setState(() => {
-      return {
-        width: radius * 2,
-        height: radius * 2 + 24,
-      };
-    }, this.initialRender);
-  }
-
-  initialRender() {
     this.renderSVG();
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.renderSVG(nextProps);
+  }
+
   renderSVG() {
-    const { data, radius, height, width, color, formatFunction } = this.state;
+    const { data, radius, height, width, formatFunction, id } = this.props;
+    const color = d3.scaleOrdinal(this.props.color);
 
     this.svg = d3
-      .select(this.refs.container)
-      .attr('width', width)
-      .attr('height', height)
+      .select(this.svgNode)
+      .attr('width', this.width)
+      .attr('height', this.height)
       .append('g')
       .attr('class', 'group-container')
-      .attr('transform', `translate(${width / 2}, ${height / 2})`);
+      .attr('transform', `translate(${this.width / 2}, ${this.height / 2})`);
 
     const pie = d3.pie().sort(null).value(d => d[1]);
-
     const path = d3.arc().outerRadius(radius - 10).innerRadius(radius - 40);
-
     const pathTwo = d3.arc().outerRadius(radius).innerRadius(radius - 40);
 
     const arc = this.svg
@@ -63,12 +53,14 @@ class PieChart extends Component {
       .append('g')
       .attr('class', 'arc');
 
-    arc
+    const arcs = arc
       .append('path')
-      .attr('d', path)
       .attr('fill', (d, i) => color(i))
       .attr('stroke-width', 2)
       .attr('stroke', '#FFFFFF')
+      .attr('d', path);
+
+    arcs
       .on('mouseover', function(d) {
         d3
           .select(this)
@@ -76,17 +68,18 @@ class PieChart extends Component {
           .style('cursor', 'pointer')
           .attr('d', pathTwo);
 
-        d3.select('.bx--pie-tooltip').style('display', 'inherit');
-        d3.select('.bx--pie-key').text(`${d.data[0]}`);
-        d3.select('.bx--pie-value').text(`${formatFunction(d.data[1])}`);
+        d3.select(`#${id} .bx--pie-tooltip`).style('display', 'inherit');
+        d3.select(`#${id} .bx--pie-key`).text(`${d.data[0]}`);
+        d3.select(`#${id} .bx--pie-value`).text(`${formatFunction(d.data[1])}`);
       })
       .on('mouseout', function(d) {
-        d3.select('.bx--pie-tooltip').style('display', 'none');
+        d3.select(`#${id} .bx--pie-tooltip`).style('display', 'none');
         d3.select(this).transition().attr('d', path);
       });
   }
 
   render() {
+    const { id } = this.props;
     const tooltipStyles = {
       display: 'none',
       position: 'absolute',
@@ -109,16 +102,19 @@ class PieChart extends Component {
       lineHeight: '1',
     };
 
+    this.renderSVG();
+
     return (
       <div
         className="bx--graph-container"
+        id={id}
         style={{
           position: 'relative',
-          width: this.state.width,
-          height: this.state.height,
+          width: this.width,
+          height: this.height,
         }}
       >
-        <svg ref="container" />
+        <svg ref={node => this.svgNode = node} />
         <div className="bx--pie-tooltip" style={tooltipStyles}>
           <p className="bx--pie-value" style={valueStyles} />
           <p className="bx--pie-key" style={keyStyles} />
