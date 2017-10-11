@@ -92,4 +92,6 @@ storiesOf('LineGraph', module)
       ]}
     />
   ))
-  .addWithInfo('Empty', ` Empty Example. `, () => <LineGraph />);
+  .addWithInfo('Empty', ` Empty Example. `, () => (
+    <LineGraph data={[[20, 1507563000000]]} />
+  ));
