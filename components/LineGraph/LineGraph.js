@@ -93,7 +93,7 @@ class LineGraph extends Component {
   updateEmptyState(data) {
     const { emptyText } = this.props;
 
-    if (data.length < 1) {
+    if (data.length < 2) {
       this.svg.style('opacity', '.3');
       this.emptyContainer.style('display', 'inline-block');
     } else {
