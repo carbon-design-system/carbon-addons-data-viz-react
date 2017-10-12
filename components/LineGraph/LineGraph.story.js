@@ -91,6 +91,7 @@ storiesOf('LineGraph', module)
         [53.733333333333, 1507564800000],
       ]}
       onHover={action('Hover')}
+      onMouseOut={action('Mouseout')}
     />
   ))
   .addWithInfo('Empty', ` Empty Example. `, () => (
