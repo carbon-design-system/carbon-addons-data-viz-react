@@ -87,9 +87,11 @@ storiesOf('LineGraph', module)
     <LineGraph
       data={[
         [48.633333333333, 1507563000000],
-        [49.933333333333, 1507563900000],
+        [12, 1507563900000],
         [53.733333333333, 1507564800000],
       ]}
+      onHover={action('Hover')}
+      onMouseOut={action('Mouseout')}
     />
   ))
   .addWithInfo('Empty', ` Empty Example. `, () => (

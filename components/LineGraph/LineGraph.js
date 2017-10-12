@@ -17,6 +17,7 @@ const propTypes = {
   xAxisLabel: PropTypes.string,
   yAxisLabel: PropTypes.string,
   onHover: PropTypes.func,
+  onMouseOut: PropTypes.func,
   emptyText: PropTypes.string,
   isUTC: PropTypes.bool,
 };
@@ -40,6 +41,7 @@ const defaultProps = {
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
   onHover: () => {},
+  onMouseOut: () => {},
   emptyText: 'There is currently no data available for the parameters selected. Please try a different combination.',
   isUTC: false,
 };
@@ -274,7 +276,14 @@ class LineGraph extends Component {
       .style('pointer-events', 'all')
       .on('mousemove', () => {
         this.onMouseMove();
+      })
+      .on('mouseout', () => {
+        this.onMouseOut();
       });
+  }
+
+  onMouseOut() {
+    this.props.onMouseOut();
   }
 
   onMouseMove() {
@@ -294,7 +303,15 @@ class LineGraph extends Component {
       d = timestamp - d0[1] > d1[1] - timestamp ? d1 : d0;
     }
 
-    this.props.onHover(d, d3.event.pageX, d3.event.pageY);
+    const mouseData = {
+      data: d,
+      pageX: d3.event.pageX,
+      pageY: d3.event.pageY,
+      graphX: this.x(d[1]),
+      graphY: this.y(d[0]),
+    };
+
+    this.props.onHover(mouseData);
   }
 
   render() {
