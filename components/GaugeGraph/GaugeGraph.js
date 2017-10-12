@@ -12,6 +12,9 @@ const propTypes = {
   gaugePercentages: PropTypes.array,
   id: PropTypes.string,
   tooltipId: PropTypes.string,
+  tau: PropTypes.number,
+  labelText: PropTypes.string,
+  valueText: PropTypes.string,
 };
 
 const defaultProps = {
