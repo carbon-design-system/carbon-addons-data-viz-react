@@ -8,6 +8,7 @@ const propTypes = {
   radius: PropTypes.number,
   formatFunction: PropTypes.func,
   id: PropTypes.string,
+  color: PropTypes.array,
 };
 
 const defaultProps = {
@@ -103,6 +104,8 @@ class PieChart extends Component {
     };
 
     this.renderSVG();
+
+    console.log(this.height);
 
     return (
       <div
