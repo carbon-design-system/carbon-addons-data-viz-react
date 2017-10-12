@@ -105,8 +105,6 @@ class PieChart extends Component {
 
     this.renderSVG();
 
-    console.log(this.height);
-
     return (
       <div
         className="bx--graph-container"
