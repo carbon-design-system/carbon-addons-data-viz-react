@@ -20,6 +20,7 @@ const propTypes = {
   onMouseOut: PropTypes.func,
   emptyText: PropTypes.string,
   isUTC: PropTypes.bool,
+  color: PropTypes.array,
 };
 
 const defaultProps = {
@@ -44,6 +45,7 @@ const defaultProps = {
   onMouseOut: () => {},
   emptyText: 'There is currently no data available for the parameters selected. Please try a different combination.',
   isUTC: false,
+  color: ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
 };
 
 class LineGraph extends Component {
@@ -85,7 +87,10 @@ class LineGraph extends Component {
   componentWillReceiveProps(nextProps) {
     if (this.x) {
       this.x.domain(d3.extent(nextProps.data, d => d[d.length - 1]));
-      this.y.domain([0, d3.max(nextProps.data, d => d[0])]);
+      this.y.domain([
+        0,
+        d3.max(nextProps.data, d => d3.max(d.slice(0, d.length - 1))),
+      ]);
 
       this.updateEmptyState(nextProps.data);
       this.updateData(nextProps);
@@ -163,7 +168,7 @@ class LineGraph extends Component {
     this.y = d3
       .scaleLinear()
       .range([this.height, 0])
-      .domain([0, d3.max(data, d => d[0])]);
+      .domain([0, d3.max(data, d => d3.max(d.slice(0, d.length - 1)))]);
 
     this.line = d3.line().x(d => this.x(d[d.length - 1])).y(d => {
       return this.y(d[this.count]);
@@ -244,7 +249,8 @@ class LineGraph extends Component {
 
   renderLine() {
     const { data } = this.props;
-
+    const color = d3.scaleOrdinal(this.props.color);
+    console.log(color(1));
     this.count = 0;
 
     for (let i = 0; i < data[0].length - 1; i++) {
@@ -254,7 +260,8 @@ class LineGraph extends Component {
         .datum(data)
         .append('path')
         .attr('class', 'bx--line')
-        .attr('stroke', '#00a69f')
+        // .attr('stroke', '#00a69f')
+        .attr('stroke', color(i))
         .attr('stroke-width', 2)
         .attr('fill', 'none')
         .attr('pointer-events', 'none')
@@ -307,18 +314,20 @@ class LineGraph extends Component {
     const d0 = data[index - 1];
     const d1 = data[index];
 
-    let d;
+    let d, mouseData;
     if (d0 && d1) {
-      d = timestamp - d0[1] > d1[1] - timestamp ? d1 : d0;
-    }
+      d = timestamp - d0[d0.length - 1] > d1[d1.length - 1] - timestamp
+        ? d1
+        : d0;
 
-    const mouseData = {
-      data: d,
-      pageX: d3.event.pageX,
-      pageY: d3.event.pageY,
-      graphX: this.x(d[1]),
-      graphY: this.y(d[0]),
-    };
+      mouseData = {
+        data: d,
+        pageX: d3.event.pageX,
+        pageY: d3.event.pageY,
+        graphX: this.x(d[d.length - 1]),
+        graphY: this.y(d[0]),
+      };
+    }
 
     this.props.onHover(mouseData);
   }

@@ -4,8 +4,7 @@ import LineGraph from './LineGraph';
 
 class LineGraphContainer extends Component {
   state = {
-    data: this.createData(3).sort(function(a, b) {
-      console.log(a, b);
+    data: this.createData(20).sort(function(a, b) {
       return a[a.length - 1] - b[b.length - 1];
     }),
   };
@@ -25,8 +24,9 @@ class LineGraphContainer extends Component {
       let d = new Date();
       let randomNum = Math.floor(Math.random() * 1000 + 1);
       let randomNumTwo = Math.floor(Math.random() * 1000 + 1);
+      let randomNumThree = Math.floor(Math.random() * 1000 + 1);
       d = d.getTime() - i * 3000;
-      tempArr.push(randomNum, randomNumTwo, d);
+      tempArr.push(randomNum, randomNumTwo, randomNumThree, d);
       data.push(tempArr);
     }
 
