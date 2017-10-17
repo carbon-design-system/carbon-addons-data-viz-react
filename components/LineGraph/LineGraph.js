@@ -60,6 +60,10 @@ class LineGraph extends Component {
       emptyText,
     } = this.props;
 
+    if (data) {
+      this.totalLines = data[0].length - 1;
+    }
+
     this.emptyContainer = d3
       .select(`#${containerId} .bx--line-graph-empty-text`)
       .text(emptyText)
@@ -112,11 +116,9 @@ class LineGraph extends Component {
   updateData(nextProps) {
     const { data, axisOffset, xAxisLabel, yAxisLabel } = nextProps;
 
-    const path = this.svg
-      .selectAll('.bx--line')
-      .datum(data)
-      .transition()
-      .attr('d', this.line);
+    for (var i = 0; i < this.totalLines; i++) {
+      this.svg.selectAll(`g[data-line="${i}"]`).remove();
+    }
 
     this.svg
       .select('.bx--axis--y')
@@ -250,17 +252,15 @@ class LineGraph extends Component {
   renderLine() {
     const { data } = this.props;
     const color = d3.scaleOrdinal(this.props.color);
-    console.log(color(1));
-    this.count = 0;
 
+    this.count = 0;
     for (let i = 0; i < data[0].length - 1; i++) {
-      console.log(`loop: ${i}`);
       const path = this.svg
         .append('g')
+        .attr('data-line', i)
         .datum(data)
         .append('path')
         .attr('class', 'bx--line')
-        // .attr('stroke', '#00a69f')
         .attr('stroke', color(i))
         .attr('stroke-width', 2)
         .attr('fill', 'none')
