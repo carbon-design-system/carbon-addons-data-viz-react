@@ -5,7 +5,7 @@ import LineGraph from './LineGraph';
 class LineGraphContainer extends Component {
   state = {
     data: this.createData(12).sort(function(a, b) {
-      return a[1] - b[1];
+      return a[a.length - 1] - b[b.length - 1];
     }),
   };
 
@@ -23,8 +23,10 @@ class LineGraphContainer extends Component {
       let tempArr = [];
       let d = new Date();
       let randomNum = Math.floor(Math.random() * 1000 + 1);
+      let randomNumTwo = Math.floor(Math.random() * 1000 + 1);
+      let randomNumThree = Math.floor(Math.random() * 1000 + 1);
       d = d.getTime() - i * 3000;
-      tempArr.push(randomNum, d);
+      tempArr.push(randomNum, randomNumTwo, randomNumThree, d);
       data.push(tempArr);
     }
 
@@ -34,7 +36,7 @@ class LineGraphContainer extends Component {
   updateData(i) {
     let randomNumber = Math.floor(Math.random() * 20) + 10;
     let data = this.createData(12).sort(function(a, b) {
-      return a[1] - b[1];
+      return a[a.length - 1] - b[b.length - 1];
     });
 
     this.setState({
