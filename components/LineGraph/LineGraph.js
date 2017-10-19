@@ -174,6 +174,8 @@ class LineGraph extends Component {
 
     this.line = d3.line().x(d => this.x(d[d.length - 1])).y(d => {
       return this.y(d[this.count]);
+    }).defined(d => {
+      return !isNaN(d[this.count]);
     });
 
     this.xAxis = d3
