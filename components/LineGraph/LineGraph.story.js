@@ -80,8 +80,16 @@ storiesOf('LineGraph', module)
     `,
     () => (
       <div>
-        <LineGraphContainer />
-        <LineGraphContainer id="two" containerId="test-two" />
+        <LineGraphContainer
+          onHover={action('Hover')}
+          onMouseOut={action('Mouseout')}
+        />
+        <LineGraphContainer
+          id="two"
+          containerId="test-two"
+          onHover={action('Hover')}
+          onMouseOut={action('Mouseout')}
+        />
       </div>
     )
   )
@@ -97,5 +105,5 @@ storiesOf('LineGraph', module)
     />
   ))
   .addWithInfo('Empty', ` Empty Example. `, () => (
-    <LineGraph data={[[20, 1507563000000]]} />
+    <LineGraph onHover={action('Hover')} onMouseOut={action('Mouseout')} />
   ));
