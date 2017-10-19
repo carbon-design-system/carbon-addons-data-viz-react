@@ -120,6 +120,10 @@ class LineGraph extends Component {
       this.svg.selectAll(`g[data-line="${i}"]`).remove();
     }
 
+    if (data.length > 0) {
+      this.totalLines = data[0].length - 1;
+    }
+
     this.svg
       .select('.bx--axis--y')
       .transition()
@@ -172,11 +176,15 @@ class LineGraph extends Component {
       .range([this.height, 0])
       .domain([0, d3.max(data, d => d3.max(d.slice(0, d.length - 1)))]);
 
-    this.line = d3.line().x(d => this.x(d[d.length - 1])).y(d => {
-      return this.y(d[this.count]);
-    }).defined(d => {
-      return !isNaN(d[this.count]);
-    });
+    this.line = d3
+      .line()
+      .x(d => this.x(d[d.length - 1]))
+      .y(d => {
+        return this.y(d[this.count]);
+      })
+      .defined(d => {
+        return !isNaN(d[this.count]);
+      });
 
     this.xAxis = d3
       .axisBottom()
