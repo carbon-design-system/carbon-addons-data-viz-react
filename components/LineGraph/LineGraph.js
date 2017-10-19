@@ -24,7 +24,7 @@ const propTypes = {
 };
 
 const defaultProps = {
-  data: [],
+  data: [[12, 1507563900000]],
   height: 300,
   width: 800,
   id: 'container',
@@ -60,7 +60,7 @@ class LineGraph extends Component {
       emptyText,
     } = this.props;
 
-    if (data) {
+    if (data.length > 0) {
       this.totalLines = data[0].length - 1;
     }
 
@@ -256,29 +256,31 @@ class LineGraph extends Component {
     const color = d3.scaleOrdinal(this.props.color);
 
     this.count = 0;
-    for (let i = 0; i < data[0].length - 1; i++) {
-      const path = this.svg
-        .append('g')
-        .attr('data-line', i)
-        .datum(data)
-        .append('path')
-        .attr('class', 'bx--line')
-        .attr('stroke', color(i))
-        .attr('stroke-width', 2)
-        .attr('fill', 'none')
-        .attr('pointer-events', 'none')
-        .attr('d', this.line);
+    if (data.length > 0) {
+      for (let i = 0; i < data[0].length - 1; i++) {
+        const path = this.svg
+          .append('g')
+          .attr('data-line', i)
+          .datum(data)
+          .append('path')
+          .attr('class', 'bx--line')
+          .attr('stroke', color(i))
+          .attr('stroke-width', 2)
+          .attr('fill', 'none')
+          .attr('pointer-events', 'none')
+          .attr('d', this.line);
 
-      var totalLength = path.node().getTotalLength();
+        var totalLength = path.node().getTotalLength();
 
-      path
-        .attr('stroke-dasharray', 0 + ' ' + totalLength)
-        .transition()
-        .ease(d3.easeSin)
-        .duration(1000)
-        .attr('stroke-dasharray', totalLength + ' ' + 0);
+        path
+          .attr('stroke-dasharray', 0 + ' ' + totalLength)
+          .transition()
+          .ease(d3.easeSin)
+          .duration(1000)
+          .attr('stroke-dasharray', totalLength + ' ' + 0);
 
-      this.count++;
+        this.count++;
+      }
     }
   }
 
@@ -293,10 +295,14 @@ class LineGraph extends Component {
       .style('fill', 'none')
       .style('pointer-events', 'all')
       .on('mousemove', () => {
-        this.onMouseMove();
+        if (data.length > 2) {
+          this.onMouseMove();
+        }
       })
       .on('mouseout', () => {
-        this.onMouseOut();
+        if (data.length > 2) {
+          this.onMouseOut();
+        }
       });
   }
 
