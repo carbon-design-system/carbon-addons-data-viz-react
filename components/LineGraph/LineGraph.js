@@ -303,19 +303,17 @@ class LineGraph extends Component {
       .style('fill', 'none')
       .style('pointer-events', 'all')
       .on('mousemove', () => {
-        if (data.length > 2) {
-          this.onMouseMove();
-        }
+        this.onMouseMove();
       })
       .on('mouseout', () => {
-        if (data.length > 2) {
-          this.onMouseOut();
-        }
+        this.onMouseOut();
       });
   }
 
   onMouseOut() {
-    this.props.onMouseOut();
+    if (data.length > 2) {
+      this.props.onMouseOut();
+    }
   }
 
   onMouseMove() {
@@ -324,28 +322,30 @@ class LineGraph extends Component {
       return d[d.length - 1];
     }).right;
 
-    const mouse = d3.mouse(this.id)[0] - margin.left;
-    const timestamp = this.x.invert(mouse);
-    const index = bisectDate(data, timestamp);
-    const d0 = data[index - 1];
-    const d1 = data[index];
+    if (data.length > 2) {
+      const mouse = d3.mouse(this.id)[0] - margin.left;
+      const timestamp = this.x.invert(mouse);
+      const index = bisectDate(data, timestamp);
+      const d0 = data[index - 1];
+      const d1 = data[index];
 
-    let d, mouseData;
-    if (d0 && d1) {
-      d = timestamp - d0[d0.length - 1] > d1[d1.length - 1] - timestamp
-        ? d1
-        : d0;
+      let d, mouseData;
+      if (d0 && d1) {
+        d = timestamp - d0[d0.length - 1] > d1[d1.length - 1] - timestamp
+          ? d1
+          : d0;
 
-      mouseData = {
-        data: d,
-        pageX: d3.event.pageX,
-        pageY: d3.event.pageY,
-        graphX: this.x(d[d.length - 1]),
-        graphY: this.y(d[0]),
-      };
+        mouseData = {
+          data: d,
+          pageX: d3.event.pageX,
+          pageY: d3.event.pageY,
+          graphX: this.x(d[d.length - 1]),
+          graphY: this.y(d[0]),
+        };
+      }
+
+      this.props.onHover(mouseData);
     }
-
-    this.props.onHover(mouseData);
   }
 
   render() {
