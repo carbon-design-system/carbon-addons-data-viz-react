@@ -311,7 +311,7 @@ class LineGraph extends Component {
   }
 
   onMouseOut() {
-    if (data.length > 2) {
+    if (this.props.data.length > 2) {
       this.props.onMouseOut();
     }
   }
