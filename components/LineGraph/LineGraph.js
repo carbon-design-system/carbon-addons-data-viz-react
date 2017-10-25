@@ -102,7 +102,7 @@ class LineGraph extends Component {
   }
   
   shouldComponentUpdate(nextProps) {
-	return this.props.data !== nextProps.data;
+    return this.props.data !== nextProps.data;
   }
 
   updateEmptyState(data) {
