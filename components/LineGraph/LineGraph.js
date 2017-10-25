@@ -88,7 +88,7 @@ class LineGraph extends Component {
     this.initialRender();
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentWillUpdate(nextProps) {
     if (this.x) {
       this.x.domain(d3.extent(nextProps.data, d => d[d.length - 1]));
       this.y.domain([
@@ -99,6 +99,10 @@ class LineGraph extends Component {
       this.updateEmptyState(nextProps.data);
       this.updateData(nextProps);
     }
+  }
+  
+  shouldComponentUpdate(nextProps) {
+    return this.props.data !== nextProps.data;
   }
 
   updateEmptyState(data) {
@@ -311,7 +315,7 @@ class LineGraph extends Component {
   }
 
   onMouseOut() {
-    if (data.length > 2) {
+    if (this.props.data.length > 2) {
       this.props.onMouseOut();
     }
   }
