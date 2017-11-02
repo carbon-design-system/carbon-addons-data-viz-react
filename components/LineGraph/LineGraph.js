@@ -21,6 +21,7 @@ const propTypes = {
   emptyText: PropTypes.string,
   isUTC: PropTypes.bool,
   color: PropTypes.array,
+  drawLine: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -46,6 +47,7 @@ const defaultProps = {
   emptyText: 'There is currently no data available for the parameters selected. Please try a different combination.',
   isUTC: false,
   color: ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
+  drawLine: true,
 };
 
 class LineGraph extends Component {
@@ -264,7 +266,7 @@ class LineGraph extends Component {
   }
 
   renderLine() {
-    const { data } = this.props;
+    const { data, drawLine } = this.props;
     const color = d3.scaleOrdinal(this.props.color);
 
     this.count = 0;
@@ -284,12 +286,18 @@ class LineGraph extends Component {
 
         var totalLength = path.node().getTotalLength();
 
-        path
-          .attr('stroke-dasharray', 0 + ' ' + totalLength)
-          .transition()
-          .ease(d3.easeSin)
-          .duration(1000)
-          .attr('stroke-dasharray', totalLength + ' ' + 0);
+        if (drawLine) {
+          path
+            .attr('stroke-dasharray', 0 + ' ' + totalLength)
+            .transition()
+            .ease(d3.easeSin)
+            .duration(1000)
+            .attr('stroke-dasharray', totalLength + ' ' + 0);
+        } else {
+          path
+            .attr('stroke-dasharray', 0 + ' ' + totalLength)
+            .attr('stroke-dasharray', totalLength + ' ' + 0);
+        }
 
         this.count++;
       }

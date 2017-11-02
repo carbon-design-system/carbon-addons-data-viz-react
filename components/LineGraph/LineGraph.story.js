@@ -66,6 +66,7 @@ class LineGraphContainer extends Component {
       onHover: action('Hover'),
       id: this.props.id,
       containerId: this.props.containerId,
+      drawLine: this.props.drawLine,
     };
 
     return <LineGraph {...props} />;
@@ -89,6 +90,28 @@ storiesOf('LineGraph', module)
           containerId="test-two"
           onHover={action('Hover')}
           onMouseOut={action('Mouseout')}
+        />
+      </div>
+    )
+  )
+  .addWithInfo(
+    'Updating without drawing line',
+    `
+      Line Graph without draw line animation.
+    `,
+    () => (
+      <div>
+        <LineGraphContainer
+          onHover={action('Hover')}
+          onMouseOut={action('Mouseout')}
+          drawLine={false}
+        />
+        <LineGraphContainer
+          id="two"
+          containerId="test-two"
+          onHover={action('Hover')}
+          onMouseOut={action('Mouseout')}
+          drawLine={false}
         />
       </div>
     )
