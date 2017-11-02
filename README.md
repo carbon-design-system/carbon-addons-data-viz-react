@@ -43,22 +43,26 @@ Pie charts show individual values that make up a whole data set so users can com
 ## Graph Props
 ### Line Graph
 
-| name         | type   | example                                      |
-|--------------|--------|----------------------------------------------|
-| data         | array  | [[25, 1507563000000], [100, 1507563900000]   |
-| height       | number | 300                                          |
-| width        | number | 800                                          |
-| id           | string | 'graph'                                      |
-| containerId  | string | 'graph-container'                            |
-| margin       | object | { top: 30, right: 20, bottom: 70, left: 65 } |
-| labelOffsetX | number | 65                                           |
-| labelOffsetY | number | 55                                           |
-| axisOffset   | number | 16                                           |
-| timeFormat   | string | %I:%M:%S                                     |
-| xAxisLabel   | string | X Axis                                       |
-| yAxisLabel   | string | Y Axis                                       |
-| emptyText    | string | There is currently no data available         |
-| onHover      | func   | () => {}                                     |
+| name         | type   | example                                                    |
+|--------------|--------|------------------------------------------------------------|
+| data         | array  | [[25, 1507563000000], [100, 1507563900000]                 |
+| height       | number | 300                                                        |
+| width        | number | 800                                                        |
+| id           | string | 'graph'                                                    |
+| containerId  | string | 'graph-container'                                          |
+| margin       | object | { top: 30, right: 20, bottom: 70, left: 65 }               |
+| labelOffsetX | number | 65                                                         |
+| labelOffsetY | number | 55                                                         |
+| axisOffset   | number | 16                                                         |
+| timeFormat   | string | %I:%M:%S                                                   |
+| xAxisLabel   | string | X Axis                                                     |
+| yAxisLabel   | string | Y Axis                                                     |
+| emptyText    | string | There is currently no data available                       |
+| onHover      | func   | () => {}                                                   |
+| onMouseOut   | func   | () => {}                                                   |
+| isUTC        | bool   | false                                                      |
+| color        | array  | ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB']    |
+| drawLine     | bool   | true                                                       |
 
 ### Gauge Graph
 | name             | type   | example           |
