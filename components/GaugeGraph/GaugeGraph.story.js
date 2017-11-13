@@ -10,7 +10,11 @@ const props = {
 };
 
 const halfGaugeProps = {
-  gaugePercentages: [50, 75],
+  gaugePercentages: [
+    { low: 0, high: 50, color: '#4B8400' },
+    { low: 50, high: 75, color: '#EFC100' },
+    { low: 75, high: 100, color: '#FF5050' },
+  ],
   size: 'half',
   radius: 80,
   padding: 30,
@@ -22,7 +26,11 @@ const halfGaugeProps = {
 };
 
 const halfGaugePropsTwo = {
-  gaugePercentages: [50, 75],
+  gaugePercentages: [
+    { low: 0, high: 50, color: '#4B8400' },
+    { low: 50, high: 75, color: '#EFC100' },
+    { low: 75, high: 100, color: '#FF5050' },
+  ],
   size: 'half',
   radius: 80,
   padding: 30,
