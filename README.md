@@ -65,19 +65,19 @@ Pie charts show individual values that make up a whole data set so users can com
 | drawLine     | bool   | true                                                       |
 
 ### Gauge Graph
-| name             | type   | example           |
-|------------------|--------|-------------------|
-| radius           | number | 80                |
-| padding          | number | 30                |
-| amount           | number | 75                |
-| total            | number | 100               |
-| size             | string | full              |
-| gaugePercentages | array  | [50, 75]          |
-| id               | string | gauge             |
-| tooltipId        | string | tooltip-container |
-| tau              | number | 2 * Math.PI       |
-| valueText        | string | 75 out of 100GB   |
-| labelText        | string | 75%               |
+| name             | type   | example                                                                                                                   |
+|------------------|--------|---------------------------------------------------------------------------------------------------------------------------|
+| radius           | number | 80                                                                                                                        |
+| padding          | number | 30                                                                                                                        |
+| amount           | number | 75                                                                                                                        |
+| total            | number | 100                                                                                                                       |
+| size             | string | full                                                                                                                      |
+| gaugePercentages | array  | [{ low: 0, high: 50, color: '#4B8400' },{ low: 50, high: 75, color: '#EFC100' },{ low: 75, high: 100, color: '#FF5050' }] |
+| id               | string | gauge                                                                                                                     |
+| tooltipId        | string | tooltip-container                                                                                                         |
+| tau              | number | 2 * Math.PI                                                                                                               |
+| valueText        | string | 75 out of 100GB                                                                                                           |
+| labelText        | string | 75%                                                                                                                       |
 
 ### Pie Chart
 
