@@ -5,6 +5,7 @@
     "stage-1"
   ],
   "plugins": [
+    "transform-runtime",
     "transform-object-assign"
   ]
 }
