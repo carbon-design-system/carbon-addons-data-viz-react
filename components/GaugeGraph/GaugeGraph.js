@@ -26,7 +26,12 @@ const defaultProps = {
   valueText: '75%',
   labelText: '75 out of 100GB',
   size: 'full',
-  gaugePercentages: [50, 75],
+  fillColor: '#FE8500',
+  gaugePercentages: [
+    { low: 0, high: 50, color: '#4B8400' },
+    { low: 50, high: 75, color: '#EFC100' },
+    { low: 75, high: 100, color: '#FF5050' },
+  ],
   id: 'container',
   tooltipId: 'tooltip-container',
 };
@@ -64,7 +69,15 @@ class GaugeGraph extends Component {
   }
 
   renderSVG() {
-    const { tau, radius, padding, size, gaugePercentages, id } = this.props;
+    const {
+      tau,
+      radius,
+      padding,
+      size,
+      gaugePercentages,
+      id,
+      fillColor,
+    } = this.props;
     const { boxSize, ratio } = this.state;
 
     // Transition function
@@ -78,15 +91,14 @@ class GaugeGraph extends Component {
           const percent = newAngle / tau * 100;
 
           line.style('fill', d => {
-            if (percent <= gaugePercentages[0]) {
-              return '#4B8400';
-            } else if (
-              percent >= gaugePercentages[0] && percent <= gaugePercentages[1]
-            ) {
-              return '#EFC100';
-            } else {
-              return '#FF5050';
-            }
+            let color;
+            gaugePercentages.forEach(range => {
+              if (percent >= range.low && percent <= range.high) {
+                color = range.color;
+              }
+            });
+
+            return color;
           });
         } else {
           interpolate = d3.interpolate(d.endAngle, newAngle);
@@ -115,7 +127,7 @@ class GaugeGraph extends Component {
     this.svg
       .append('path')
       .datum({ endAngle: 0 })
-      .style('fill', '#FE8500')
+      .style('fill', fillColor)
       .attr('transform', `${size === 'half' ? 'rotate(-90)' : ''}`)
       .attr('class', 'bx--gauge-line')
       .transition()
