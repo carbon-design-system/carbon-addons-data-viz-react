@@ -1708,12 +1708,12 @@ caniuse-lite@^1.0.30000718, caniuse-lite@^1.0.30000726:
   version "1.0.30000727"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000727.tgz#20c895768398ded5f98a4beab4a76c285def41d2"
 
-carbon-components-react@^3.10.3:
-  version "3.10.5"
-  resolved "https://registry.yarnpkg.com/carbon-components-react/-/carbon-components-react-3.10.5.tgz#ade56e07117c7670b48690453c9ac26e54600e75"
+carbon-components-react@^4.1.4:
+  version "4.2.2"
+  resolved "https://registry.yarnpkg.com/carbon-components-react/-/carbon-components-react-4.2.2.tgz#05c7ba7d146638a9c11c14ab20263680af6e6a6d"
   dependencies:
     classnames "2.2.5"
-    flatpickr "^3.0.7"
+    flatpickr "3.0.7"
     lodash.debounce "^4.0.8"
     react-addons-css-transition-group "^15.4.2"
     warning "3.0.0"
@@ -3040,7 +3040,7 @@ flatpickr@2.6.3:
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-2.6.3.tgz#457357532deb135f3da64b425bf4435737961564"
 
-flatpickr@^3.0.7:
+flatpickr@3.0.7:
   version "3.0.7"
   resolved "https://registry.yarnpkg.com/flatpickr/-/flatpickr-3.0.7.tgz#2aa980c0bd83884c0299ee9fba3b7809bea16a29"
 
