@@ -2,6 +2,7 @@ import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import classnames from 'classnames';
 import * as d3 from 'd3';
+import _ from 'lodash';
 
 const propTypes = {
   data: PropTypes.array,
@@ -9,6 +10,7 @@ const propTypes = {
   formatFunction: PropTypes.func,
   id: PropTypes.string,
   color: PropTypes.array,
+  onHover: PropTypes.func,
 };
 
 const defaultProps = {
@@ -28,11 +30,17 @@ class PieChart extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.renderSVG(nextProps);
+    if (!_.isEqual(this.props, nextProps)) {
+      this.renderSVG(nextProps);
+    }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return !_.isEqual(this.props, nextProps);
   }
 
   renderSVG() {
-    const { data, radius, height, width, formatFunction, id } = this.props;
+    const { data, radius, height, width, formatFunction, id, onHover } = this.props;
     const color = d3.scaleOrdinal(this.props.color);
 
     this.svg = d3
@@ -72,10 +80,16 @@ class PieChart extends Component {
         d3.select(`#${id} .bx--pie-tooltip`).style('display', 'inherit');
         d3.select(`#${id} .bx--pie-key`).text(`${d.data[0]}`);
         d3.select(`#${id} .bx--pie-value`).text(`${formatFunction(d.data[1])}`);
+        if (onHover) {
+          onHover(true, d.data[0]);
+        }
       })
       .on('mouseout', function(d) {
         d3.select(`#${id} .bx--pie-tooltip`).style('display', 'none');
         d3.select(this).transition().attr('d', path);
+        if (onHover) {
+          onHover(false);
+        }
       });
   }
 
