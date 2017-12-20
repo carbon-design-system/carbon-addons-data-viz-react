@@ -102,7 +102,7 @@ class LineGraph extends Component {
       this.updateData(nextProps);
     }
   }
-  
+
   shouldComponentUpdate(nextProps) {
     return this.props.data !== nextProps.data;
   }
@@ -346,6 +346,7 @@ class LineGraph extends Component {
         d = timestamp - d0[d0.length - 1] > d1[d1.length - 1] - timestamp
           ? d1
           : d0;
+        const graphYArray = d.map(el => this.y(el)).slice(0, -1);
 
         mouseData = {
           data: d,
@@ -353,6 +354,7 @@ class LineGraph extends Component {
           pageY: d3.event.pageY,
           graphX: this.x(d[d.length - 1]),
           graphY: this.y(d[0]),
+          graphYArray
         };
       }
 
