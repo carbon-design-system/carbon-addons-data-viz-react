@@ -346,7 +346,6 @@ class LineGraph extends Component {
         d = timestamp - d0[d0.length - 1] > d1[d1.length - 1] - timestamp
           ? d1
           : d0;
-        const graphYArray = d.slice(0, -1).map(el => this.y(el));
 
         mouseData = {
           data: d,
@@ -354,7 +353,7 @@ class LineGraph extends Component {
           pageY: d3.event.pageY,
           graphX: this.x(d[d.length - 1]),
           graphY: this.y(d[0]),
-          graphYArray
+          graphYArray: d.slice(0, -1).map(el => this.y(el)),
         };
       }
 
