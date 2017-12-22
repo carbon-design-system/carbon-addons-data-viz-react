@@ -353,7 +353,7 @@ class LineGraph extends Component {
           pageY: d3.event.pageY,
           graphX: this.x(d[d.length - 1]),
           graphY: this.y(d[0]),
-          graphYArray: d.slice(0, -1).map(el => this.y(el)),
+          graphYArray: d.slice(0, -1).map(this.y),
         };
       }
 
