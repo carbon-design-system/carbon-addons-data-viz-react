@@ -90,6 +90,16 @@ class LineGraph extends Component {
     this.initialRender();
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.height != this.props.height || nextProps.width != this.props.width) {
+      this.resize(nextProps.height, nextProps.width);
+    }
+  }
+
+  shouldComponentUpdate(nextProps) {
+    return this.props.data !== nextProps.data;
+  }
+
   componentWillUpdate(nextProps) {
     if (this.x) {
       this.x.domain(d3.extent(nextProps.data, d => d[d.length - 1]));
@@ -101,10 +111,6 @@ class LineGraph extends Component {
       this.updateEmptyState(nextProps.data);
       this.updateData(nextProps);
     }
-  }
-  
-  shouldComponentUpdate(nextProps) {
-    return this.props.data !== nextProps.data;
   }
 
   updateEmptyState(data) {
@@ -158,6 +164,29 @@ class LineGraph extends Component {
     this.svg.selectAll('.bx--axis path').attr('stroke', '#5A6872');
     this.svg.selectAll('.tick line').attr('stroke', '#5A6872');
     this.svg.selectAll('.tick text').attr('fill', '#5A6872');
+  }
+
+  resize(height, width) {
+    const {
+      margin,
+      containerId
+    } = this.props;
+
+    this.height = height - (margin.top + margin.bottom);
+    this.width = width - (margin.left + margin.right);
+
+    this.svg.selectAll('*').remove();
+
+    this.svg = d3
+      .select(`#${containerId} svg`)
+      .attr('class', 'bx--graph')
+      .attr('width', width)
+      .attr('height', height)
+      .append('g')
+      .attr('class', 'bx--group-container')
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
+
+    this.initialRender();
   }
 
   initialRender() {
