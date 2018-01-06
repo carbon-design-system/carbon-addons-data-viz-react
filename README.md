@@ -4,7 +4,7 @@ The React version of carbon-addons-data-viz (currently the only version).
 
 ## Getting Started
 
-Install the repo:
+Install:
 
 `npm install -S carbon-addons-data-viz-react`
 
