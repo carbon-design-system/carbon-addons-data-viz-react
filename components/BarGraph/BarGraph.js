@@ -147,6 +147,8 @@ class BarGraph extends Component {
   renderAxes() {
     const { data, axisOffset, timeFormat } = this.props;
 
+    let x;
+
     this.svg
       .append('g')
       .attr('class', 'bx--axis bx--axis--y')

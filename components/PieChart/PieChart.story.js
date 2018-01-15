@@ -59,7 +59,8 @@ storiesOf('PieChart', module)
     `,
     () => (
       <div>
-        <PieChart id="one" {...props} /><PieChart id="two" {...props} />
+        <PieChart id="one" {...props} />
+        <PieChart id="two" {...props} />
       </div>
     )
   )

@@ -44,7 +44,8 @@ const defaultProps = {
   yAxisLabel: 'Y Axis',
   onHover: () => {},
   onMouseOut: () => {},
-  emptyText: 'There is currently no data available for the parameters selected. Please try a different combination.',
+  emptyText:
+    'There is currently no data available for the parameters selected. Please try a different combination.',
   isUTC: false,
   color: ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
   drawLine: true,
@@ -91,7 +92,10 @@ class LineGraph extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.height != this.props.height || nextProps.width != this.props.width) {
+    if (
+      nextProps.height != this.props.height ||
+      nextProps.width != this.props.width
+    ) {
       this.resize(nextProps.height, nextProps.width);
     }
   }
@@ -167,10 +171,7 @@ class LineGraph extends Component {
   }
 
   resize(height, width) {
-    const {
-      margin,
-      containerId
-    } = this.props;
+    const { margin, containerId } = this.props;
 
     this.height = height - (margin.top + margin.bottom);
     this.width = width - (margin.left + margin.right);
@@ -372,9 +373,10 @@ class LineGraph extends Component {
 
       let d, mouseData;
       if (d0 && d1) {
-        d = timestamp - d0[d0.length - 1] > d1[d1.length - 1] - timestamp
-          ? d1
-          : d0;
+        d =
+          timestamp - d0[d0.length - 1] > d1[d1.length - 1] - timestamp
+            ? d1
+            : d0;
 
         mouseData = {
           data: d,
@@ -400,10 +402,9 @@ class LineGraph extends Component {
       <div
         className="bx--graph-container"
         id={containerId}
-        style={{ position: 'relative' }}
-      >
+        style={{ position: 'relative' }}>
         <p className="bx--line-graph-empty-text" />
-        <svg id={id} ref={id => this.id = id} />
+        <svg id={id} ref={id => (this.id = id)} />
       </div>
     );
   }

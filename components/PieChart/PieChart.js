@@ -40,7 +40,15 @@ class PieChart extends Component {
   }
 
   renderSVG() {
-    const { data, radius, height, width, formatFunction, id, onHover } = this.props;
+    const {
+      data,
+      radius,
+      height,
+      width,
+      formatFunction,
+      id,
+      onHover,
+    } = this.props;
     const color = d3.scaleOrdinal(this.props.color);
 
     this.svg = d3
@@ -51,9 +59,18 @@ class PieChart extends Component {
       .attr('class', 'group-container')
       .attr('transform', `translate(${this.width / 2}, ${this.height / 2})`);
 
-    const pie = d3.pie().sort(null).value(d => d[1]);
-    const path = d3.arc().outerRadius(radius - 10).innerRadius(radius - 40);
-    const pathTwo = d3.arc().outerRadius(radius).innerRadius(radius - 40);
+    const pie = d3
+      .pie()
+      .sort(null)
+      .value(d => d[1]);
+    const path = d3
+      .arc()
+      .outerRadius(radius - 10)
+      .innerRadius(radius - 40);
+    const pathTwo = d3
+      .arc()
+      .outerRadius(radius)
+      .innerRadius(radius - 40);
 
     const arc = this.svg
       .selectAll('.arc')
@@ -86,7 +103,10 @@ class PieChart extends Component {
       })
       .on('mouseout', function(d) {
         d3.select(`#${id} .bx--pie-tooltip`).style('display', 'none');
-        d3.select(this).transition().attr('d', path);
+        d3
+          .select(this)
+          .transition()
+          .attr('d', path);
         if (onHover) {
           onHover(false);
         }
@@ -127,9 +147,8 @@ class PieChart extends Component {
           position: 'relative',
           width: this.width,
           height: this.height,
-        }}
-      >
-        <svg ref={node => this.svgNode = node} />
+        }}>
+        <svg ref={node => (this.svgNode = node)} />
         <div className="bx--pie-tooltip" style={tooltipStyles}>
           <p className="bx--pie-value" style={valueStyles} />
           <p className="bx--pie-key" style={keyStyles} />

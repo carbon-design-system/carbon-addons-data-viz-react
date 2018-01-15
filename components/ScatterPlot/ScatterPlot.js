@@ -68,7 +68,10 @@ class ScatterPlot extends Component {
   initialRender() {
     const { data, width, height } = this.state;
 
-    this.x = d3.scaleBand().rangeRound([0, width]).domain(data.map(d => d[1]));
+    this.x = d3
+      .scaleBand()
+      .rangeRound([0, width])
+      .domain(data.map(d => d[1]));
 
     this.y = d3
       .scaleLinear()
@@ -90,7 +93,11 @@ class ScatterPlot extends Component {
       .tickSize(0)
       .tickFormat(d3.timeFormat(timeFormat));
 
-    const yAxis = d3.axisLeft().ticks(4).tickSize(-width).scale(this.y.nice());
+    const yAxis = d3
+      .axisLeft()
+      .ticks(4)
+      .tickSize(-width)
+      .scale(this.y.nice());
 
     this.svg
       .append('g')
