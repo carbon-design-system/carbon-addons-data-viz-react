@@ -6,7 +6,8 @@
   "module": "es/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git"
+    "url":
+      "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git"
   },
   "author": "tw15egan <tw15egan@gmail.com>",
   "license": "Apache-2.0",
@@ -59,17 +60,12 @@
     "commitmsg": "commitlint --extends=@commitlint/config-angular -e",
     "build": "node scripts/build.js",
     "storybook": "start-storybook -p 9001 -c .storybook",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release":
+      "semantic-release pre && npm publish && semantic-release post"
   },
-  "files": [
-    "cjs/**/*",
-    "es/**/*",
-    "scss/**/*"
-  ],
+  "files": ["cjs/**/*", "es/**/*", "scss/**/*"],
   "eslintConfig": {
-    "extends": [
-      "prettier"
-    ],
+    "extends": ["prettier"],
     "parserOptions": {
       "ecmaVersion": 2016,
       "sourceType": "module"
