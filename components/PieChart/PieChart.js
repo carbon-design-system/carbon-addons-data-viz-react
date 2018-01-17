@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import classnames from 'classnames';
 import * as d3 from 'd3';
 import _ from 'lodash';
 
@@ -40,15 +39,7 @@ class PieChart extends Component {
   }
 
   renderSVG() {
-    const {
-      data,
-      radius,
-      height,
-      width,
-      formatFunction,
-      id,
-      onHover,
-    } = this.props;
+    const { data, radius, formatFunction, id, onHover } = this.props;
     const color = d3.scaleOrdinal(this.props.color);
 
     this.svg = d3
@@ -101,7 +92,7 @@ class PieChart extends Component {
           onHover(true, d.data[0]);
         }
       })
-      .on('mouseout', function(d) {
+      .on('mouseout', function() {
         d3.select(`#${id} .bx--pie-tooltip`).style('display', 'none');
         d3
           .select(this)
