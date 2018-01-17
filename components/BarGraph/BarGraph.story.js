@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { storiesOf, action } from '@storybook/react';
 import BarGraph from './BarGraph';
 
@@ -33,8 +33,8 @@ const props = {
   labelOffsetX: 65,
   axisOffset: 16,
   timeFormat: '%b',
-  yAxisLabel: 'Test Y',
-  xAxisLabel: 'Test X',
+  yAxisLabel: 'Amount ($)',
+  xAxisLabel: 'Date',
   data: data,
   onHover: action('Hover'),
   id: 'bar-graph-1',

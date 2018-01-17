@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import classnames from 'classnames';
 import * as d3 from 'd3';
 import _ from 'lodash';
 
@@ -42,7 +41,6 @@ const defaultProps = {
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
   onHover: () => {},
-  onMouseOut: () => {},
   emptyText:
     'There is currently no data available for the parameters selected. Please try a different combination.',
   color: ['#00A78F', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
@@ -50,15 +48,7 @@ const defaultProps = {
 
 class BarGraph extends Component {
   componentDidMount() {
-    const {
-      data,
-      width,
-      height,
-      margin,
-      id,
-      containerId,
-      emptyText,
-    } = this.props;
+    const { width, height, margin, containerId, emptyText } = this.props;
 
     this.emptyContainer = d3
       .select(`#${containerId} .bx--bar-graph-empty-text`)
@@ -108,7 +98,7 @@ class BarGraph extends Component {
   }
 
   initialRender() {
-    const { data, timeFormat, xScale, isUTC } = this.props;
+    const { data, timeFormat } = this.props;
 
     this.updateEmptyState(data);
 
@@ -137,7 +127,6 @@ class BarGraph extends Component {
 
     this.renderAxes();
     this.renderLabels();
-    // this.renderOverlay();
 
     if (this.x) {
       this.renderBars();
@@ -145,9 +134,7 @@ class BarGraph extends Component {
   }
 
   renderAxes() {
-    const { data, axisOffset, timeFormat } = this.props;
-
-    let x;
+    const { axisOffset } = this.props;
 
     this.svg
       .append('g')
@@ -184,10 +171,17 @@ class BarGraph extends Component {
         .append('rect')
         .attr('class', 'bar')
         .attr('x', d => this.x(d[1]))
-        .attr('y', d => this.height)
+        .attr('y', this.height)
         .attr('height', 0)
         .attr('width', this.x.bandwidth())
         .attr('fill', color(i))
+        .attr('data-bar', (d, i) => i)
+        .on('mouseenter', (d, i) => {
+          this.onMouseEnter(d, i);
+        })
+        .on('mouseout', (d, i) => {
+          this.onMouseOut(d, i);
+        })
         .transition()
         .duration(500)
         .delay((d, i) => i * 50)
@@ -201,7 +195,7 @@ class BarGraph extends Component {
   renderLabels() {
     const { labelOffsetY, labelOffsetX, xAxisLabel, yAxisLabel } = this.props;
 
-    const yLabel = this.svg
+    this.svg
       .select('.bx--axis--y')
       .append('text')
       .text(`${yAxisLabel}`)
@@ -211,7 +205,7 @@ class BarGraph extends Component {
         `translate(${-labelOffsetY}, ${this.height / 2}) rotate(-90)`
       );
 
-    const xLabel = this.svg
+    this.svg
       .select('.bx--axis--x')
       .append('text')
       .text(`${xAxisLabel}`)
@@ -224,6 +218,27 @@ class BarGraph extends Component {
       .attr('font-weight', '700')
       .attr('fill', '#5A6872')
       .attr('text-anchor', 'middle');
+  }
+
+  onMouseEnter(d, i) {
+    let mouseData = {
+      data: d[0],
+      time: d[1],
+      index: i,
+    };
+
+    let rect = this.svg.select(`rect[data-bar="${i}"]`);
+    rect.attr('fill', d3.color(rect.attr('fill')).darker());
+
+    this.props.onHover(mouseData);
+  }
+
+  onMouseOut(d, i) {
+    let rect = this.svg.select(`rect[data-bar="${i}"]`);
+    rect
+      .transition()
+      .duration(250)
+      .attr('fill', d3.color(rect.attr('fill')).brighter());
   }
 
   resize(height, width) {
@@ -247,7 +262,7 @@ class BarGraph extends Component {
   }
 
   updateData(nextProps) {
-    const { data, axisOffset, xAxisLabel, yAxisLabel } = nextProps;
+    const { axisOffset, xAxisLabel, yAxisLabel } = nextProps;
 
     this.svg.selectAll('g.bar-container').remove();
 
@@ -274,8 +289,6 @@ class BarGraph extends Component {
   }
 
   updateEmptyState(data) {
-    const { emptyText } = this.props;
-
     if (data.length < 2) {
       this.svg.style('opacity', '.3');
       this.emptyContainer.style('display', 'inline-block');
