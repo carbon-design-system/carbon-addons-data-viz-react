@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import classnames from 'classnames';
 import * as d3 from 'd3';
 
 const propTypes = {
@@ -53,15 +52,7 @@ const defaultProps = {
 
 class LineGraph extends Component {
   componentDidMount() {
-    const {
-      data,
-      width,
-      height,
-      margin,
-      id,
-      containerId,
-      emptyText,
-    } = this.props;
+    const { data, width, height, margin, containerId, emptyText } = this.props;
 
     if (data.length > 0) {
       this.totalLines = data[0].length - 1;
@@ -118,8 +109,6 @@ class LineGraph extends Component {
   }
 
   updateEmptyState(data) {
-    const { emptyText } = this.props;
-
     if (data.length < 2) {
       this.svg.style('opacity', '.3');
       this.emptyContainer.style('display', 'inline-block');
@@ -191,7 +180,7 @@ class LineGraph extends Component {
   }
 
   initialRender() {
-    const { data, timeFormat, xScale, isUTC } = this.props;
+    const { data, timeFormat, isUTC } = this.props;
 
     this.updateEmptyState(data);
 
@@ -244,7 +233,7 @@ class LineGraph extends Component {
   }
 
   renderAxes() {
-    const { data, axisOffset, timeFormat } = this.props;
+    const { axisOffset } = this.props;
 
     this.svg
       .append('g')
@@ -270,7 +259,7 @@ class LineGraph extends Component {
   renderLabels() {
     const { labelOffsetY, labelOffsetX, xAxisLabel, yAxisLabel } = this.props;
 
-    const yLabel = this.svg
+    this.svg
       .select('.bx--axis--y')
       .append('text')
       .text(`${yAxisLabel}`)
@@ -280,7 +269,7 @@ class LineGraph extends Component {
         `translate(${-labelOffsetY}, ${this.height / 2}) rotate(-90)`
       );
 
-    const xLabel = this.svg
+    this.svg
       .select('.bx--axis--x')
       .append('text')
       .text(`${xAxisLabel}`)
@@ -335,9 +324,7 @@ class LineGraph extends Component {
   }
 
   renderOverlay() {
-    const { data } = this.props;
-
-    const overlay = this.svg
+    this.svg
       .append('rect')
       .attr('width', this.width)
       .attr('height', this.height)
@@ -359,7 +346,7 @@ class LineGraph extends Component {
   }
 
   onMouseMove() {
-    const { margin, id, data } = this.props;
+    const { margin, data } = this.props;
     const bisectDate = d3.bisector(function(d) {
       return d[d.length - 1];
     }).right;

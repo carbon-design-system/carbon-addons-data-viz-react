@@ -34,7 +34,6 @@ class LineGraphContainer extends Component {
   }
 
   updateData(i) {
-    let randomNumber = Math.floor(Math.random() * 20) + 10;
     let data = this.createData(12).sort(function(a, b) {
       return a[a.length - 1] - b[b.length - 1];
     });
@@ -84,12 +83,14 @@ storiesOf('LineGraph', module)
         <LineGraphContainer
           onHover={action('Hover')}
           onMouseOut={action('Mouseout')}
+          onBlur={action('Blur')}
         />
         <LineGraphContainer
           id="two"
           containerId="test-two"
           onHover={action('Hover')}
           onMouseOut={action('Mouseout')}
+          onBlur={action('Blur')}
         />
       </div>
     )
@@ -104,6 +105,7 @@ storiesOf('LineGraph', module)
         <LineGraphContainer
           onHover={action('Hover')}
           onMouseOut={action('Mouseout')}
+          onBlur={action('Blur')}
           drawLine={false}
         />
         <LineGraphContainer
@@ -111,6 +113,7 @@ storiesOf('LineGraph', module)
           containerId="test-two"
           onHover={action('Hover')}
           onMouseOut={action('Mouseout')}
+          onBlur={action('Blur')}
           drawLine={false}
         />
       </div>
@@ -125,8 +128,13 @@ storiesOf('LineGraph', module)
       ]}
       onHover={action('Hover')}
       onMouseOut={action('Mouseout')}
+      onBlur={action('Blur')}
     />
   ))
   .addWithInfo('Empty', ` Empty Example. `, () => (
-    <LineGraph onHover={action('Hover')} onMouseOut={action('Mouseout')} />
+    <LineGraph
+      onHover={action('Hover')}
+      onMouseOut={action('Mouseout')}
+      onBlur={action('Blur')}
+    />
   ));

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import classnames from 'classnames';
 import * as d3 from 'd3';
 
 const propTypes = {
@@ -46,7 +45,7 @@ class ScatterPlot extends Component {
   };
 
   componentDidMount() {
-    const { data, width, height, margin } = this.state;
+    const { width, height, margin } = this.state;
 
     this.svg = d3
       .select(this.refs.container)
@@ -85,7 +84,7 @@ class ScatterPlot extends Component {
   }
 
   renderAxes() {
-    const { data, width, height, axisOffset, timeFormat } = this.state;
+    const { width, height, axisOffset, timeFormat } = this.state;
 
     const xAxis = d3
       .axisBottom()
@@ -126,7 +125,7 @@ class ScatterPlot extends Component {
   renderLabels() {
     const { labelOffset, xAxisLabel, yAxisLabel, height, width } = this.state;
 
-    const yLabel = this.svg
+    this.svg
       .select('.bx--axis--y')
       .append('text')
       .text(`${yAxisLabel}`)
@@ -136,7 +135,7 @@ class ScatterPlot extends Component {
         `translate(${-labelOffset}, ${height / 2}) rotate(-90)`
       );
 
-    const xLabel = this.svg
+    this.svg
       .select('.bx--axis--x')
       .append('text')
       .text(`${xAxisLabel}`)
@@ -174,7 +173,7 @@ class ScatterPlot extends Component {
   renderOverlay() {
     const { width, height, data } = this.state;
 
-    const overlay = this.svg
+    this.svg
       .append('rect')
       .attr('width', width)
       .attr('height', height)

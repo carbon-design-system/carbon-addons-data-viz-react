@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { storiesOf, action } from '@storybook/react';
+import { storiesOf } from '@storybook/react';
 import PieChart from './PieChart';
 class PieUpdater extends Component {
   state = {

@@ -1,6 +1,5 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
-import classnames from 'classnames';
 import * as d3 from 'd3';
 
 const propTypes = {
@@ -69,16 +68,8 @@ class GaugeGraph extends Component {
   }
 
   renderSVG() {
-    const {
-      tau,
-      radius,
-      padding,
-      size,
-      gaugePercentages,
-      id,
-      fillColor,
-    } = this.props;
-    const { boxSize, ratio } = this.state;
+    const { tau, radius, size, gaugePercentages, id, fillColor } = this.props;
+    const { ratio } = this.state;
 
     // Transition function
     const arcTween = function(newAngle) {
@@ -90,7 +81,7 @@ class GaugeGraph extends Component {
           const line = d3.select(`#${id} .bx--gauge-line`);
           const percent = newAngle / tau * 100;
 
-          line.style('fill', d => {
+          line.style('fill', () => {
             let color;
             gaugePercentages.forEach(range => {
               if (percent >= range.low && percent <= range.high) {
@@ -137,7 +128,7 @@ class GaugeGraph extends Component {
   }
 
   renderLabels() {
-    const { valueText, labelText, id, tooltipId } = this.props;
+    const { valueText, labelText, tooltipId } = this.props;
 
     d3
       .select(`#${tooltipId} .bx--gauge-amount`)
