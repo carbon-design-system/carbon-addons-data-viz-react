@@ -37,7 +37,7 @@ const defaultProps = {
   labelOffsetX: 65,
   labelOffsetY: 55,
   axisOffset: 16,
-  timeFormat: '%I:%M:%S',
+  timeFormat: null,
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
   onHover: () => {},
@@ -70,6 +70,7 @@ class BarGraph extends Component {
 
     this.width = width - (margin.left + margin.right);
     this.height = height - (margin.top + margin.bottom);
+    this.color = d3.scaleOrdinal(this.props.color);
 
     this.initialRender();
   }
@@ -141,8 +142,11 @@ class BarGraph extends Component {
     this.xAxis = d3
       .axisBottom()
       .scale(this.x)
-      .tickSize(0)
-      .tickFormat(d3.timeFormat(timeFormat));
+      .tickSize(0);
+
+    if (timeFormat !== null) {
+      this.xAxis.tickFormat(d3.timeFormat(timeFormat));
+    }
 
     this.yAxis = d3
       .axisLeft()
@@ -183,60 +187,67 @@ class BarGraph extends Component {
 
   renderBars() {
     const { data } = this.props;
-    const color = d3.scaleOrdinal().range(this.props.color);
 
     const barContainer = this.svg.append('g').attr('class', 'bar-container');
 
-    if (this.isGrouped) {
-      this.count = 0;
+    if (data.length > 1) {
+      if (this.isGrouped) {
+        this.count = 0;
+        barContainer
+          .selectAll('g')
+          .data(data)
+          .enter()
+          .append('g')
+          .attr('transform', d => `translate(${this.x(d[1])}, 0)`)
+          .selectAll('rect')
+          .data(d => {
+            this.count++;
+            return d[0].map((key, index) => {
+              return {
+                key,
+                index,
+                group: this.count - 1,
+              };
+            });
+          })
+          .enter()
+          .append('rect')
+          .attr('class', 'bar')
+          .attr('x', d => this.x1(d.index))
+          .attr('y', this.height)
+          .attr('width', this.x1.bandwidth())
+          .attr('height', 0)
+          .attr('fill', d => this.color(d.index))
+          .attr('data-bar', d => `${d.index}-${d.group}`)
+          .transition()
+          .duration(500)
+          .delay((d, i) => i * 50)
+          .attr('y', d => this.y(d.key))
+          .attr('height', d => this.height - this.y(d.key));
+      } else {
+        barContainer
+          .selectAll('rect')
+          .data(data)
+          .enter()
+          .append('rect')
+          .attr('class', 'bar')
+          .attr('x', d => this.x(d[1]))
+          .attr('y', this.height)
+          .attr('height', 0)
+          .attr('width', this.x.bandwidth())
+          .attr('fill', this.color(0))
+          .attr('data-bar', (d, i) => `${i}-0`)
+          .transition()
+          .duration(500)
+          .delay((d, i) => i * 50)
+          .attr('y', d => this.y(d[0]))
+          .attr('height', d => this.height - this.y(d[0]));
+      }
+
       barContainer
-        .selectAll('g')
-        .data(data)
-        .enter()
-        .append('g')
-        .attr('transform', d => `translate(${this.x(d[1])}, 0)`)
         .selectAll('rect')
-        .data(d => {
-          this.count++;
-          return d[0].map((key, index) => {
-            return {
-              key,
-              index,
-              series: this.count,
-            };
-          });
-        })
-        .enter()
-        .append('rect')
-        .attr('class', 'bar')
-        .attr('x', d => this.x1(d.index))
-        .attr('y', this.height)
-        .attr('width', this.x1.bandwidth())
-        .attr('height', 0)
-        .attr('fill', d => color(d.index))
-        .transition()
-        .duration(500)
-        .delay((d, i) => i * 50)
-        .attr('y', d => this.y(d.key))
-        .attr('height', d => this.height - this.y(d.key));
-    } else {
-      barContainer
-        .selectAll('rect')
-        .data(data)
-        .enter()
-        .append('rect')
-        .attr('class', 'bar')
-        .attr('x', d => this.x(d[1]))
-        .attr('y', this.height)
-        .attr('height', 0)
-        .attr('width', this.x.bandwidth())
-        .attr('fill', color(0))
-        .attr('data-bar', (d, i) => i)
-        .transition()
-        .duration(500)
-        .delay((d, i) => i * 50)
-        .attr('y', d => this.y(d[0]))
-        .attr('height', d => this.height - this.y(d[0]));
+        .on('mouseover', d => this.onMouseEnter(d))
+        .on('mouseout', d => this.onMouseOut(d));
     }
   }
 
@@ -268,25 +279,49 @@ class BarGraph extends Component {
       .attr('text-anchor', 'middle');
   }
 
-  onMouseEnter(d, i) {
-    let mouseData = {
-      data: d[0],
-      time: d[1],
-      index: i,
-    };
+  getMouseData(d) {
+    let mouseData;
+    if (d.key) {
+      mouseData = {
+        data: d.key,
+        index: d.index,
+        group: d.group,
+      };
+    } else {
+      mouseData = {
+        data: d[0][0],
+        index: d[1],
+        group: 0,
+      };
+    }
 
-    let rect = this.svg.select(`rect[data-bar="${i}"]`);
+    return mouseData;
+  }
+
+  onMouseEnter(d) {
+    const mouseData = this.getMouseData(d);
+
+    let rect = this.svg.select(
+      `rect[data-bar="${mouseData.index}-${mouseData.group}"]`
+    );
     rect.attr('fill', d3.color(rect.attr('fill')).darker());
-
     this.props.onHover(mouseData);
   }
 
-  onMouseOut(d, i) {
-    let rect = this.svg.select(`rect[data-bar="${i}"]`);
+  onMouseOut(d) {
+    const mouseData = this.getMouseData(d);
+
+    let rect = this.svg.select(
+      `rect[data-bar="${mouseData.index}-${mouseData.group}"]`
+    );
+
     rect
       .transition()
-      .duration(250)
-      .attr('fill', d3.color(rect.attr('fill')).brighter());
+      .duration(500)
+      .attr(
+        'fill',
+        () => (this.isGrouped ? this.color(mouseData.index) : this.color(0))
+      );
   }
 
   resize(height, width) {
