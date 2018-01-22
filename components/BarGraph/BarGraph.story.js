@@ -9,14 +9,33 @@ function createData(num) {
     let d = new Date();
     let randomNum = Math.floor(Math.random() * 1000 + 1);
     d = d.setDate(d.getDate() - i * 30);
-    tempArr.push(randomNum, d);
+    tempArr.push([randomNum], d);
     data.push(tempArr);
   }
-
   return data;
 }
 
-let data = createData(12).sort(function(a, b) {
+function createGroupedData(num) {
+  let data = [];
+  for (let i = 0; i < num; i++) {
+    let numArr = [];
+    const one = Math.floor(Math.random() * 1000 + 10);
+    const two = Math.floor(Math.random() * 1000 + 10);
+    const three = Math.floor(Math.random() * 1000 + 10);
+    const four = Math.floor(Math.random() * 1000 + 10);
+    numArr.push(one, two, three, four);
+    let d = i;
+    const entry = [numArr, d];
+    data.push(entry);
+  }
+  return data;
+}
+
+let data = createData(20).sort(function(a, b) {
+  return a[1] - b[1];
+});
+
+let groupedData = createGroupedData(1).sort(function(a, b) {
   return a[1] - b[1];
 });
 
@@ -35,16 +54,23 @@ const props = {
   timeFormat: '%b',
   yAxisLabel: 'Amount ($)',
   xAxisLabel: 'Date',
-  data: data,
   onHover: action('Hover'),
   id: 'bar-graph-1',
   containerId: 'bar-graph-container',
 };
 
-storiesOf('BarGraph', module).addWithInfo(
-  'Default',
-  `
+storiesOf('BarGraph', module)
+  .addWithInfo(
+    'Default',
+    `
       Bar Graph.
     `,
-  () => <BarGraph onHover={action('Hover')} {...props} />
-);
+    () => <BarGraph onHover={action('Hover')} data={data} {...props} />
+  )
+  .addWithInfo(
+    'Grouped',
+    `
+     Grouped Bar Graph.
+    `,
+    () => <BarGraph onHover={action('Hover')} data={groupedData} {...props} />
+  );
