@@ -37,7 +37,7 @@ const defaultProps = {
   labelOffsetX: 65,
   labelOffsetY: 55,
   axisOffset: 16,
-  timeFormat: '%I:%M:%S',
+  timeFormat: null,
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
   onHover: () => {},
@@ -70,6 +70,7 @@ class BarGraph extends Component {
 
     this.width = width - (margin.left + margin.right);
     this.height = height - (margin.top + margin.bottom);
+    this.color = d3.scaleOrdinal(this.props.color);
 
     this.initialRender();
   }
@@ -86,7 +87,16 @@ class BarGraph extends Component {
   componentWillUpdate(nextProps) {
     if (this.x) {
       this.x.domain(nextProps.data.map(d => d[1]));
-      this.y.domain([0, d3.max(nextProps.data, d => d[0])]);
+
+      if (this.isGrouped) {
+        const dataLength = nextProps.data[0][0].length;
+        this.x1
+          .rangeRound([0, this.x.bandwidth()])
+          .domain(d3.range(dataLength));
+        this.y.domain([0, d3.max(nextProps.data, d => d3.max(d[0], i => i))]);
+      } else {
+        this.y.domain([0, d3.max(nextProps.data, d => d[0])]);
+      }
 
       this.updateEmptyState(nextProps.data);
       this.updateData(nextProps);
@@ -102,22 +112,41 @@ class BarGraph extends Component {
 
     this.updateEmptyState(data);
 
+    const dataLength = data[0][0].length;
+    this.isGrouped = dataLength > 1;
+
     this.x = d3
       .scaleBand()
       .rangeRound([0, this.width])
       .domain(data.map(d => d[1]))
-      .padding(0.1);
+      .padding(0.3);
 
-    this.y = d3
-      .scaleLinear()
-      .range([this.height, 0])
-      .domain([0, d3.max(data, d => d[0])]);
+    if (this.isGrouped) {
+      this.x1 = d3
+        .scaleBand()
+        .rangeRound([0, this.x.bandwidth()])
+        .domain(d3.range(dataLength))
+        .padding(0.05);
+
+      this.y = d3
+        .scaleLinear()
+        .range([this.height, 0])
+        .domain([0, d3.max(data, d => d3.max(d[0], i => i))]);
+    } else {
+      this.y = d3
+        .scaleLinear()
+        .range([this.height, 0])
+        .domain([0, d3.max(data, d => d[0])]);
+    }
 
     this.xAxis = d3
       .axisBottom()
       .scale(this.x)
-      .tickSize(0)
-      .tickFormat(d3.timeFormat(timeFormat));
+      .tickSize(0);
+
+    if (timeFormat !== null) {
+      this.xAxis.tickFormat(d3.timeFormat(timeFormat));
+    }
 
     this.yAxis = d3
       .axisLeft()
@@ -158,37 +187,67 @@ class BarGraph extends Component {
 
   renderBars() {
     const { data } = this.props;
-    const color = d3.scaleOrdinal(this.props.color);
 
-    this.count = 0;
-    for (let i = 0; i < data[0].length - 1; i++) {
-      this.svg
-        .append('g')
-        .attr('class', 'bar-container')
+    const barContainer = this.svg.append('g').attr('class', 'bar-container');
+
+    if (data.length > 1) {
+      if (this.isGrouped) {
+        this.count = 0;
+        barContainer
+          .selectAll('g')
+          .data(data)
+          .enter()
+          .append('g')
+          .attr('transform', d => `translate(${this.x(d[1])}, 0)`)
+          .selectAll('rect')
+          .data(d => {
+            this.count++;
+            return d[0].map((key, index) => {
+              return {
+                key,
+                index,
+                group: this.count - 1,
+              };
+            });
+          })
+          .enter()
+          .append('rect')
+          .attr('class', 'bar')
+          .attr('x', d => this.x1(d.index))
+          .attr('y', this.height)
+          .attr('width', this.x1.bandwidth())
+          .attr('height', 0)
+          .attr('fill', d => this.color(d.index))
+          .attr('data-bar', d => `${d.index}-${d.group}`)
+          .transition()
+          .duration(500)
+          .delay((d, i) => i * 50)
+          .attr('y', d => this.y(d.key))
+          .attr('height', d => this.height - this.y(d.key));
+      } else {
+        barContainer
+          .selectAll('rect')
+          .data(data)
+          .enter()
+          .append('rect')
+          .attr('class', 'bar')
+          .attr('x', d => this.x(d[1]))
+          .attr('y', this.height)
+          .attr('height', 0)
+          .attr('width', this.x.bandwidth())
+          .attr('fill', this.color(0))
+          .attr('data-bar', (d, i) => `${i}-0`)
+          .transition()
+          .duration(500)
+          .delay((d, i) => i * 50)
+          .attr('y', d => this.y(d[0]))
+          .attr('height', d => this.height - this.y(d[0]));
+      }
+
+      barContainer
         .selectAll('rect')
-        .data(data)
-        .enter()
-        .append('rect')
-        .attr('class', 'bar')
-        .attr('x', d => this.x(d[1]))
-        .attr('y', this.height)
-        .attr('height', 0)
-        .attr('width', this.x.bandwidth())
-        .attr('fill', color(i))
-        .attr('data-bar', (d, i) => i)
-        .on('mouseenter', (d, i) => {
-          this.onMouseEnter(d, i);
-        })
-        .on('mouseout', (d, i) => {
-          this.onMouseOut(d, i);
-        })
-        .transition()
-        .duration(500)
-        .delay((d, i) => i * 50)
-        .attr('y', d => this.y(d[0]))
-        .attr('height', d => this.height - this.y(d[0]));
-
-      this.count++;
+        .on('mouseover', d => this.onMouseEnter(d))
+        .on('mouseout', d => this.onMouseOut(d));
     }
   }
 
@@ -220,25 +279,49 @@ class BarGraph extends Component {
       .attr('text-anchor', 'middle');
   }
 
-  onMouseEnter(d, i) {
-    let mouseData = {
-      data: d[0],
-      time: d[1],
-      index: i,
-    };
+  getMouseData(d) {
+    let mouseData;
+    if (d.key) {
+      mouseData = {
+        data: d.key,
+        index: d.index,
+        group: d.group,
+      };
+    } else {
+      mouseData = {
+        data: d[0][0],
+        index: d[1],
+        group: 0,
+      };
+    }
 
-    let rect = this.svg.select(`rect[data-bar="${i}"]`);
+    return mouseData;
+  }
+
+  onMouseEnter(d) {
+    const mouseData = this.getMouseData(d);
+
+    let rect = this.svg.select(
+      `rect[data-bar="${mouseData.index}-${mouseData.group}"]`
+    );
     rect.attr('fill', d3.color(rect.attr('fill')).darker());
-
     this.props.onHover(mouseData);
   }
 
-  onMouseOut(d, i) {
-    let rect = this.svg.select(`rect[data-bar="${i}"]`);
+  onMouseOut(d) {
+    const mouseData = this.getMouseData(d);
+
+    let rect = this.svg.select(
+      `rect[data-bar="${mouseData.index}-${mouseData.group}"]`
+    );
+
     rect
       .transition()
-      .duration(250)
-      .attr('fill', d3.color(rect.attr('fill')).brighter());
+      .duration(500)
+      .attr(
+        'fill',
+        () => (this.isGrouped ? this.color(mouseData.index) : this.color(0))
+      );
   }
 
   resize(height, width) {
