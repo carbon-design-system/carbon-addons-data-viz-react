@@ -289,7 +289,7 @@ class BarGraph extends Component {
       };
     } else {
       mouseData = {
-        data: d[0][0],
+        data: d[0][0] || d[0],
         index: d[1],
         group: 0,
       };

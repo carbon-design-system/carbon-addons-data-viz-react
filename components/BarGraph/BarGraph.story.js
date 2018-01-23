@@ -90,7 +90,8 @@ function createGroupedData(num) {
     const two = Math.floor(Math.random() * 1000 + 10);
     const three = Math.floor(Math.random() * 1000 + 10);
     const four = Math.floor(Math.random() * 1000 + 10);
-    numArr.push(one, two, three, four);
+    const five = Math.floor(Math.random() * 1000 + 10);
+    numArr.push(one, two, three, four, five);
     let d = new Date();
     d = d.setDate(d.getDate() - i * 30);
     const entry = [numArr, d];
@@ -103,7 +104,7 @@ let data = createData(12).sort(function(a, b) {
   return a[1] - b[1];
 });
 
-let groupedData = createGroupedData(4).sort(function(a, b) {
+let groupedData = createGroupedData(3).sort(function(a, b) {
   return a[1] - b[1];
 });
 
