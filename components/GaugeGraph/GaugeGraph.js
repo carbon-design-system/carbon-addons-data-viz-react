@@ -25,7 +25,7 @@ const defaultProps = {
   valueText: '75%',
   labelText: '75 out of 100GB',
   size: 'full',
-  fillColor: '#FE8500',
+  fillColor: '#00a68f',
   gaugePercentages: [
     { low: 0, high: 50, color: '#4B8400' },
     { low: 50, high: 75, color: '#EFC100' },
