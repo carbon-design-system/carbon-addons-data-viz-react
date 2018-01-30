@@ -76,7 +76,9 @@ function createData(num) {
   for (let i = 0; i < num; i++) {
     let tempArr = [];
     let randomNum = Math.floor(Math.random() * 1000 + 1);
-    tempArr.push([randomNum], i);
+    let d = new Date();
+    d = d.setDate(d.getDate() + i * 30);
+    tempArr.push([randomNum], d);
     data.push(tempArr);
   }
   return data;
@@ -137,7 +139,14 @@ storiesOf('BarGraph', module)
     `
       Bar Graph.
     `,
-    () => <BarGraph onHover={action('Hover')} data={data} {...props} />
+    () => (
+      <BarGraph
+        timeFormat="%b"
+        onHover={action('Hover')}
+        data={data}
+        {...props}
+      />
+    )
   )
   .addWithInfo(
     'Grouped',
