@@ -1,0 +1,31 @@
+.bx--data-tooltip {
+  padding: 0;
+}
+
+.bx--tooltip-list-item {
+  display: inline-flex;
+  align-items: flex-start;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.bx--tooltip-list-item__data {
+  background-color: $ui-01;
+  z-index: 2;
+}
+
+.bx--tooltip-list-item__label {
+  color: $text-02;
+  font-size: rem(12px);
+}
+
+.bx--tooltip-list-item--single {
+}
+
+.bx--tooltip-list-item--multiple {
+}
+
+.bx--tooltip-list-item--no-color {
+  height: 1.625rem;
+  padding: 0 0.625rem;
+}
