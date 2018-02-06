@@ -20,17 +20,6 @@ const defaultProps = {
 };
 
 class DataTooltip extends Component {
-  componentDidMount() {}
-
-  // shouldComponentUpdate(nextProps) {
-  //   return this.props.isActive !== nextProps.isActive;
-  // }
-
-  componentWillReceiveProps() {}
-
-  // shouldComponentUpdate(nextProps) {}
-  componentWillUpdate() {}
-
   renderTooltipData() {
     const { data } = this.props;
     const items = data.map((item, i) => {
@@ -47,14 +36,19 @@ class DataTooltip extends Component {
             margin: `.5rem 1rem`,
             borderLeft: `4px solid ${item.color}`,
             minHeight: '2rem',
-            paddingLeft: '1rem',
+            paddingLeft: '.5rem',
           };
-          // if (data.length >= 4) {
-          //   divStyle.maxWidth = 'calc(50% - 2rem)';
-          // }
 
           if (i === data.length - 1) {
             divStyle.marginBottom = '1rem';
+          }
+
+          if (data.length > 3 && i >= data.length / 2) {
+            divStyle.marginLeft = '0';
+          }
+
+          if (data.length > 3 && i < data.length / 2) {
+            divStyle.marginRight = '0';
           }
         }
       } else {
@@ -78,7 +72,14 @@ class DataTooltip extends Component {
   }
 
   render() {
-    const { className, direction, heading, isActive } = this.props;
+    const {
+      className,
+      direction,
+      heading,
+      isActive,
+      data,
+      ...other
+    } = this.props;
 
     const tooltipClasses = classNames(
       'bx--tooltip',
@@ -89,10 +90,20 @@ class DataTooltip extends Component {
       className
     );
 
+    const listStyle = {
+      columnCount: data.length > 3 ? '2' : '1',
+      columnGap: '1.25rem',
+    };
+
     return (
-      <div className={tooltipClasses} data-floating-menu-direction={direction}>
+      <div
+        className={tooltipClasses}
+        data-floating-menu-direction={direction}
+        {...other}>
         {heading && <p className="bx--tooltip__label">{heading}</p>}
-        <ul className="bx--tooltip-list">{this.renderTooltipData()}</ul>
+        <ul className="bx--tooltip-list" style={listStyle}>
+          {this.renderTooltipData()}
+        </ul>
       </div>
     );
   }

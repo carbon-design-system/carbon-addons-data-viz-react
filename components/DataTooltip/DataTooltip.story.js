@@ -30,6 +30,8 @@ const maxData = [
 
 const props = {
   heading: 'Label 2',
+  direction: 'bottom',
+  isActive: true,
 };
 
 storiesOf('DataTooltip', module)

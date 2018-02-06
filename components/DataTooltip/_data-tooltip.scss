@@ -1,8 +1,5 @@
 .bx--data-tooltip {
   padding: 0;
-  max-width: 1000rem;
-  display: flex;
-  flex-direction: column;
 }
 
 .bx--data-tooltip .bx--tooltip__label {
@@ -17,12 +14,6 @@
   border-bottom: 1px solid $ui-04;
 }
 
-.bx--data-tooltip .bx--tooltip-list {
-  display: flex;
-  flex-wrap: wrap;
-  width: auto;
-}
-
 .bx--data-tooltip .bx--tooltip-list-item {
   display: inline-flex;
   align-items: flex-start;
@@ -30,12 +21,8 @@
   flex-direction: column;
 }
 
-.test {
-  width: 100%;
-  display: block;
-}
-
 .bx--data-tooltip .bx--tooltip-list-item__data {
+  font-weight: 600;
   background-color: $ui-01;
   z-index: 2;
 }
