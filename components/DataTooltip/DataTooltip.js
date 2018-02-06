@@ -33,7 +33,7 @@ class DataTooltip extends Component {
 
   renderTooltipData() {
     const { data } = this.props;
-    const items = data.map(item => {
+    const items = data.map((item, i) => {
       let divStyle;
       if (item.color) {
         if (data.length <= 1) {
@@ -44,9 +44,18 @@ class DataTooltip extends Component {
           };
         } else {
           divStyle = {
+            margin: `.5rem 1rem`,
             borderLeft: `4px solid ${item.color}`,
             minHeight: '2rem',
+            paddingLeft: '1rem',
           };
+          // if (data.length >= 4) {
+          //   divStyle.maxWidth = 'calc(50% - 2rem)';
+          // }
+
+          if (i === data.length - 1) {
+            divStyle.marginBottom = '1rem';
+          }
         }
       } else {
         divStyle = {
@@ -56,7 +65,7 @@ class DataTooltip extends Component {
       }
 
       return (
-        <li style={divStyle} className="bx--tooltip-list-item">
+        <li key={i} style={divStyle} className="bx--tooltip-list-item">
           {item.label && (
             <span className="bx--tooltip-list-item__label">{item.label}</span>
           )}

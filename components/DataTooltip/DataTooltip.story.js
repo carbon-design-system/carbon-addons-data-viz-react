@@ -29,7 +29,7 @@ const maxData = [
 ];
 
 const props = {
-  heading: 'January',
+  heading: 'Label 2',
 };
 
 storiesOf('DataTooltip', module)

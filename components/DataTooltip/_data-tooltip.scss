@@ -1,31 +1,56 @@
 .bx--data-tooltip {
   padding: 0;
+  max-width: 1000rem;
+  display: flex;
+  flex-direction: column;
 }
 
-.bx--tooltip-list-item {
+.bx--data-tooltip .bx--tooltip__label {
+  width: 100%;
+  height: rem(32px);
+  display: inline-flex;
+  align-items: center;
+  font-size: rem(14px);
+  color: $text-02;
+  padding: 0 1rem;
+  white-space: nowrap;
+  border-bottom: 1px solid $ui-04;
+}
+
+.bx--data-tooltip .bx--tooltip-list {
+  display: flex;
+  flex-wrap: wrap;
+  width: auto;
+}
+
+.bx--data-tooltip .bx--tooltip-list-item {
   display: inline-flex;
   align-items: flex-start;
   justify-content: center;
   flex-direction: column;
 }
 
-.bx--tooltip-list-item__data {
+.test {
+  width: 100%;
+  display: block;
+}
+
+.bx--data-tooltip .bx--tooltip-list-item__data {
   background-color: $ui-01;
   z-index: 2;
 }
 
-.bx--tooltip-list-item__label {
+.bx--data-tooltip .bx--tooltip-list-item__label {
   color: $text-02;
   font-size: rem(12px);
 }
 
-.bx--tooltip-list-item--single {
+.bx--data-tooltip .bx--tooltip-list-item__data,
+.bx--data-tooltip .bx--tooltip-list-item__label {
+  display: inline-block;
 }
 
-.bx--tooltip-list-item--multiple {
-}
-
-.bx--tooltip-list-item--no-color {
+.bx--data-tooltip .bx--tooltip-list-item--no-color {
   height: 1.625rem;
   padding: 0 0.625rem;
 }
