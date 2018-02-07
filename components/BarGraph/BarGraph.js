@@ -202,11 +202,13 @@ class BarGraph extends Component {
           .selectAll('rect')
           .data(d => {
             this.count++;
+            let itemLabel = d[1];
             return d[0].map((key, index) => {
               return {
                 key,
                 index,
                 group: this.count - 1,
+                itemLabel,
               };
             });
           })
@@ -246,8 +248,8 @@ class BarGraph extends Component {
 
       barContainer
         .selectAll('rect')
-        .on('mouseover', d => this.onMouseEnter(d))
-        .on('mouseout', d => this.onMouseOut(d));
+        .on('mouseover', (d, i) => this.onMouseEnter(d, i))
+        .on('mouseout', (d, i) => this.onMouseOut(d, i));
     }
   }
 
@@ -279,37 +281,47 @@ class BarGraph extends Component {
       .attr('text-anchor', 'middle');
   }
 
-  getMouseData(d) {
+  getMouseData(d, i) {
     let mouseData;
+
     if (d.key) {
       mouseData = {
-        data: d.key,
+        data: [d.key],
         index: d.index,
         group: d.group,
+        label: d.itemLabel,
       };
     } else {
       mouseData = {
-        data: d[0][0] || d[0],
-        index: d[1],
+        data: [d[0][0]] || [d[0]],
+        index: i,
         group: 0,
+        label: d[1],
       };
     }
 
     return mouseData;
   }
 
-  onMouseEnter(d) {
-    const mouseData = this.getMouseData(d);
+  onMouseEnter(d, i) {
+    const { timeFormat } = this.props;
+    const mouseData = this.getMouseData(d, i);
 
     let rect = this.svg.select(
       `rect[data-bar="${mouseData.index}-${mouseData.group}"]`
     );
     rect.attr('fill', d3.color(rect.attr('fill')).darker());
+
+    if (timeFormat) {
+      const format = d3.timeFormat(timeFormat);
+
+      mouseData.label = format(mouseData.label);
+    }
     this.props.onHover(mouseData);
   }
 
-  onMouseOut(d) {
-    const mouseData = this.getMouseData(d);
+  onMouseOut(d, i) {
+    const mouseData = this.getMouseData(d, i);
 
     let rect = this.svg.select(
       `rect[data-bar="${mouseData.index}-${mouseData.group}"]`
