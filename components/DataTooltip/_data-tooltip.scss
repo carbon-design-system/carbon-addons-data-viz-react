@@ -2,7 +2,7 @@
   padding: 0;
 }
 
-.bx--data-tooltip .bx--tooltip__label {
+.bx--data-tooltip__label {
   width: 100%;
   height: rem(32px);
   display: inline-flex;
@@ -14,30 +14,53 @@
   border-bottom: 1px solid $ui-04;
 }
 
-.bx--data-tooltip .bx--tooltip-list-item {
+.bx--data-tooltip-list-item {
   display: inline-flex;
   align-items: flex-start;
   justify-content: center;
   flex-direction: column;
 }
 
-.bx--data-tooltip .bx--tooltip-list-item__data {
+.bx--data-tooltip-list-item__data {
   font-weight: 600;
   background-color: $ui-01;
   z-index: 2;
 }
 
-.bx--data-tooltip .bx--tooltip-list-item__label {
+.bx--data-tooltip-list-item__label {
   color: $text-02;
   font-size: rem(12px);
 }
 
-.bx--data-tooltip .bx--tooltip-list-item__data,
-.bx--data-tooltip .bx--tooltip-list-item__label {
+.bx--data-tooltip-list-item__data,
+.bx--data-tooltip-list-item__label {
   display: inline-block;
 }
 
-.bx--data-tooltip .bx--tooltip-list-item--no-color {
-  height: 1.625rem;
+.bx--data-tooltip__base {
+  min-height: 1.625rem;
   padding: 0 0.625rem;
+}
+
+.bx--data-tooltip__single {
+  min-height: 2.625rem;
+  padding: 0 0.625rem;
+}
+
+.bx--data-tooltip__multiple {
+  margin: 0.5rem 1rem;
+  min-height: 2rem;
+  padding-left: 0.5rem;
+}
+
+.bx--data-tooltip__multiple--last {
+  margin-bottom: 1rem;
+}
+
+.bx--data-tooltip__multiple--right {
+  margin-left: 0;
+}
+
+.bx--data-tooltip__multiple--left {
+  margin-right: 0;
 }
