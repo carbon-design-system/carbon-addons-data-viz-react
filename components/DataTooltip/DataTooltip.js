@@ -28,42 +28,47 @@ class DataTooltip extends Component {
         if (data.length <= 1) {
           divStyle = {
             borderTop: `4px solid ${item.color}`,
-            minHeight: '2.625rem',
-            padding: '0 0.625rem',
           };
         } else {
           divStyle = {
-            margin: `.5rem 1rem`,
             borderLeft: `4px solid ${item.color}`,
-            minHeight: '2rem',
-            paddingLeft: '.5rem',
           };
-
-          if (i === data.length - 1) {
-            divStyle.marginBottom = '1rem';
-          }
-
-          if (data.length > 3 && i >= data.length / 2) {
-            divStyle.marginLeft = '0';
-          }
-
-          if (data.length > 3 && i < data.length / 2) {
-            divStyle.marginRight = '0';
-          }
         }
-      } else {
-        divStyle = {
-          minHeight: '1.625rem',
-          padding: '0 0.625rem',
-        };
       }
 
+      const tooltipItemClasses = classNames(
+        'bx--data-tooltip-list-item',
+        {
+          'bx--data-tooltip__base': !item.color && data.length <= 1,
+        },
+        {
+          'bx--data-tooltip__single': item.color && data.length <= 1,
+        },
+        {
+          'bx--data-tooltip__multiple': item.color && data.length > 1,
+        },
+        {
+          'bx--data-tooltip__multiple--last':
+            item.color && data.length > 1 && i === data.length - 1,
+        },
+        {
+          'bx--data-tooltip__multiple--right':
+            item.color && (data.length > 3 && i >= data.length / 2),
+        },
+        {
+          'bx--data-tooltip__multiple--left':
+            item.color && (data.length > 3 && i < data.length / 2),
+        }
+      );
+
       return (
-        <li key={i} style={divStyle} className="bx--tooltip-list-item">
+        <li key={i} style={divStyle} className={tooltipItemClasses}>
           {item.label && (
-            <span className="bx--tooltip-list-item__label">{item.label}</span>
+            <span className="bx--data-tooltip-list-item__label">
+              {item.label}
+            </span>
           )}
-          <span className="bx--tooltip-list-item__data">{item.data}</span>
+          <span className="bx--data-tooltip-list-item__data">{item.data}</span>
         </li>
       );
     });
@@ -100,8 +105,8 @@ class DataTooltip extends Component {
         className={tooltipClasses}
         data-floating-menu-direction={direction}
         {...other}>
-        {heading && <p className="bx--tooltip__label">{heading}</p>}
-        <ul className="bx--tooltip-list" style={listStyle}>
+        {heading && <p className="bx--data-tooltip__label">{heading}</p>}
+        <ul className="bx--data-tooltip-list" style={listStyle}>
           {this.renderTooltipData()}
         </ul>
       </div>
