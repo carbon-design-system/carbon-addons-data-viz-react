@@ -2946,10 +2946,6 @@ enhanced-resolve@^3.4.0:
     object-assign "^4.0.1"
     tapable "^0.2.7"
 
-entities@~1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/entities/-/entities-1.1.1.tgz#6e5c2d0a5621b5dadaecef80b90edfb5cd7772f0"
-
 errno@^0.1.3:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/errno/-/errno-0.1.4.tgz#b896e23a9e5e8ba33871fc996abd3635fc9a1c7d"
@@ -4513,12 +4509,6 @@ levn@^0.3.0, levn@~0.3.0:
     prelude-ls "~1.1.2"
     type-check "~0.3.2"
 
-linkify-it@^2.0.0:
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/linkify-it/-/linkify-it-2.0.3.tgz#d94a4648f9b1c179d64fa97291268bdb6ce9434f"
-  dependencies:
-    uc.micro "^1.0.1"
-
 lint-staged@^4.3.0:
   version "4.3.0"
   resolved "https://registry.yarnpkg.com/lint-staged/-/lint-staged-4.3.0.tgz#ed0779ad9a42c0dc62bb3244e522870b41125879"
@@ -4849,20 +4839,6 @@ map-stream@~0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/map-stream/-/map-stream-0.1.0.tgz#e56aa94c4c8055a16404a0674b78f215f7c8e194"
 
-markdown-it-sup@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/markdown-it-sup/-/markdown-it-sup-1.0.0.tgz#cb9c9ff91a5255ac08f3fd3d63286e15df0a1fc3"
-
-markdown-it@^8.3.1:
-  version "8.4.0"
-  resolved "https://registry.yarnpkg.com/markdown-it/-/markdown-it-8.4.0.tgz#e2400881bf171f7018ed1bd9da441dac8af6306d"
-  dependencies:
-    argparse "^1.0.7"
-    entities "~1.1.1"
-    linkify-it "^2.0.0"
-    mdurl "^1.0.1"
-    uc.micro "^1.0.3"
-
 marked@^0.3.6:
   version "0.3.6"
   resolved "https://registry.yarnpkg.com/marked/-/marked-0.3.6.tgz#b2c6c618fccece4ef86c4fc6cb8a7cbf5aeda8d7"
@@ -4885,10 +4861,6 @@ md5.js@^1.3.4:
   dependencies:
     hash-base "^3.0.0"
     inherits "^2.0.1"
-
-mdurl@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/mdurl/-/mdurl-1.0.1.tgz#fe85b2ec75a59037f2adfec100fd6c601761152e"
 
 media-typer@0.3.0:
   version "0.3.0"
@@ -7300,10 +7272,6 @@ typedarray@^0.0.6:
 ua-parser-js@^0.7.9:
   version "0.7.14"
   resolved "https://registry.yarnpkg.com/ua-parser-js/-/ua-parser-js-0.7.14.tgz#110d53fa4c3f326c121292bbeac904d2e03387ca"
-
-uc.micro@^1.0.1, uc.micro@^1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/uc.micro/-/uc.micro-1.0.3.tgz#7ed50d5e0f9a9fb0a573379259f2a77458d50192"
 
 uglify-js@^2.6, uglify-js@^2.8.29:
   version "2.8.29"
