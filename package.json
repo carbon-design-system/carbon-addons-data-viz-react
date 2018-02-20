@@ -12,7 +12,7 @@
   "license": "Apache-2.0",
   "dependencies": {
     "carbon-components": "^8.0.0",
-    "carbon-components-react": "^4.1.4",
+    "carbon-components-react": "^5.0.0",
     "carbon-icons": "^6.1.0",
     "classnames": "^2.2.5",
     "d3": "^4.10.2"
@@ -29,8 +29,8 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "bluebird": "^3.5.0",
     "carbon-components": "^8.0.0",
-    "carbon-components-react": "^4.1.4",
-    "carbon-icons": "^6.0.6",
+    "carbon-components-react": "^5.0.0",
+    "carbon-icons": "^6.1.0",
     "css-loader": "^0.28.4",
     "eslint": "^4.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
@@ -65,7 +65,8 @@
     "prettier": "prettier --write \"**/*.{scss,css,js}\"",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "precommit": "lint-staged",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "test": ""
   },
   "files": [
     "cjs/**/*",
