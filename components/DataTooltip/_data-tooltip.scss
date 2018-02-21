@@ -12,10 +12,11 @@
   padding: 0 1rem;
   white-space: nowrap;
   border-bottom: 1px solid $ui-04;
+  margin-bottom: 0.5rem;
 }
 
 .bx--data-tooltip-list-item {
-  display: inline-flex;
+  display: flex;
   align-items: flex-start;
   justify-content: center;
   flex-direction: column;
@@ -30,6 +31,10 @@
 .bx--data-tooltip-list-item__label {
   color: $text-02;
   font-size: rem(12px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
 }
 
 .bx--data-tooltip-list-item__data,
@@ -48,13 +53,9 @@
 }
 
 .bx--data-tooltip__multiple {
-  margin: 0.5rem 1rem;
+  margin: 0 1rem 0.5rem;
   min-height: 2rem;
   padding-left: 0.5rem;
-}
-
-.bx--data-tooltip__multiple--last {
-  margin-bottom: 1rem;
 }
 
 .bx--data-tooltip__multiple--right {
