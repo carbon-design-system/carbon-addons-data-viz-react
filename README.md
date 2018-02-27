@@ -12,10 +12,6 @@ Import the graph:
 
 `import { LineGraph } from 'carbon-addons-data-viz-react';`
 
-Import the styles: 
-
-`@import 'carbon-components-data-viz-react/scss/index'`
-
 Here is a link to a Code Sandbox example in which you can play around: https://codesandbox.io/s/ov4169pq36
 
 ## Current Components
