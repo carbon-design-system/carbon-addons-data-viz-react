@@ -1,9 +1,19 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import * as d3 from 'd3';
+import _ from 'lodash';
 
 const propTypes = {
-  data: PropTypes.array,
+  /**
+   * If your data set has a single series, or multiple series with all the same x values, use the data prop, and format like this: [[y1a, y1b, ... , x1], [y2a, y2b, ... , x2], ...]
+   */
+  data: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
+  /**
+   * If your data set has multiple series with different x values, use the datasets prop, and format like this: [[[y1a, x1a], [y2a, x2a], ...], [[y1b, x1b], [y2b, x2b], ...], ...]
+   */
+  datasets: PropTypes.arrayOf(
+    PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
+  ),
   height: PropTypes.number,
   width: PropTypes.number,
   id: PropTypes.string,
@@ -21,10 +31,15 @@ const propTypes = {
   isUTC: PropTypes.bool,
   color: PropTypes.array,
   drawLine: PropTypes.bool,
+  /**
+   * Set this prop to false to prevent x values from being converted to time.
+   */
+  isXTime: PropTypes.bool,
 };
 
 const defaultProps = {
-  data: [[12, 1507563900000]],
+  data: [],
+  datasets: [],
   height: 300,
   width: 800,
   id: 'container',
@@ -48,14 +63,25 @@ const defaultProps = {
   isUTC: false,
   color: ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
   drawLine: true,
+  isXTime: true,
 };
 
 class LineGraph extends Component {
   componentDidMount() {
-    const { data, width, height, margin, containerId, emptyText } = this.props;
+    const {
+      data,
+      datasets,
+      width,
+      height,
+      margin,
+      containerId,
+      emptyText,
+    } = this.props;
 
     if (data.length > 0) {
       this.totalLines = data[0].length - 1;
+    } else if (datasets.length > 0) {
+      this.totalLines = datasets.length;
     }
 
     this.emptyContainer = d3
@@ -92,24 +118,35 @@ class LineGraph extends Component {
   }
 
   shouldComponentUpdate(nextProps) {
-    return this.props.data !== nextProps.data;
+    return (
+      this.props.data !== nextProps.data ||
+      this.props.datasets !== nextProps.datasets
+    );
   }
 
   componentWillUpdate(nextProps) {
     if (this.x) {
-      this.x.domain(d3.extent(nextProps.data, d => d[d.length - 1]));
-      this.y.domain([
-        0,
-        d3.max(nextProps.data, d => d3.max(d.slice(0, d.length - 1))),
-      ]);
+      const data =
+        nextProps.data.length > 0
+          ? nextProps.data
+          : _.flatten(nextProps.datasets);
+      this.x.domain(d3.extent(data, d => d[d.length - 1]));
+      this.y.domain([0, d3.max(data, d => d3.max(d.slice(0, d.length - 1)))]);
 
-      this.updateEmptyState(nextProps.data);
+      this.updateEmptyState(
+        nextProps.data.length > 0 ? nextProps.data : nextProps.datasets
+      );
       this.updateData(nextProps);
     }
   }
 
   updateEmptyState(data) {
-    if (data.length < 2) {
+    if (
+      data[0]
+        ? (!Array.isArray(data[0][0]) && data.length < 2) ||
+          (Array.isArray(data[0][0]) && _.max(data.map(d => d.length)) < 2)
+        : true
+    ) {
       this.svg.style('opacity', '.3');
       this.emptyContainer.style('display', 'inline-block');
     } else {
@@ -119,7 +156,7 @@ class LineGraph extends Component {
   }
 
   updateData(nextProps) {
-    const { data, axisOffset, xAxisLabel, yAxisLabel } = nextProps;
+    const { data, datasets, axisOffset, xAxisLabel, yAxisLabel } = nextProps;
 
     for (var i = 0; i < this.totalLines; i++) {
       this.svg.selectAll(`g[data-line="${i}"]`).remove();
@@ -127,6 +164,8 @@ class LineGraph extends Component {
 
     if (data.length > 0) {
       this.totalLines = data[0].length - 1;
+    } else if (datasets.length > 0) {
+      this.totalLines = datasets.length;
     }
 
     this.svg
@@ -180,42 +219,48 @@ class LineGraph extends Component {
   }
 
   initialRender() {
-    const { data, timeFormat, isUTC } = this.props;
+    const { data, datasets, timeFormat, isUTC, isXTime } = this.props;
 
-    this.updateEmptyState(data);
+    this.updateEmptyState(data.length > 0 ? data : datasets);
+
+    const flatData = data.length > 0 ? data : _.flatten(datasets);
 
     if (isUTC) {
       this.x = d3
         .scaleUtc()
         .range([0, this.width])
-        .domain(d3.extent(data, d => d[d.length - 1]));
-    } else {
+        .domain(d3.extent(flatData, d => d[d.length - 1]));
+    } else if (isXTime) {
       this.x = d3
         .scaleTime()
         .range([0, this.width])
-        .domain(d3.extent(data, d => d[d.length - 1]));
+        .domain(d3.extent(flatData, d => d[d.length - 1]));
+    } else {
+      this.x = d3
+        .scaleLinear()
+        .range([0, this.width])
+        .domain(d3.extent(flatData, d => d[d.length - 1]));
     }
 
     this.y = d3
       .scaleLinear()
       .range([this.height, 0])
-      .domain([0, d3.max(data, d => d3.max(d.slice(0, d.length - 1)))]);
+      .domain([
+        0,
+        d3.max(flatData, d => d3.max(d.slice(0, d.length - 1))) || 10,
+      ]);
 
     this.line = d3
       .line()
       .x(d => this.x(d[d.length - 1]))
-      .y(d => {
-        return this.y(d[this.count]);
-      })
-      .defined(d => {
-        return !isNaN(d[this.count]);
-      });
+      .y(d => this.y(d[this.count]))
+      .defined(d => !isNaN(d[this.count]));
 
     this.xAxis = d3
       .axisBottom()
       .scale(this.x)
       .tickSize(0)
-      .tickFormat(d3.timeFormat(timeFormat));
+      .tickFormat(isXTime ? d3.timeFormat(timeFormat) : null);
 
     this.yAxis = d3
       .axisLeft()
@@ -285,16 +330,18 @@ class LineGraph extends Component {
   }
 
   renderLine() {
-    const { data, drawLine } = this.props;
+    const { data, datasets, drawLine } = this.props;
     const color = d3.scaleOrdinal(this.props.color);
+    const hasData = data.length > 0;
+    const numLines = hasData ? data[0].length - 1 : datasets.length;
 
     this.count = 0;
-    if (data.length > 0) {
-      for (let i = 0; i < data[0].length - 1; i++) {
+    if (hasData || _.max(datasets.map(d => d.length)) > 0) {
+      for (let i = 0; i < numLines; i++) {
         const path = this.svg
           .append('g')
           .attr('data-line', i)
-          .datum(data)
+          .datum(hasData ? data : datasets[i])
           .append('path')
           .attr('class', 'bx--line')
           .attr('stroke', color(i))
@@ -318,7 +365,7 @@ class LineGraph extends Component {
             .attr('stroke-dasharray', totalLength + ' ' + 0);
         }
 
-        this.count++;
+        this.count += hasData ? 1 : 0;
       }
     }
   }
@@ -340,23 +387,27 @@ class LineGraph extends Component {
   }
 
   onMouseOut() {
-    if (this.props.data.length > 2) {
+    if (
+      this.props.data.length > 2 ||
+      _.max(this.props.datasets.map(d => d.length)) > 2
+    ) {
       this.props.onMouseOut();
     }
   }
 
   onMouseMove() {
-    const { margin, data } = this.props;
+    const { margin, data, datasets } = this.props;
     const bisectDate = d3.bisector(function(d) {
       return d[d.length - 1];
     }).right;
 
-    if (data.length > 2) {
+    if (data.length > 2 || _.max(datasets.map(d => d.length)) > 2) {
       const mouse = d3.mouse(this.id)[0] - margin.left;
       const timestamp = this.x.invert(mouse);
-      const index = bisectDate(data, timestamp);
-      const d0 = data[index - 1];
-      const d1 = data[index];
+      const flatData = data.length > 0 ? data : _.flatten(datasets);
+      const index = bisectDate(flatData, timestamp);
+      const d0 = flatData[index - 1];
+      const d1 = flatData[index];
 
       let d, mouseData;
       if (d0 && d1) {
@@ -392,6 +443,7 @@ class LineGraph extends Component {
         style={{ position: 'relative' }}>
         <p className="bx--line-graph-empty-text" />
         <svg id={id} ref={id => (this.id = id)} />
+        <div id="tooltip-div" ref={id => (this.tooltipId = id)} />
       </div>
     );
   }
