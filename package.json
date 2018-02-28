@@ -15,7 +15,8 @@
     "carbon-components-react": "^5.0.0",
     "carbon-icons": "^6.1.0",
     "classnames": "^2.2.5",
-    "d3": "^4.10.2"
+    "d3": "^4.10.2",
+    "lodash": "^4.17.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^3.2.0",

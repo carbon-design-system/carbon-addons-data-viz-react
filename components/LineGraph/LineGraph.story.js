@@ -11,10 +11,14 @@ class LineGraphContainer extends Component {
 
   componentDidMount() {
     let i = 0;
-    setInterval(() => {
+    this.interval = setInterval(() => {
       this.updateData(i);
       i++;
     }, 5000);
+  }
+
+  componentWillUnmount() {
+    window.clearInterval(this.interval);
   }
 
   createData(num) {
@@ -121,14 +125,29 @@ storiesOf('LineGraph', module)
   )
   .addWithInfo('Static', ` Static Example. `, () => (
     <LineGraph
-      data={[
-        [48.633333333333, 1507563000000],
-        [12, 1507563900000],
-        [53.733333333333, 1507564800000],
+      datasets={[
+        [[43, 1507563000000], [27, 1507563900000], [33, 1507564800000]],
+        [
+          [48.633333333333, 1507563004000],
+          [21, 1507563900140],
+          [38, 1507564830000],
+        ],
       ]}
       onHover={action('Hover')}
       onMouseOut={action('Mouseout')}
       onBlur={action('Blur')}
+    />
+  ))
+  .addWithInfo('Number values for X', ` Static Example. `, () => (
+    <LineGraph
+      datasets={[
+        [[45, 12], [23, 14], [33, 18], [31, 20], [12, 21]],
+        [[48.633333333333, 11], [21, 15], [38, 16], [21, 19], [31, 21]],
+      ]}
+      onHover={action('Hover')}
+      onMouseOut={action('Mouseout')}
+      onBlur={action('Blur')}
+      isXTime={false}
     />
   ))
   .addWithInfo('Empty', ` Empty Example. `, () => (
