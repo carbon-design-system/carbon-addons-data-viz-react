@@ -70,6 +70,7 @@ class LineGraphContainer extends Component {
       id: this.props.id,
       containerId: this.props.containerId,
       drawLine: this.props.drawLine,
+      seriesLabels: ['Series 1', 'Series 2', 'Series 3'],
     };
 
     return <LineGraph {...props} />;
@@ -147,6 +148,7 @@ storiesOf('LineGraph', module)
       onHover={action('Hover')}
       onMouseOut={action('Mouseout')}
       onBlur={action('Blur')}
+      seriesLabels={['Series 1', 'Series 2', 'Series 3']}
       isXTime={false}
     />
   ))
