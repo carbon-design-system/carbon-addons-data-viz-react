@@ -1,5 +1,7 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+import DataTooltip from '../DataTooltip/DataTooltip';
 import * as d3 from 'd3';
 import _ from 'lodash';
 
@@ -20,6 +22,7 @@ const propTypes = {
   onMouseOut: PropTypes.func,
   emptyText: PropTypes.string,
   color: PropTypes.array,
+  showTooltip: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -44,6 +47,7 @@ const defaultProps = {
   emptyText:
     'There is currently no data available for the parameters selected. Please try a different combination.',
   color: ['#00A78F', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
+  showTooltip: true,
 };
 
 class BarGraph extends Component {
@@ -304,7 +308,13 @@ class BarGraph extends Component {
   }
 
   onMouseEnter(d, i) {
-    const { timeFormat } = this.props;
+    const {
+      timeFormat,
+      showTooltip,
+      height,
+      labelOffsetX,
+      seriesLabels,
+    } = this.props;
     const mouseData = this.getMouseData(d, i);
 
     let rect = this.svg.select(
@@ -312,12 +322,52 @@ class BarGraph extends Component {
     );
     rect.attr('fill', d3.color(rect.attr('fill')).darker());
 
+    const xVal = mouseData.label;
     if (timeFormat) {
       const format = d3.timeFormat(timeFormat);
 
       mouseData.label = format(mouseData.label);
     }
+
     this.props.onHover(mouseData);
+
+    if (showTooltip) {
+      ReactDOM.render(
+        <DataTooltip
+          data={[
+            {
+              data: mouseData.data[0],
+              label: seriesLabels
+                ? seriesLabels[mouseData.index]
+                : mouseData.label,
+              color: rect.attr('fill'),
+            },
+          ]}
+        />,
+        this.tooltipId
+      );
+      const tooltipSize = d3
+        .select(this.tooltipId.children[0])
+        .node()
+        .getBoundingClientRect();
+      const offset = -tooltipSize.width / 2;
+
+      d3
+        .select(this.tooltipId)
+        .style('position', 'relative')
+        .style(
+          'left',
+          `${this.x(xVal) +
+            (this.x1 ? this.x1(mouseData.index) : 0) +
+            labelOffsetX +
+            offset +
+            (this.x1 ? this.x1.bandwidth() / 2 : this.x.bandwidth() / 2)}px`
+        )
+        .style(
+          'top',
+          `${this.y(mouseData.data[0]) - height - tooltipSize.height + 10}px`
+        );
+    }
   }
 
   onMouseOut(d, i) {
@@ -334,6 +384,7 @@ class BarGraph extends Component {
         'fill',
         () => (this.isGrouped ? this.color(mouseData.index) : this.color(0))
       );
+    ReactDOM.unmountComponentAtNode(this.tooltipId);
   }
 
   resize(height, width) {
@@ -414,6 +465,7 @@ class BarGraph extends Component {
         style={{ position: 'relative' }}>
         <p className="bx--bar-graph-empty-text" />
         <svg id={id} ref={id => (this.id = id)} />
+        <div id="tooltip-div" ref={id => (this.tooltipId = id)} />
       </div>
     );
   }

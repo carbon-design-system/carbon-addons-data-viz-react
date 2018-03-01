@@ -159,6 +159,13 @@ storiesOf('BarGraph', module)
         onHover={action('Hover')}
         data={groupedData}
         {...props}
+        seriesLabels={[
+          'Series 1',
+          'Series 2',
+          'Series 3',
+          'Series 4',
+          'Series 5',
+        ]}
       />
     )
   )
