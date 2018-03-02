@@ -1,6 +1,8 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 import * as d3 from 'd3';
+import DataTooltip from '../DataTooltip/DataTooltip';
 import _ from 'lodash';
 
 const propTypes = {
@@ -14,6 +16,10 @@ const propTypes = {
   datasets: PropTypes.arrayOf(
     PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number))
   ),
+  /**
+   * If your data set has multiple series, the seriesLabels array should contain strings labeling your series in the same order that your series appear in either data or datasets props.
+   */
+  seriesLabels: PropTypes.arrayOf(PropTypes.string),
   height: PropTypes.number,
   width: PropTypes.number,
   id: PropTypes.string,
@@ -31,6 +37,7 @@ const propTypes = {
   isUTC: PropTypes.bool,
   color: PropTypes.array,
   drawLine: PropTypes.bool,
+  showTooltip: PropTypes.bool,
   /**
    * Set this prop to false to prevent x values from being converted to time.
    */
@@ -40,6 +47,7 @@ const propTypes = {
 const defaultProps = {
   data: [],
   datasets: [],
+  seriesLabels: [],
   height: 300,
   width: 800,
   id: 'container',
@@ -63,6 +71,7 @@ const defaultProps = {
   isUTC: false,
   color: ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
   drawLine: true,
+  showTooltip: true,
   isXTime: true,
 };
 
@@ -392,29 +401,76 @@ class LineGraph extends Component {
       _.max(this.props.datasets.map(d => d.length)) > 2
     ) {
       this.props.onMouseOut();
+      ReactDOM.unmountComponentAtNode(this.tooltipId);
     }
   }
 
   onMouseMove() {
-    const { margin, data, datasets } = this.props;
-    const bisectDate = d3.bisector(function(d) {
-      return d[d.length - 1];
-    }).right;
+    const {
+      margin,
+      data,
+      datasets,
+      showTooltip,
+      timeFormat,
+      color,
+      height,
+      labelOffsetX,
+      isXTime,
+      seriesLabels,
+    } = this.props;
 
     if (data.length > 2 || _.max(datasets.map(d => d.length)) > 2) {
+      const bisectDate = d3.bisector(function(d) {
+        return d[d.length - 1];
+      }).right;
       const mouse = d3.mouse(this.id)[0] - margin.left;
       const timestamp = this.x.invert(mouse);
-      const flatData = data.length > 0 ? data : _.flatten(datasets);
-      const index = bisectDate(flatData, timestamp);
-      const d0 = flatData[index - 1];
-      const d1 = flatData[index];
+      let d, mouseData, tooltipHeading, tooltipData;
+      if (data.length > 0) {
+        const index = bisectDate(data, timestamp);
+        const d0 = data[index - 1];
+        const d1 = data[index];
 
-      let d, mouseData;
-      if (d0 && d1) {
-        d =
-          timestamp - d0[d0.length - 1] > d1[d1.length - 1] - timestamp
-            ? d1
-            : d0;
+        if (d0 && d1) {
+          d =
+            timestamp - d0[d0.length - 1] > d1[d1.length - 1] - timestamp
+              ? d1
+              : d0;
+
+          mouseData = {
+            data: d,
+            pageX: d3.event.pageX,
+            pageY: d3.event.pageY,
+            graphX: this.x(d[d.length - 1]),
+            graphY: this.y(d[0]),
+            graphYArray: d.slice(0, -1).map(this.y),
+          };
+
+          tooltipData = _.dropRight(d).map((p, i) => ({
+            data: _.round(p, 2),
+            label: seriesLabels[i],
+            color: color[i],
+          }));
+
+          tooltipHeading =
+            d.length > 2
+              ? isXTime
+                ? d3.timeFormat(timeFormat)(d[d.length - 1])
+                : d[d.length - 1]
+              : null;
+        }
+      } else {
+        const mouseX = this.x(timestamp);
+        const mouseY = d3.mouse(this.id)[1] - margin.top;
+        const distances = [];
+        d = _.sortBy(_.flatten(datasets), a => {
+          const aDist =
+            Math.pow(mouseX - this.x(a[a.length - 1]), 2) +
+            Math.pow(mouseY - this.y(a[0]), 2);
+          distances.push({ a, aDist });
+          return aDist;
+        })[0];
+        const i = datasets.findIndex(set => set.includes(d));
 
         mouseData = {
           data: d,
@@ -424,9 +480,44 @@ class LineGraph extends Component {
           graphY: this.y(d[0]),
           graphYArray: d.slice(0, -1).map(this.y),
         };
+
+        const xVal = isXTime
+          ? d3.timeFormat(timeFormat)(d[d.length - 1])
+          : d[d.length - 1];
+
+        tooltipHeading = d.length > 2 ? xVal : null;
+
+        tooltipData = _.dropRight(d).map(p => ({
+          data: _.round(p, 2),
+          label: tooltipHeading ? seriesLabels[i] : xVal,
+          color: color[i],
+        }));
       }
 
       this.props.onHover(mouseData);
+
+      if (showTooltip && tooltipData && tooltipData.length > 0) {
+        ReactDOM.render(
+          <DataTooltip heading={tooltipHeading} data={tooltipData} />,
+          this.tooltipId
+        );
+        const tooltipSize = d3
+          .select(this.tooltipId.children[0])
+          .node()
+          .getBoundingClientRect();
+        const offset = -tooltipSize.width / 2;
+        d3
+          .select(this.tooltipId)
+          .style('position', 'relative')
+          .style('left', `${mouseData.graphX + labelOffsetX + offset}px`)
+          .style(
+            'top',
+            `${this.y(_.max(_.dropRight(d))) -
+              height -
+              tooltipSize.height +
+              10}px`
+          );
+      }
     }
   }
 
