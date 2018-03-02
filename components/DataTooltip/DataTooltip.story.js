@@ -29,6 +29,22 @@ const quadData = [
   },
 ];
 
+const quintData = [
+  { data: '$123.45', label: 'Jan', color: '#3b1a40' },
+  { data: '$112.22', label: 'Feb', color: '#473793' },
+  { data: '$250.17', label: 'Mar', color: '#3c6df0' },
+  {
+    data: '$123.45',
+    label: 'Long text to show what will happen when text is really long',
+    color: '#00a68f',
+  },
+  {
+    data: '$112.22',
+    label: 'Long text to show what will happen when text is really long',
+    color: '#48d4bb',
+  },
+];
+
 const maxData = [
   { data: '$123.45', label: 'Jan', color: '#3b1a40' },
   { data: '$112.22', label: 'Feb', color: '#473793' },
@@ -76,6 +92,13 @@ storiesOf('DataTooltip', module)
       Data Tooltip.
     `,
     () => <DataTooltip data={quadData} {...props} />
+  )
+  .addWithInfo(
+    'Quint',
+    `
+        Data Tooltip.
+      `,
+    () => <DataTooltip data={quintData} {...props} />
   )
   .addWithInfo(
     'Max',
