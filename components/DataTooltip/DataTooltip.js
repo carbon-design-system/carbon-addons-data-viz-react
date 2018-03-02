@@ -91,6 +91,10 @@ class DataTooltip extends Component {
       className
     );
 
+    const tooltipListClasses = classNames('bx--data-tooltip-list', {
+      'bx--data-tooltip-list--block': data.length >= 4,
+    });
+
     const listStyle = {
       columnCount: data.length > 3 ? '2' : '1',
       columnGap: '1.25rem',
@@ -102,7 +106,7 @@ class DataTooltip extends Component {
         data-floating-menu-direction={direction}
         {...other}>
         {heading && <p className="bx--data-tooltip__label">{heading}</p>}
-        <ul className="bx--data-tooltip-list" style={listStyle}>
+        <ul className={tooltipListClasses} style={listStyle}>
           {this.renderTooltipData()}
         </ul>
       </div>
