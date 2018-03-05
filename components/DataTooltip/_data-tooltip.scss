@@ -12,7 +12,8 @@
   padding: 0 1rem;
   white-space: nowrap;
   border-bottom: 1px solid $ui-04;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  font-weight: 600;
 }
 
 .bx--data-tooltip-list-item {
@@ -48,6 +49,10 @@
   width: 100%;
 }
 
+.bx--data-tooltip-list-item__data {
+  font-weight: 600;
+}
+
 .bx--data-tooltip-list-item__data,
 .bx--data-tooltip-list-item__label {
   display: inline-block;
@@ -64,7 +69,7 @@
 }
 
 .bx--data-tooltip__multiple {
-  margin: 0 1rem 0.5rem;
+  margin: 0 1rem 1rem;
   min-height: 2rem;
   padding-left: 0.5rem;
 }
