@@ -21,15 +21,11 @@ const defaultProps = {
 
 class DataTooltip extends Component {
   renderTooltipData() {
-    const { data } = this.props;
+    const { data, heading } = this.props;
     const items = data.map((item, i) => {
       let divStyle;
       if (item.color) {
-        if (data.length <= 1) {
-          divStyle = {
-            borderTop: `4px solid ${item.color}`,
-          };
-        } else {
+        if (data.length > 1 && heading) {
           divStyle = {
             borderLeft: `4px solid ${item.color}`,
           };
@@ -100,12 +96,24 @@ class DataTooltip extends Component {
       columnGap: '1.25rem',
     };
 
+    const headingClasses = classNames('bx--data-tooltip__label', {
+      'bx--data-tooltip__label--no-margin': data.length === 1,
+    });
+
+    if (data.length === 1 && data[0].color) {
+      if (direction === 'top') {
+        listStyle.borderTop = `4px solid ${data[0].color}`;
+      } else if (direction === 'bottom') {
+        listStyle.borderBottom = `4px solid ${data[0].color}`;
+      }
+    }
+
     return (
       <div
         className={tooltipClasses}
         data-floating-menu-direction={direction}
         {...other}>
-        {heading && <p className="bx--data-tooltip__label">{heading}</p>}
+        {heading && <p className={headingClasses}>{heading}</p>}
         <ul className={tooltipListClasses} style={listStyle}>
           {this.renderTooltipData()}
         </ul>

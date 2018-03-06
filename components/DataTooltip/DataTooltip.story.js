@@ -9,21 +9,21 @@ const singleData = [
 ];
 
 const data = [
-  { data: '$123.45', label: 'Jan', color: '#3b1a40' },
-  { data: '$112.22', label: 'Feb', color: '#473793' },
-  { data: '$250.17', label: 'Mar', color: '#3c6df0' },
-  { data: '$123.45', label: 'Apr', color: '#00a68f' },
+  { data: '5.3%', label: 'CPU', color: '#3b1a40' },
+  { data: '8.9%', label: 'CPU', color: '#473793' },
+  { data: '35.1%', label: 'CPU', color: '#3c6df0' },
+  { data: '46.5%', label: 'CPU', color: '#00a68f' },
   {
-    data: '$112.22',
-    label: 'Long text to show what will happen when text is really long',
+    data: '0.2%',
+    label: 'CPU',
     color: '#48d4bb',
   },
-  { data: '$250.17', label: 'Jun', color: '#9b82f3' },
+  { data: '$250.17', label: 'CPU', color: '#9b82f3' },
 ];
 
 const props = {
-  heading: 'Label 2',
-  direction: 'bottom',
+  heading: 'Mar 1 @ 11:26 AM',
+  direction: 'top',
   isActive: true,
 };
 
@@ -36,11 +36,18 @@ storiesOf('DataTooltip', module)
     () => <DataTooltip data={singleNoColorData} />
   )
   .addWithInfo(
-    'Single',
+    'Single, No Label',
     `
       Data Tooltip.
     `,
     () => <DataTooltip data={singleData} />
+  )
+  .addWithInfo(
+    'Single',
+    `
+        Data Tooltip.
+      `,
+    () => <DataTooltip data={data.slice(0, data.length - 5)} {...props} />
   )
   .addWithInfo(
     'Triple',
