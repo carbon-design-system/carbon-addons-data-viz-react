@@ -16,6 +16,11 @@
   font-weight: 600;
 }
 
+.bx--data-tooltip__label--no-margin {
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
 .bx--data-tooltip-list-item {
   display: flex;
   align-items: flex-start;
