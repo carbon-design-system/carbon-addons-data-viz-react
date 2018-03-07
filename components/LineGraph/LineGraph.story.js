@@ -149,6 +149,7 @@ storiesOf('LineGraph', module)
       onMouseOut={action('Mouseout')}
       onBlur={action('Blur')}
       seriesLabels={['Series 1', 'Series 2', 'Series 3']}
+      showLegend
       isXTime={false}
     />
   ))

@@ -38,6 +38,7 @@ const propTypes = {
   color: PropTypes.array,
   drawLine: PropTypes.bool,
   showTooltip: PropTypes.bool,
+  showLegend: PropTypes.bool,
   /**
    * Set this prop to false to prevent x values from being converted to time.
    */
@@ -72,6 +73,7 @@ const defaultProps = {
   color: ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
   drawLine: true,
   showTooltip: true,
+  showLegend: false,
   isXTime: true,
 };
 
@@ -85,6 +87,8 @@ class LineGraph extends Component {
       margin,
       containerId,
       emptyText,
+      showLegend,
+      seriesLabels,
     } = this.props;
 
     if (data.length > 0) {
@@ -111,7 +115,13 @@ class LineGraph extends Component {
       .attr('class', 'bx--group-container')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-    this.width = width - (margin.left + margin.right);
+    this.width =
+      width -
+      (margin.left +
+        margin.right +
+        (showLegend && seriesLabels.length > 0
+          ? 30 + _.max(seriesLabels.map(l => l.length)) * 8
+          : 0));
     this.height = height - (margin.top + margin.bottom);
 
     this.initialRender();
@@ -208,10 +218,16 @@ class LineGraph extends Component {
   }
 
   resize(height, width) {
-    const { margin, containerId } = this.props;
+    const { margin, containerId, showLegend, seriesLabels } = this.props;
 
     this.height = height - (margin.top + margin.bottom);
-    this.width = width - (margin.left + margin.right);
+    this.width =
+      width -
+      (margin.left +
+        margin.right +
+        (showLegend && seriesLabels.length > 0
+          ? 30 + _.max(seriesLabels.map(l => l.length)) * 8
+          : 0));
 
     this.svg.selectAll('*').remove();
 
@@ -228,7 +244,15 @@ class LineGraph extends Component {
   }
 
   initialRender() {
-    const { data, datasets, timeFormat, isUTC, isXTime } = this.props;
+    const {
+      data,
+      datasets,
+      timeFormat,
+      isUTC,
+      isXTime,
+      showLegend,
+      seriesLabels,
+    } = this.props;
 
     this.updateEmptyState(data.length > 0 ? data : datasets);
 
@@ -283,6 +307,10 @@ class LineGraph extends Component {
 
     if (this.x) {
       this.renderLine();
+    }
+
+    if (showLegend && seriesLabels.length > 0) {
+      this.renderLegend();
     }
   }
 
@@ -393,6 +421,39 @@ class LineGraph extends Component {
       .on('mouseout', () => {
         this.onMouseOut();
       });
+  }
+
+  renderLegend() {
+    const { seriesLabels } = this.props;
+    let legendRectSize = 18;
+    let legendSpacing = 4;
+
+    let legend = this.svg
+      .selectAll('.legend')
+      .data(seriesLabels)
+      .enter()
+      .append('g')
+      .attr('class', 'legend')
+      .attr('transform', (d, i) => {
+        const h = legendRectSize + legendSpacing;
+        const offset = h * seriesLabels.length / 2;
+        const horz = this.width + 10;
+        const vert = i * h - offset + 50;
+        return `translate(${horz},${vert})`;
+      });
+
+    legend
+      .append('rect')
+      .attr('width', legendRectSize)
+      .attr('height', legendRectSize)
+      .style('fill', (d, i) => this.props.color[i])
+      .style('stroke', (d, i) => this.props.color[i]);
+
+    legend
+      .append('text')
+      .attr('x', legendRectSize + legendSpacing)
+      .attr('y', legendRectSize - legendSpacing)
+      .text((d, i) => seriesLabels[i]);
   }
 
   onMouseOut() {
