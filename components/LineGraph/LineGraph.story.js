@@ -70,6 +70,7 @@ class LineGraphContainer extends Component {
       id: this.props.id,
       containerId: this.props.containerId,
       drawLine: this.props.drawLine,
+      animateAxes: this.props.animateAxes,
       seriesLabels: ['Series 1', 'Series 2', 'Series 3'],
     };
 
@@ -120,6 +121,30 @@ storiesOf('LineGraph', module)
           onMouseOut={action('Mouseout')}
           onBlur={action('Blur')}
           drawLine={false}
+        />
+      </div>
+    )
+  )
+  .addWithInfo(
+    'Updating without animating axes',
+    `
+      Line Graph without axes animation.
+    `,
+    () => (
+      <div>
+        <LineGraphContainer
+          onHover={action('Hover')}
+          onMouseOut={action('Mouseout')}
+          onBlur={action('Blur')}
+          animateAxes={false}
+        />
+        <LineGraphContainer
+          id="two"
+          containerId="test-two"
+          onHover={action('Hover')}
+          onMouseOut={action('Mouseout')}
+          onBlur={action('Blur')}
+          animateAxes={false}
         />
       </div>
     )

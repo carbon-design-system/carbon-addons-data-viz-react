@@ -98,6 +98,7 @@ Pie charts show individual values that make up a whole data set so users can com
 | isUTC        | bool   | false                                                   |
 | color        | array  | ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'] |
 | drawLine     | bool   | true                                                    |
+| animateAxes  | bool   | true                                                    |
 
 ### Gauge Graph
 

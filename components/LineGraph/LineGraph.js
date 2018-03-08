@@ -37,6 +37,7 @@ const propTypes = {
   isUTC: PropTypes.bool,
   color: PropTypes.array,
   drawLine: PropTypes.bool,
+  animateAxes: PropTypes.bool,
   showTooltip: PropTypes.bool,
   /**
    * Set this prop to false to prevent x values from being converted to time.
@@ -71,6 +72,7 @@ const defaultProps = {
   isUTC: false,
   color: ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
   drawLine: true,
+  animateAxes: true,
   showTooltip: true,
   isXTime: true,
 };
@@ -165,7 +167,14 @@ class LineGraph extends Component {
   }
 
   updateData(nextProps) {
-    const { data, datasets, axisOffset, xAxisLabel, yAxisLabel } = nextProps;
+    const {
+      data,
+      datasets,
+      axisOffset,
+      xAxisLabel,
+      yAxisLabel,
+      animateAxes,
+    } = nextProps;
 
     for (var i = 0; i < this.totalLines; i++) {
       this.svg.selectAll(`g[data-line="${i}"]`).remove();
@@ -177,24 +186,39 @@ class LineGraph extends Component {
       this.totalLines = datasets.length;
     }
 
-    this.svg
-      .select('.bx--axis--y')
-      .transition()
-      .call(this.yAxis)
-      .selectAll('text')
-      .attr('x', -axisOffset);
+    if (animateAxes) {
+      this.svg
+        .select('.bx--axis--x')
+        .transition()
+        .call(this.xAxis)
+        .selectAll('.bx--axis--x .tick text')
+        .attr('y', axisOffset)
+        .style('text-anchor', 'end')
+        .attr('transform', `rotate(-65)`);
+
+      this.svg
+        .select('.bx--axis--y')
+        .transition()
+        .call(this.yAxis)
+        .selectAll('text')
+        .attr('x', -axisOffset);
+    } else {
+      this.svg
+        .select('.bx--axis--x')
+        .call(this.xAxis)
+        .selectAll('.bx--axis--x .tick text')
+        .attr('y', axisOffset)
+        .style('text-anchor', 'end')
+        .attr('transform', `rotate(-65)`);
+
+      this.svg
+        .select('.bx--axis--y')
+        .call(this.yAxis)
+        .selectAll('text')
+        .attr('x', -axisOffset);
+    }
 
     this.svg.select('.bx--axis--y .bx--graph-label').text(yAxisLabel);
-
-    this.svg
-      .select('.bx--axis--x')
-      .transition()
-      .call(this.xAxis)
-      .selectAll('.bx--axis--x .tick text')
-      .attr('y', axisOffset)
-      .style('text-anchor', 'end')
-      .attr('transform', `rotate(-65)`);
-
     this.svg.select('.bx--axis--x .bx--graph-label').text(xAxisLabel);
 
     this.updateStyles();
