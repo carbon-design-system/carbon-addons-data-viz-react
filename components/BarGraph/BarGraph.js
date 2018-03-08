@@ -23,6 +23,8 @@ const propTypes = {
   emptyText: PropTypes.string,
   color: PropTypes.array,
   showTooltip: PropTypes.bool,
+  showLegend: PropTypes.bool,
+  seriesLabels: PropTypes.arrayOf(PropTypes.string),
 };
 
 const defaultProps = {
@@ -48,11 +50,21 @@ const defaultProps = {
     'There is currently no data available for the parameters selected. Please try a different combination.',
   color: ['#00A78F', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
   showTooltip: true,
+  showLegend: false,
+  seriesLabels: [],
 };
 
 class BarGraph extends Component {
   componentDidMount() {
-    const { width, height, margin, containerId, emptyText } = this.props;
+    const {
+      width,
+      height,
+      margin,
+      containerId,
+      emptyText,
+      showLegend,
+      seriesLabels,
+    } = this.props;
 
     this.emptyContainer = d3
       .select(`#${containerId} .bx--bar-graph-empty-text`)
@@ -72,7 +84,13 @@ class BarGraph extends Component {
       .attr('class', 'bx--group-container')
       .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
-    this.width = width - (margin.left + margin.right);
+    this.width =
+      width -
+      (margin.left +
+        margin.right +
+        (showLegend && seriesLabels.length > 0
+          ? 30 + _.max(seriesLabels.map(l => l.length)) * 8
+          : 0));
     this.height = height - (margin.top + margin.bottom);
     this.color = d3.scaleOrdinal(this.props.color);
 
@@ -112,7 +130,7 @@ class BarGraph extends Component {
   }
 
   initialRender() {
-    const { data, timeFormat } = this.props;
+    const { data, timeFormat, showLegend, seriesLabels } = this.props;
 
     this.updateEmptyState(data);
 
@@ -163,6 +181,10 @@ class BarGraph extends Component {
 
     if (this.x) {
       this.renderBars();
+    }
+
+    if (showLegend && seriesLabels.length > 0) {
+      this.renderLegend();
     }
   }
 
@@ -285,6 +307,39 @@ class BarGraph extends Component {
       .attr('text-anchor', 'middle');
   }
 
+  renderLegend() {
+    const { seriesLabels } = this.props;
+    let legendRectSize = 18;
+    let legendSpacing = 4;
+
+    let legend = this.svg
+      .selectAll('.legend')
+      .data(seriesLabels)
+      .enter()
+      .append('g')
+      .attr('class', 'legend')
+      .attr('transform', (d, i) => {
+        const h = legendRectSize + legendSpacing;
+        const offset = h * seriesLabels.length / 2;
+        const horz = this.width + 10;
+        const vert = i * h - offset + 50;
+        return `translate(${horz},${vert})`;
+      });
+
+    legend
+      .append('rect')
+      .attr('width', legendRectSize)
+      .attr('height', legendRectSize)
+      .style('fill', (d, i) => this.props.color[i])
+      .style('stroke', (d, i) => this.props.color[i]);
+
+    legend
+      .append('text')
+      .attr('x', legendRectSize + legendSpacing)
+      .attr('y', legendRectSize - legendSpacing)
+      .text((d, i) => seriesLabels[i]);
+  }
+
   getMouseData(d, i) {
     let mouseData;
 
@@ -388,10 +443,16 @@ class BarGraph extends Component {
   }
 
   resize(height, width) {
-    const { margin, containerId } = this.props;
+    const { margin, containerId, showLegend, seriesLabels } = this.props;
 
     this.height = height - (margin.top + margin.bottom);
-    this.width = width - (margin.left + margin.right);
+    this.width =
+      width -
+      (margin.left +
+        margin.right +
+        (showLegend && seriesLabels.length > 0
+          ? 30 + _.max(seriesLabels.map(l => l.length)) * 8
+          : 0));
 
     this.svg.selectAll('*').remove();
 
