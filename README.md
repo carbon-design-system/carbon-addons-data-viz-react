@@ -1,5 +1,7 @@
 # carbon-addons-data-viz-react
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/carbon-design-system/carbon-addons-data-viz-react.svg)](https://greenkeeper.io/)
+
 The React version of carbon-addons-data-viz (currently the only version).
 
 ## Getting Started
