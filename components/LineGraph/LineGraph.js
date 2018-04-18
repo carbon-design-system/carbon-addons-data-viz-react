@@ -619,7 +619,7 @@ class LineGraph extends Component {
         style={{ position: 'relative' }}>
         <p className="bx--line-graph-empty-text" />
         <svg id={id} ref={id => (this.id = id)} />
-        <div id="tooltip-div" ref={id => (this.tooltipId = id)} />
+        <div id={`${id}-tooltip`} ref={id => (this.tooltipId = id)} />
       </div>
     );
   }
