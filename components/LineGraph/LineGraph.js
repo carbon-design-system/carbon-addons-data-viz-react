@@ -486,11 +486,15 @@ class LineGraph extends Component {
       _.max(this.props.datasets.map(d => d.length)) > 2
     ) {
       this.props.onMouseOut();
-      ReactDOM.unmountComponentAtNode(this.tooltipId);
+      if (this.tooltipId) {
+        ReactDOM.unmountComponentAtNode(this.tooltipId);
+      }
     }
   }
 
   onMouseMove() {
+    if (!this.id) return null;
+
     const {
       margin,
       data,
