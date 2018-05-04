@@ -31,7 +31,7 @@ const defaultProps = {
     { low: 50, high: 75, color: '#EFC100' },
     { low: 75, high: 100, color: '#FF5050' },
   ],
-  id: 'container',
+  id: 'gauge-container',
   tooltipId: 'tooltip-container',
 };
 
@@ -57,7 +57,7 @@ class GaugeGraph extends Component {
     const { size, padding, id } = this.props;
 
     this.svg = d3
-      .select(this.refs[`${id}`])
+      .select(`#${id}`)
       .attr('width', boxSize)
       .attr('height', size === 'half' ? boxSize / 2 + padding : boxSize)
       .append('g')
@@ -178,7 +178,7 @@ class GaugeGraph extends Component {
       <div
         className="bx--graph-container"
         style={{ position: 'relative', width: this.state.boxSize }}>
-        <svg id={id} ref={id} />
+        <svg id={id} />
         <div className="bx--gauge-tooltip" id={tooltipId} style={tooltipStyles}>
           <p className="bx--gauge-amount" style={amountStyles}>
             Place
