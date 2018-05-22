@@ -44,6 +44,15 @@ const defaultProps = {
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
   onHover: () => {},
+  formatTooltipData: ({ data, seriesLabels, label, index, rect }) => {
+    return [
+      {
+        data: data[0],
+        label: seriesLabels ? seriesLabels[index] : label,
+        color: rect.attr('fill'),
+      },
+    ];
+  },
   emptyText:
     'There is currently no data available for the parameters selected. Please try a different combination.',
   color: ['#00A78F', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
@@ -331,21 +340,15 @@ class BarGraph extends Component {
 
     this.props.onHover(mouseData);
 
+    const tooltipData = this.props.formatTooltipData(
+      Object.assign(mouseData, {
+        rect,
+        seriesLabels,
+      })
+    );
+
     if (showTooltip) {
-      ReactDOM.render(
-        <DataTooltip
-          data={[
-            {
-              data: mouseData.data[0],
-              label: seriesLabels
-                ? seriesLabels[mouseData.index]
-                : mouseData.label,
-              color: rect.attr('fill'),
-            },
-          ]}
-        />,
-        this.tooltipId
-      );
+      ReactDOM.render(<DataTooltip data={tooltipData} />, this.tooltipId);
       const tooltipSize = d3
         .select(this.tooltipId.children[0])
         .node()
