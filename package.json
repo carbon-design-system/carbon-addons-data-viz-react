@@ -15,7 +15,7 @@
     "carbon-components-react": "^5.0.0",
     "carbon-icons": "^6.1.0",
     "classnames": "^2.2.5",
-    "d3": "^4.10.2",
+    "d3": "^5.4.0",
     "lodash": "^4.17.5"
   },
   "devDependencies": {
@@ -44,6 +44,7 @@
     "ncp": "^2.0.0",
     "node-sass": "^4.5.3",
     "prettier": "^1.7.4",
+    "prop-types": "^15.6.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",
     "rimraf": "^2.6.2",
