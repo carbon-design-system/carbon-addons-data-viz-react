@@ -170,6 +170,27 @@ storiesOf('BarGraph', module)
     )
   )
   .addWithInfo(
+    'Grouped with Custom Labels',
+    `
+     Grouped Bar Graph with custom labels.
+    `,
+    () => (
+      <BarGraph
+        onHover={action('Hover')}
+        data={[
+          [[6810753.913996485, 322316.83828169684], 'NEW YORK, NY, US'],
+          [[2029509.2509859744, 319256.4128819143], 'LONDON, GB'],
+          [[1180299.5624584288, 98796.86410370439], 'AUSTIN, TX, US'],
+          [[997409.8602056602, 301419.9550709436], 'DALLAS, TX, US'],
+          [[1306600.6748098487, 82748.73011782495], 'DURHAM, NC, US'],
+        ]}
+        yAxisLabel="Amount ($)"
+        xAxisLabel=""
+        seriesLabels={['Fixed Rate', 'Dynamic Rate']}
+      />
+    )
+  )
+  .addWithInfo(
     'Updating',
     `
      Updating Grouped Bar Graph.
