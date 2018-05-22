@@ -64,4 +64,15 @@ storiesOf('PieChart', module)
       </div>
     )
   )
+  .addWithInfo(
+    'With totals',
+    `
+      Pie Chart with totals.
+    `,
+    () => (
+      <div>
+        <PieChart id="totals" {...props} showTotals />
+      </div>
+    )
+  )
   .addWithInfo('Updating', `Pie Chart w/ Updates`, () => <PieUpdater />);

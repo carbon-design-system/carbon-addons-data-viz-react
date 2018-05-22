@@ -1,7 +1,11 @@
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
+import DataTooltip from '../DataTooltip/DataTooltip';
 import * as d3 from 'd3';
 import _ from 'lodash';
+import ReactDOM from 'react-dom';
+
+window.d3 = d3;
 
 const propTypes = {
   data: PropTypes.array,
@@ -10,14 +14,27 @@ const propTypes = {
   id: PropTypes.string,
   color: PropTypes.array,
   onHover: PropTypes.func,
+  showTotals: PropTypes.bool,
+  showTooltip: PropTypes.bool,
 };
 
 const defaultProps = {
   data: [['Gryffindor', 100]],
   radius: 96,
   formatFunction: value => value,
+  formatTooltipData: ({ data: [label, value], color }) => {
+    return [
+      {
+        data: value,
+        label: label,
+        color: color,
+      },
+    ];
+  },
   color: ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'],
   id: 'graph-container',
+  showTotals: false,
+  showTooltip: true,
 };
 
 class PieChart extends Component {
@@ -39,7 +56,16 @@ class PieChart extends Component {
   }
 
   renderSVG() {
-    const { data, radius, formatFunction, id, onHover } = this.props;
+    const {
+      data,
+      radius,
+      formatFunction,
+      formatTooltipData,
+      id,
+      onHover,
+      showTotals,
+      showTooltip,
+    } = this.props;
     const color = d3.scaleOrdinal(this.props.color);
 
     this.svg = d3
@@ -50,6 +76,7 @@ class PieChart extends Component {
       .attr('class', 'group-container')
       .attr('transform', `translate(${this.width / 2}, ${this.height / 2})`);
 
+    const tooltipId = this.tooltipId;
     const pie = d3
       .pie()
       .sort(null)
@@ -77,6 +104,14 @@ class PieChart extends Component {
       .attr('stroke', '#FFFFFF')
       .attr('d', path);
 
+    const totalAmount = data.reduce((acc, values) => (acc += values[1]), 0);
+
+    if (showTotals) {
+      d3.select(`#${id} .bx--pie-tooltip`).style('display', 'block');
+      d3.select(`#${id} .bx--pie-key`).text('Total');
+      d3.select(`#${id} .bx--pie-value`).text(`${formatFunction(totalAmount)}`);
+    }
+
     arcs
       .on('mouseover', function(d) {
         d3
@@ -91,16 +126,52 @@ class PieChart extends Component {
         if (onHover) {
           onHover(true, d.data[0]);
         }
+        if (showTooltip) {
+          const tooltipData = formatTooltipData({
+            data: d.data,
+            color: color(d.index),
+          });
+
+          ReactDOM.render(<DataTooltip data={tooltipData} />, tooltipId);
+
+          const tooltipSize = d3
+            .select(tooltipId.children[0])
+            .node()
+            .getBoundingClientRect();
+          const pos = path.centroid(d); //[x, y]
+
+          d3
+            .select(tooltipId)
+            .style('position', 'absolute')
+            .style('top', `50%`)
+            .style('left', `50%`)
+            .style('margin-left', `${pos[0]}px`)
+            .style('margin-top', `${pos[1] - tooltipSize.height}px`)
+            .style('width', `${tooltipSize.width}px`)
+            .style('height', `${tooltipSize.height}px`)
+            .style('transform', 'translate(-50%, -50%)');
+        }
       })
       .on('mouseout', function() {
-        d3.select(`#${id} .bx--pie-tooltip`).style('display', 'none');
+        d3
+          .select(`#${id} .bx--pie-tooltip`)
+          .style('display', !showTotals && 'none');
         d3
           .select(this)
           .transition()
           .attr('d', path);
+        if (showTotals) {
+          d3.select(`#${id} .bx--pie-tooltip`).style('display', 'block');
+          d3.select(`#${id} .bx--pie-key`).text('Totals');
+          d3
+            .select(`#${id} .bx--pie-value`)
+            .text(`${formatFunction(totalAmount)}`);
+        }
+
         if (onHover) {
           onHover(false);
         }
+        ReactDOM.unmountComponentAtNode(tooltipId);
       });
   }
 
@@ -144,6 +215,7 @@ class PieChart extends Component {
           <p className="bx--pie-value" style={valueStyles} />
           <p className="bx--pie-key" style={keyStyles} />
         </div>
+        <div id="tooltip-div" ref={id => (this.tooltipId = id)} />
       </div>
     );
   }
