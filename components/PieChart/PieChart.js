@@ -5,12 +5,11 @@ import * as d3 from 'd3';
 import _ from 'lodash';
 import ReactDOM from 'react-dom';
 
-window.d3 = d3;
-
 const propTypes = {
   data: PropTypes.array,
   radius: PropTypes.number,
-  formatFunction: PropTypes.func,
+  formatValue: PropTypes.func,
+  formatTooltipData: PropTypes.func,
   id: PropTypes.string,
   color: PropTypes.array,
   onHover: PropTypes.func,
@@ -21,7 +20,7 @@ const propTypes = {
 const defaultProps = {
   data: [['Gryffindor', 100]],
   radius: 96,
-  formatFunction: value => value,
+  formatValue: value => value,
   formatTooltipData: ({ data: [label, value], color }) => {
     return [
       {
@@ -59,7 +58,7 @@ class PieChart extends Component {
     const {
       data,
       radius,
-      formatFunction,
+      formatValue,
       formatTooltipData,
       id,
       onHover,
@@ -109,7 +108,7 @@ class PieChart extends Component {
     if (showTotals) {
       d3.select(`#${id} .bx--pie-tooltip`).style('display', 'block');
       d3.select(`#${id} .bx--pie-key`).text('Total');
-      d3.select(`#${id} .bx--pie-value`).text(`${formatFunction(totalAmount)}`);
+      d3.select(`#${id} .bx--pie-value`).text(`${formatValue(totalAmount)}`);
     }
 
     arcs
@@ -122,7 +121,7 @@ class PieChart extends Component {
 
         d3.select(`#${id} .bx--pie-tooltip`).style('display', 'inherit');
         d3.select(`#${id} .bx--pie-key`).text(`${d.data[0]}`);
-        d3.select(`#${id} .bx--pie-value`).text(`${formatFunction(d.data[1])}`);
+        d3.select(`#${id} .bx--pie-value`).text(`${formatValue(d.data[1])}`);
         if (onHover) {
           onHover(true, d.data[0]);
         }
@@ -165,7 +164,7 @@ class PieChart extends Component {
           d3.select(`#${id} .bx--pie-key`).text('Totals');
           d3
             .select(`#${id} .bx--pie-value`)
-            .text(`${formatFunction(totalAmount)}`);
+            .text(`${formatValue(totalAmount)}`);
         }
 
         if (onHover) {
