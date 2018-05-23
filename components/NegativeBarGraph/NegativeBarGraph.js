@@ -241,7 +241,10 @@ class NegativeBarGraph extends Component {
           .attr('width', 0)
           .attr('x', () => this.xScale(0))
           .attr('y', d => this.yScale1(d.index))
-          .attr('fill', d => this.color(d.index))
+          .attr('fill', d => {
+            const p = d.key < 0 ? 1 : 0;
+            return d3.color(this.color(d.index)).darker(p);
+          })
           .attr('data-bar', d => `${d.index}-${d.group}`)
           .transition()
           .duration(500)
@@ -269,7 +272,10 @@ class NegativeBarGraph extends Component {
           .attr('y', d => this.yScale(d[1]))
           .attr('height', this.yScale.bandwidth())
           .attr('data-bar', (d, i) => `${i}-0`)
-          .attr('fill', () => this.color(0))
+          .attr('fill', d => {
+            const val = d[0][0];
+            return val > 0 ? this.color(0) : d3.color(this.color(0)).darker(1);
+          })
           .transition()
           .duration(750)
           .delay((d, i) => i * 50)
@@ -342,11 +348,14 @@ class NegativeBarGraph extends Component {
   onMouseEnter(d, i) {
     const { showTooltip, height, labelOffsetX, seriesLabels } = this.props;
     const mouseData = this.getMouseData(d, i);
-
+    const p = mouseData.data[0] < 0 ? -1 : 1;
     let rect = this.svg.select(
       `rect[data-bar="${mouseData.index}-${mouseData.group}"]`
     );
-    rect.attr('fill', d3.color(rect.attr('fill')).darker());
+    rect
+      .transition()
+      .duration(150)
+      .attr('fill', d3.color(rect.attr('fill')).darker(p));
 
     const yVal = mouseData.label;
 
@@ -399,13 +408,19 @@ class NegativeBarGraph extends Component {
       `rect[data-bar="${mouseData.index}-${mouseData.group}"]`
     );
 
+    const darken = (c, p) => {
+      return d3.color(c).darker(p);
+    };
+
     rect
       .transition()
       .duration(500)
-      .attr(
-        'fill',
-        () => (this.isGrouped ? this.color(mouseData.index) : this.color(0))
-      );
+      .attr('fill', () => {
+        const p = mouseData.data[0] < 0 ? 1 : 0;
+        return this.isGrouped
+          ? darken(this.color(mouseData.index), p)
+          : darken(this.color(0), p);
+      });
     ReactDOM.unmountComponentAtNode(this.tooltipId);
   }
 
