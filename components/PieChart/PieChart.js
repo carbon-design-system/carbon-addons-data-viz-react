@@ -161,7 +161,7 @@ class PieChart extends Component {
           .attr('d', path);
         if (showTotals) {
           d3.select(`#${id} .bx--pie-tooltip`).style('display', 'block');
-          d3.select(`#${id} .bx--pie-key`).text('Totals');
+          d3.select(`#${id} .bx--pie-key`).text('Total');
           d3
             .select(`#${id} .bx--pie-value`)
             .text(`${formatValue(totalAmount)}`);
