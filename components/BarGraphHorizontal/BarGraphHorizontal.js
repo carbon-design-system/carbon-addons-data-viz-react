@@ -23,6 +23,8 @@ const propTypes = {
   emptyText: PropTypes.string,
   color: PropTypes.array,
   showTooltip: PropTypes.bool,
+  formatValue: PropTypes.func,
+  formatTooltipData: PropTypes.func,
 };
 
 const defaultProps = {
@@ -44,6 +46,7 @@ const defaultProps = {
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
   onHover: () => {},
+  formatValue: value => value,
   formatTooltipData: ({ data, seriesLabels, label, index, rect }) => {
     return [
       {
@@ -124,7 +127,7 @@ class BarGraphHorizontal extends Component {
   }
 
   initialRender() {
-    const { data, timeFormat } = this.props;
+    const { data, timeFormat, formatValue } = this.props;
 
     this.updateEmptyState(data);
 
@@ -157,7 +160,7 @@ class BarGraphHorizontal extends Component {
 
     this.xAxis = d3
       .axisBottom()
-      .ticks(Math.min(6, Math.max(data.length, 4)))
+      .ticks(4)
       .tickSize(-this.height)
       .scale(this.xScale.nice());
 
@@ -168,6 +171,10 @@ class BarGraphHorizontal extends Component {
 
     if (timeFormat !== null) {
       this.yAxis.tickFormat(d3.timeFormat(timeFormat));
+    }
+
+    if (formatValue !== null) {
+      this.xAxis.tickFormat(formatValue);
     }
 
     this.renderAxes();
@@ -357,23 +364,23 @@ class BarGraphHorizontal extends Component {
       const offsetY = tooltipSize.height / 2.5;
       const offsetX = tooltipSize.width / 2;
 
-      const incredibleCalculus =
+      const leftPos =
+        this.xScale(mouseData.data[0]) / 2 + labelOffsetX - offsetX;
+      const topPos =
         this.yScale(yVal) +
         (this.yScale1 ? this.yScale1(mouseData.index) : 0) -
         offsetY -
         (this.yScale1
           ? this.yScale1.bandwidth() / 2
-          : this.yScale.bandwidth() / 2);
+          : this.yScale.bandwidth() / 2) -
+        height;
 
       d3
         .select(this.tooltipId)
         .style('position', 'relative')
         .style('z-index', 1)
-        .style(
-          'left',
-          `${this.xScale(mouseData.data[0]) / 2 + labelOffsetX - offsetX}px`
-        )
-        .style('top', `${incredibleCalculus - height}px`);
+        .style('left', `${leftPos}px`)
+        .style('top', `${topPos}px`);
     }
   }
 
