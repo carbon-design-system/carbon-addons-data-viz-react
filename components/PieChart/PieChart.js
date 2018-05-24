@@ -69,6 +69,10 @@ class PieChart extends Component {
     } = this.props;
     const color = d3.scaleOrdinal(this.props.color);
 
+    if (this.svg) {
+      this.svg.remove();
+    }
+
     this.svg = d3
       .select(this.svgNode)
       .attr('width', this.width)
