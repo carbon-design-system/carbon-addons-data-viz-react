@@ -102,7 +102,7 @@ function createGroupedData(num) {
   return data;
 }
 
-let data = createData(12);
+let data = createData(10);
 
 let groupedData = createGroupedData(3).sort(function(a, b) {
   return a[1] - b[1];
