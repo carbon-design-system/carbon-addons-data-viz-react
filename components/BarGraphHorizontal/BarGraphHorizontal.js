@@ -155,7 +155,7 @@ class BarGraphHorizontal extends Component {
       this.xScale = d3
         .scaleLinear()
         .range([0, this.width])
-        .domain([0, d3.max(data, d => d[0])]);
+        .domain([0, d3.max(data, d => d[0][0])]);
     }
 
     this.xAxis = d3
