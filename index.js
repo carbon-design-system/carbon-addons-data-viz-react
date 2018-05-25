@@ -1,4 +1,5 @@
 export BarGraph from './components/BarGraph/BarGraph.js';
+export BubbleChart from './components/BubbleChart/BubbleChart.js';
 export BarGraphNegative from './components/NegativeBarGraph/NegativeBarGraph.js';
 export LineGraph from './components/LineGraph/LineGraph.js';
 export GaugeGraph from './components/GaugeGraph/GaugeGraph.js';
