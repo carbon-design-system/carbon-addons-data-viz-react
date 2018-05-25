@@ -62,6 +62,7 @@ class UpdatingBarGraphContainer extends Component {
       yAxisLabel: this.state.yAxisLabel,
       xAxisLabel: this.state.xAxisLabel,
       onHover: action('Hover'),
+      timeFormat: '%b',
       id: this.props.id,
       containerId: this.props.containerId,
       drawLine: this.props.drawLine,
@@ -142,6 +143,7 @@ storiesOf('BarGraph', module)
     () => (
       <BarGraph
         timeFormat="%b"
+        formatValue={value => `$${value / 1000}`}
         onHover={action('Hover')}
         data={data}
         {...props}
