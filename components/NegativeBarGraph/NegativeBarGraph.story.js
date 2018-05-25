@@ -4,37 +4,43 @@ import NegativeBarGraph from './NegativeBarGraph';
 
 class UpdatingNegativeBarGraphContainer extends Component {
   state = {
-    data: this.createGroupedData(6).sort(function(a, b) {
+    data: this.createGroupedData(4).sort(function(a, b) {
       return a[a.length - 1] - b[b.length - 1];
     }),
   };
 
+  interval;
+
   componentDidMount() {
     let i = 0;
-    setInterval(() => {
+    this.interval = setInterval(() => {
       this.updateData(i);
       i++;
-    }, 5000);
+    }, 2500);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   createGroupedData(num) {
     let data = [];
     for (let i = 0; i < num; i++) {
       let numArr = [];
-      const one = Math.floor(Math.random() * 1000 + 10);
-      const two = Math.floor(Math.random() * 1000 + 10);
-      const three = Math.floor(Math.random() * 1000 + 10);
-      const four = Math.floor(Math.random() * 1000 + 10);
+      const multiplier = i % 2 === 0 ? -1 : 1;
+      const one = Math.floor(Math.random() * 1000 * multiplier + 10);
+      const two = Math.floor(Math.random() * 1000 * multiplier + 10);
+      const three = Math.floor(Math.random() * 1000 * multiplier + 10);
+      const four = Math.floor(Math.random() * 1000 * multiplier + 10);
       numArr.push(one, two, three, four);
-      let d = i;
-      const entry = [numArr, d];
+      const entry = [numArr, i];
       data.push(entry);
     }
     return data;
   }
 
   updateData(i) {
-    let data = this.createGroupedData(6).sort(function(a, b) {
+    let data = this.createGroupedData(4).sort(function(a, b) {
       return a[a.length - 1] - b[b.length - 1];
     });
 
@@ -54,20 +60,19 @@ class UpdatingNegativeBarGraphContainer extends Component {
         bottom: 75,
         left: 65,
       },
-      height: 300,
-      width: 800,
-      labelOffsetY: 55,
-      labelOffsetX: 65,
+      height: 550,
+      width: 900,
       axisOffset: 16,
       yAxisLabel: this.state.yAxisLabel,
       xAxisLabel: this.state.xAxisLabel,
       onHover: action('Hover'),
+      timeFormat: '%b',
       id: this.props.id,
       containerId: this.props.containerId,
       drawLine: this.props.drawLine,
     };
 
-    return <BarGraphHorizontal data={data} {...props} />;
+    return <NegativeBarGraph data={data} {...props} />;
   }
 }
 
@@ -75,13 +80,11 @@ function createData(num) {
   let data = [];
   for (let i = 0; i < num; i++) {
     let tempArr = [];
-    let randomNum = Math.floor(Math.random() * 1000 + 1);
-    if (i % 2 === 0) {
-      randomNum = -randomNum;
-    }
+    const multiplier = i % 2 === 0 ? -1 : 1;
+    let randomNum = Math.floor(Math.random() * 1000 * multiplier + 1);
     let d = new Date();
     d = d.setDate(d.getDate() + i * 30);
-    tempArr.push([randomNum], `Airbus ${i}`);
+    tempArr.push([randomNum], d);
     data.push(tempArr);
   }
   return data;
@@ -100,7 +103,7 @@ function createGroupedData(num) {
     numArr.push(one, two, three, four, five);
     let d = new Date();
     d = d.setDate(d.getDate() - i * 30);
-    const entry = [numArr, `Airbus ${i}`];
+    const entry = [numArr, d];
     data.push(entry);
   }
   return data;
@@ -123,12 +126,11 @@ const props = {
   },
   height: 550,
   width: 900,
-  labelOffsetY: 55,
-  labelOffsetX: 65,
   axisOffset: 16,
-  yAxisLabel: 'Airline',
+  yAxisLabel: 'Date',
   xAxisLabel: 'Amount ($)',
   onHover: action('Hover'),
+  timeFormat: '%b',
   id: 'bar-graph-1',
   containerId: 'bar-graph-container',
 };
@@ -139,7 +141,14 @@ storiesOf('NegativeBarGraph', module)
     `
       Negative Bar Graph.
     `,
-    () => <NegativeBarGraph onHover={action('Hover')} data={data} {...props} />
+    () => (
+      <NegativeBarGraph
+        onHover={action('Hover')}
+        formatValue={value => `$${value / 1000}`}
+        data={data}
+        {...props}
+      />
+    )
   )
   .addWithInfo(
     'Grouped',
@@ -162,19 +171,16 @@ storiesOf('NegativeBarGraph', module)
     () => (
       <NegativeBarGraph
         {...props}
-        width={500}
-        height={300}
         onHover={action('Hover')}
+        timeFormat={null}
         data={[
-          [[6810753.913996485, 322316.83828169684], 'NEW YORK, NY, US'],
-          [[2029509.2509859744, 319256.4128819143], 'LONDON, GB'],
-          [[1180299.5624584288, 98796.86410370439], 'AUSTIN, TX, US'],
-          [[997409.8602056602, 301419.9550709436], 'DALLAS, TX, US'],
+          [[6810753.913996485, -322316.83828169684], 'NEW YORK, NY, US'],
+          [[-2029509.2509859744, 319256.4128819143], 'LONDON, GB'],
+          [[-1180299.5624584288, 98796.86410370439], 'AUSTIN, TX, US'],
+          [[-997409.8602056602, 301419.9550709436], 'DALLAS, TX, US'],
           [[1306600.6748098487, 82748.73011782495], 'DURHAM, NC, US'],
         ]}
         yAxisLabel="Amount ($)"
-        xAxisLabel=""
-        seriesLabels={['Fixed Rate', 'Dynamic Rate']}
       />
     )
   )

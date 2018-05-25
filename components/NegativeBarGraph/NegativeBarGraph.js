@@ -36,12 +36,14 @@ const defaultProps = {
     bottom: 70,
     left: 65,
   },
-  labelOffsetX: 65,
+  labelOffsetX: 45,
   labelOffsetY: 55,
   axisOffset: 16,
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
   onHover: () => {},
+  timeFormat: null,
+  formatValue: null,
   formatTooltipData: ({ data, seriesLabels, label, index, rect }) => {
     return [
       {
@@ -96,21 +98,24 @@ class NegativeBarGraph extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    if (this.xScale) {
-      this.xScale.domain(nextProps.data.map(d => d[1]));
+    if (this.yScale) {
+      this.yScale.domain(nextProps.data.map(d => d[1]));
 
       if (this.isGrouped) {
         const dataLength = nextProps.data[0][0].length;
         this.yScale1
           .rangeRound([this.yScale.bandwidth(), 0])
           .domain(d3.range(dataLength));
-        this.xScale.domain([
-          0,
-          d3.max(nextProps.data, d => d3.max(d[0], i => i)),
-        ]);
+        this.xScale.domain(
+          d3.extent(
+            nextProps.data.reduce((acc, item) => acc.concat(item[0]), [])
+          )
+        );
       } else {
-        this.xScale.domain([0, d3.max(nextProps.data, d => d[0])]);
+        this.xScale.domain(d3.extent(nextProps.data.map(d => d[0][0])));
       }
+
+      this.xAxis.scale(this.xScale.nice());
 
       this.updateEmptyState(nextProps.data);
       this.updateData(nextProps);
@@ -122,7 +127,7 @@ class NegativeBarGraph extends Component {
   }
 
   initialRender() {
-    const { data } = this.props;
+    const { data, timeFormat, formatValue } = this.props;
 
     this.updateEmptyState(data);
 
@@ -154,14 +159,22 @@ class NegativeBarGraph extends Component {
 
     this.xAxis = d3
       .axisBottom()
-      .ticks(Math.min(6, Math.max(data.length, 4)))
+      .ticks(5)
       .tickSize(-this.height)
       .scale(this.xScale.nice());
+
+    if (formatValue !== null) {
+      this.xAxis.tickFormat(formatValue);
+    }
 
     this.yAxis = d3
       .axisLeft()
       .scale(this.yScale)
       .tickSize(0);
+
+    if (timeFormat !== null) {
+      this.yAxis.tickFormat(d3.timeFormat(timeFormat));
+    }
 
     this.renderAxes();
     this.renderLabels();
@@ -182,23 +195,26 @@ class NegativeBarGraph extends Component {
       .attr('x', -axisOffset);
 
     this.svg
-      .append('line')
-      .attr('x1', this.xScale(0))
-      .attr('x2', this.xScale(0))
-      .attr('y1', 0)
-      .attr('y2', this.height)
-      .attr('stroke', '#3a403d')
-      .attr('stroke-width', '1px');
-
-    this.svg
       .append('g')
       .attr('class', 'bx--axis bx--axis--x')
       .attr('transform', `translate(0, ${this.height})`)
       .call(this.xAxis)
-      .attr('stroke-dasharray', '4')
+      .attr('stroke-dasharray', 4)
       .selectAll('text')
       .attr('y', axisOffset)
       .style('text-anchor', 'middle');
+
+    this.svg
+      .select('.bx--axis--x')
+      .append('line')
+      .attr('class', 'center-line')
+      .attr('x1', () => this.xScale(0))
+      .attr('x2', () => this.xScale(0))
+      .attr('y1', -this.height)
+      .attr('y2', 0)
+      .attr('stroke', '#3a403d')
+      .attr('stroke-dasharray', 0)
+      .attr('stroke-width', '2px');
 
     this.updateStyles();
   }
@@ -272,17 +288,21 @@ class NegativeBarGraph extends Component {
           .attr('y', d => this.yScale(d[1]))
           .attr('height', this.yScale.bandwidth())
           .attr('data-bar', (d, i) => `${i}-0`)
-          .attr('fill', d => {
-            const val = d[0][0];
-            return val > 0 ? this.color(0) : d3.color(this.color(0)).darker(1);
-          })
+          .attr(
+            'fill',
+            d =>
+              d[0][0] > 0 ? this.color(0) : d3.color(this.color(0)).darker(1)
+          )
           .transition()
           .duration(750)
           .delay((d, i) => i * 50)
-          .attr('x', d => (d[0][0] < 0 ? this.xScale(d[0][0]) : this.xScale(0)))
+          .attr(
+            'x',
+            d => (d[0][0] < 0 ? this.xScale(d[0][0]) - 1 : this.xScale(0) + 1)
+          )
           .attr('width', d => {
             const value = d[0][0];
-            return value > 0
+            return d[0][0] > 0
               ? this.xScale(value) - this.xScale(0)
               : this.xScale(value * -1) - this.xScale(0);
           });
@@ -346,7 +366,13 @@ class NegativeBarGraph extends Component {
   }
 
   onMouseEnter(d, i) {
-    const { showTooltip, height, labelOffsetX, seriesLabels } = this.props;
+    const {
+      timeFormat,
+      showTooltip,
+      height,
+      labelOffsetX,
+      seriesLabels,
+    } = this.props;
     const mouseData = this.getMouseData(d, i);
     const p = mouseData.data[0] < 0 ? -1 : 1;
     let rect = this.svg.select(
@@ -358,6 +384,11 @@ class NegativeBarGraph extends Component {
       .attr('fill', d3.color(rect.attr('fill')).darker(p));
 
     const yVal = mouseData.label;
+
+    if (timeFormat) {
+      const format = d3.timeFormat(timeFormat);
+      mouseData.label = format(mouseData.label);
+    }
 
     this.props.onHover(mouseData);
 
@@ -450,6 +481,14 @@ class NegativeBarGraph extends Component {
     this.svg.selectAll('g.bar-container').remove();
 
     this.svg
+      .select('.center-line')
+      .transition()
+      .attr('x1', () => this.xScale(0))
+      .attr('x2', () => this.xScale(0))
+      .attr('y1', -this.height)
+      .attr('y2', 0);
+
+    this.svg
       .select('.bx--axis--y')
       .transition()
       .call(this.yAxis)
@@ -462,7 +501,7 @@ class NegativeBarGraph extends Component {
       .select('.bx--axis--x')
       .transition()
       .call(this.xAxis)
-      .selectAll('.bx--axis--x .tick text')
+      .selectAll('text')
       .attr('y', axisOffset)
       .style('text-anchor', 'middle');
 
@@ -504,7 +543,11 @@ class NegativeBarGraph extends Component {
         style={{ position: 'relative' }}>
         <p className="bx--bar-graph-empty-text" />
         <svg id={id} ref={id => (this.id = id)} />
-        <div id="tooltip-div" ref={id => (this.tooltipId = id)} />
+        <div
+          className="bx--graph-tooltip"
+          id="tooltip-div"
+          ref={id => (this.tooltipId = id)}
+        />
       </div>
     );
   }
