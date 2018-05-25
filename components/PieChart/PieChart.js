@@ -66,19 +66,6 @@ class PieChart extends Component {
       showTooltip,
     } = this.props;
     const color = d3.scaleOrdinal(this.props.color);
-
-    if (this.svg) {
-      this.svg.remove();
-    }
-
-    this.svg = d3
-      .select(this.svgNode)
-      .attr('width', this.width)
-      .attr('height', this.height)
-      .append('g')
-      .attr('class', 'group-container')
-      .attr('transform', `translate(${this.width / 2}, ${this.height / 2})`);
-
     const tooltipId = this.tooltipId;
     const pie = d3
       .pie()
@@ -93,6 +80,21 @@ class PieChart extends Component {
       .outerRadius(radius)
       .innerRadius(radius - 40);
 
+    if (this.svg) {
+      const paths = this.svg.selectAll('path');
+      if (paths.size()) {
+        this.svg.remove();
+      }
+    }
+
+    this.svg = d3
+      .select(this.svgNode)
+      .attr('width', this.width)
+      .attr('height', this.height)
+      .append('g')
+      .attr('class', 'group-container')
+      .attr('transform', `translate(${this.width / 2}, ${this.height / 2})`);
+
     const arc = this.svg
       .selectAll('.arc')
       .data(pie(data))
@@ -100,12 +102,18 @@ class PieChart extends Component {
       .append('g')
       .attr('class', 'arc');
 
-    const arcs = arc
+    arc
       .append('path')
       .attr('fill', (d, i) => color(i))
       .attr('stroke-width', 2)
       .attr('stroke', '#FFFFFF')
-      .attr('d', path);
+      .transition()
+      .ease(d3.easeQuadOut)
+      .duration(650)
+      .attrTween('d', d => {
+        const i = d3.interpolate({ startAngle: 0, endAngle: 0 }, d);
+        return t => path(i(t));
+      });
 
     const totalAmount = data.reduce((acc, values) => (acc += values[1]), 0);
 
@@ -115,7 +123,8 @@ class PieChart extends Component {
       d3.select(`#${id} .bx--pie-value`).text(`${formatValue(totalAmount)}`);
     }
 
-    arcs
+    this.svg
+      .selectAll('path')
       .on('mouseover', function(d) {
         d3
           .select(this)
