@@ -44,6 +44,7 @@ const defaultProps = {
   xAxisLabel: 'X Axis',
   yAxisLabel: 'Y Axis',
   onHover: () => {},
+  formatValue: null,
   formatTooltipData: ({ data, seriesLabels, label, index, rect }) => {
     return [
       {
@@ -108,7 +109,7 @@ class BarGraph extends Component {
           .domain(d3.range(dataLength));
         this.y.domain([0, d3.max(nextProps.data, d => d3.max(d[0], i => i))]);
       } else {
-        this.y.domain([0, d3.max(nextProps.data, d => d[0])]);
+        this.y.domain([0, d3.max(nextProps.data, d => d[0][0])]);
       }
 
       this.updateEmptyState(nextProps.data);
@@ -121,7 +122,7 @@ class BarGraph extends Component {
   }
 
   initialRender() {
-    const { data, timeFormat } = this.props;
+    const { data, timeFormat, formatValue } = this.props;
 
     this.updateEmptyState(data);
 
@@ -149,7 +150,7 @@ class BarGraph extends Component {
       this.y = d3
         .scaleLinear()
         .range([this.height, 0])
-        .domain([0, d3.max(data, d => d[0])]);
+        .domain([0, d3.max(data, d => d[0][0])]);
     }
 
     this.xAxis = d3
@@ -166,6 +167,10 @@ class BarGraph extends Component {
       .ticks(4)
       .tickSize(-this.width)
       .scale(this.y.nice());
+
+    if (formatValue !== null) {
+      this.yAxis.tickFormat(formatValue);
+    }
 
     this.renderAxes();
     this.renderLabels();
@@ -468,7 +473,11 @@ class BarGraph extends Component {
         style={{ position: 'relative' }}>
         <p className="bx--bar-graph-empty-text" />
         <svg id={id} ref={id => (this.id = id)} />
-        <div id="tooltip-div" ref={id => (this.tooltipId = id)} />
+        <div
+          className="bx--graph-tooltip"
+          id="tooltip-div"
+          ref={id => (this.tooltipId = id)}
+        />
       </div>
     );
   }
