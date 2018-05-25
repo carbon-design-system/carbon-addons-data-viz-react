@@ -479,7 +479,11 @@ class BarGraphHorizontal extends Component {
         style={{ position: 'relative' }}>
         <p className="bx--bar-graph-empty-text" />
         <svg id={id} ref={id => (this.id = id)} />
-        <div id="tooltip-div" ref={id => (this.tooltipId = id)} />
+        <div
+          className="bx--graph-tooltip"
+          id="tooltip-div"
+          ref={id => (this.tooltipId = id)}
+        />
       </div>
     );
   }
