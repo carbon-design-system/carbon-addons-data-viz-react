@@ -474,8 +474,8 @@ class BarGraphHorizontal extends Component {
 
     return (
       <div
-        className="bx--graph-container"
         id={containerId}
+        className="bx--graph-container"
         style={{ position: 'relative' }}>
         <p className="bx--bar-graph-empty-text" />
         <svg id={id} ref={id => (this.id = id)} />
