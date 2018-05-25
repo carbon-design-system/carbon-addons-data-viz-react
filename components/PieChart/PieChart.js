@@ -227,7 +227,11 @@ class PieChart extends Component {
           <p className="bx--pie-value" style={valueStyles} />
           <p className="bx--pie-key" style={keyStyles} />
         </div>
-        <div id="tooltip-div" ref={id => (this.tooltipId = id)} />
+        <div
+          className="bx--graph-tooltip"
+          id="tooltip-div"
+          ref={id => (this.tooltipId = id)}
+        />
       </div>
     );
   }
