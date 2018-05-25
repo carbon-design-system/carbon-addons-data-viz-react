@@ -101,8 +101,8 @@ class BarGraphHorizontal extends Component {
   }
 
   componentWillUpdate(nextProps) {
-    if (this.xScale) {
-      this.xScale.domain(nextProps.data.map(d => d[1]));
+    if (this.yScale) {
+      this.yScale.domain(nextProps.data.map(d => d[1]));
 
       if (this.isGrouped) {
         const dataLength = nextProps.data[0][0].length;
@@ -114,7 +114,7 @@ class BarGraphHorizontal extends Component {
           d3.max(nextProps.data, d => d3.max(d[0], i => i)),
         ]);
       } else {
-        this.xScale.domain([0, d3.max(nextProps.data, d => d[0])]);
+        this.xScale.domain([0, d3.max(nextProps.data, d => d[0][0])]);
       }
 
       this.updateEmptyState(nextProps.data);
@@ -407,7 +407,7 @@ class BarGraphHorizontal extends Component {
     this.height = height - (margin.top + margin.bottom);
     this.width = width - (margin.left + margin.right);
 
-    this.svg.selectAll('*').remove();
+    this.svg.remove();
 
     this.svg = d3
       .select(`#${containerId} svg`)

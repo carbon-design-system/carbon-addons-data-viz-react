@@ -4,7 +4,7 @@ import BarGraphHorizontal from './BarGraphHorizontal';
 
 class UpdatingBarGraphHorizontalContainer extends Component {
   state = {
-    data: this.createGroupedData(6).sort(function(a, b) {
+    data: this.createGroupedData(4).sort(function(a, b) {
       return a[a.length - 1] - b[b.length - 1];
     }),
   };
@@ -34,7 +34,7 @@ class UpdatingBarGraphHorizontalContainer extends Component {
   }
 
   updateData(i) {
-    let data = this.createGroupedData(6).sort(function(a, b) {
+    let data = this.createGroupedData(4).sort(function(a, b) {
       return a[a.length - 1] - b[b.length - 1];
     });
 
@@ -54,7 +54,7 @@ class UpdatingBarGraphHorizontalContainer extends Component {
         bottom: 75,
         left: 65,
       },
-      height: 300,
+      height: 550,
       width: 800,
       labelOffsetY: 55,
       labelOffsetX: 65,
@@ -75,7 +75,7 @@ function createData(num) {
   let data = [];
   for (let i = 0; i < num; i++) {
     let tempArr = [];
-    let randomNum = Math.floor(Math.random() * 1000 + 1);
+    let randomNum = Math.floor(Math.random() * 1000 * 1000 * 1000 + 1);
     let d = new Date();
     d = d.setDate(d.getDate() + i * 30);
     tempArr.push([randomNum], d);
@@ -131,25 +131,54 @@ const props = {
   containerId: 'bar-graph-container',
 };
 
+let resizeInterval;
+
 storiesOf('BarGraphHorizontal', module)
+  .addDecorator(next => {
+    clearInterval(resizeInterval);
+    return next();
+  })
+  .addWithInfo('Default', 'Horizontal Bar Graph', () => (
+    <BarGraphHorizontal
+      onHover={action('Hover')}
+      timeFormat="%b"
+      data={data}
+      {...props}
+    />
+  ))
   .addWithInfo(
-    'Default',
+    'Resizing',
     `
-      Bar Graph.
+      Auto resizing Horizontal Bar Graph.
     `,
-    () => (
-      <BarGraphHorizontal
-        onHover={action('Hover')}
-        timeFormat="%b"
-        data={data}
-        {...props}
-      />
-    )
+    () => {
+      let componentRef;
+      const Component = React.createElement(
+        BarGraphHorizontal,
+        {
+          ref: element => (componentRef = element),
+          onHover: action('Hover'),
+          timeFormat: '%b',
+          data,
+          ...props,
+        },
+        null
+      );
+
+      resizeInterval = setInterval(() => {
+        if (typeof componentRef.resize === 'function') {
+          const height = Math.max(300, Math.min(Math.random() * 1000, 550));
+          const width = Math.max(650, Math.min(Math.random() * 1000, 900));
+          componentRef.resize(height, width);
+        }
+      }, 2500);
+      return Component;
+    }
   )
   .addWithInfo(
     'Grouped',
     `
-     Grouped Bar Graph.
+     Grouped Horizontal Bar Graph.
     `,
     () => (
       <BarGraphHorizontal
@@ -163,14 +192,14 @@ storiesOf('BarGraphHorizontal', module)
   .addWithInfo(
     'Updating',
     `
-     Updating Grouped Bar Graph.
+     Updating Horizontal Grouped Bar Graph.
     `,
     () => <UpdatingBarGraphHorizontalContainer />
   )
   .addWithInfo(
     'Empty',
     `
-     Empty Bar Graph.
+     Empty Horizontal Bar Graph.
     `,
     () => (
       <BarGraphHorizontal
