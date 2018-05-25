@@ -78,7 +78,7 @@ function createData(num) {
     let randomNum = Math.floor(Math.random() * 1000 + 1);
     let d = new Date();
     d = d.setDate(d.getDate() + i * 30);
-    tempArr.push([randomNum], `Airbus ${i}`);
+    tempArr.push([randomNum], d);
     data.push(tempArr);
   }
   return data;
@@ -140,9 +140,9 @@ storiesOf('BarGraphHorizontal', module)
     () => (
       <BarGraphHorizontal
         onHover={action('Hover')}
+        timeFormat="%b"
         data={data}
         {...props}
-        yAxisLabel="Airlines"
       />
     )
   )
@@ -157,30 +157,6 @@ storiesOf('BarGraphHorizontal', module)
         onHover={action('Hover')}
         data={groupedData}
         {...props}
-      />
-    )
-  )
-  .addWithInfo(
-    'Grouped with Custom Labels',
-    `
-     Grouped Bar Graph with custom labels.
-    `,
-    () => (
-      <BarGraphHorizontal
-        {...props}
-        width={500}
-        height={300}
-        onHover={action('Hover')}
-        data={[
-          [[6810753.913996485, 322316.83828169684], 'NEW YORK, NY, US'],
-          [[2029509.2509859744, 319256.4128819143], 'LONDON, GB'],
-          [[1180299.5624584288, 98796.86410370439], 'AUSTIN, TX, US'],
-          [[997409.8602056602, 301419.9550709436], 'DALLAS, TX, US'],
-          [[1306600.6748098487, 82748.73011782495], 'DURHAM, NC, US'],
-        ]}
-        yAxisLabel="Amount ($)"
-        xAxisLabel=""
-        seriesLabels={['Fixed Rate', 'Dynamic Rate']}
       />
     )
   )
