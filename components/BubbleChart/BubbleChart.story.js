@@ -4,12 +4,14 @@ import BubbleChart from './BubbleChart';
 
 class UpdatingBubbleChartContainer extends PureComponent {
   state = {
-    data: this.createData(5),
+    data: this.createData(6).sort((a, b) => b[0] - a[0]),
   };
+
+  updateInterval;
 
   componentDidMount() {
     let i = 0;
-    setInterval(() => {
+    this.updateInterval = setInterval(() => {
       this.updateData(i);
       i++;
     }, 2500);
@@ -22,15 +24,19 @@ class UpdatingBubbleChartContainer extends PureComponent {
       let d = new Date();
       let randomNum = Math.floor(Math.random() * 1000 + 1);
       d = d.setDate(d.getDate() - i * 30);
-      tempArr.push(randomNum, `Airbus ${i}`);
+      tempArr.push(randomNum, d);
       data.push(tempArr);
     }
 
     return data;
   }
 
+  componentWillUnmount() {
+    clearInterval(this.updateInterval);
+  }
+
   updateData(i) {
-    let data = this.createData(6);
+    let data = this.createData(6).sort((a, b) => b[0] - a[0]);
     action('Update');
     this.setState({
       data,
@@ -65,42 +71,87 @@ class UpdatingBubbleChartContainer extends PureComponent {
 function createData(num) {
   let data = [];
   for (let i = 0; i < num; i++) {
-    let tempArr = [];
-    let d = new Date();
     let randomNum = Math.floor(Math.random() * 1000 + 1);
-    d = d.setDate(d.getDate() - i * 30);
-    tempArr.push(randomNum, `Airbus ${i}`);
-    data.push(tempArr);
+    data.push([randomNum, i]);
   }
 
   return data;
 }
 
-let data = createData(5);
+const data = createData(7).sort((a, b) => b[0] - a[0]);
 const props = {
-  data: data,
   margin: {
     top: 30,
     right: 20,
     bottom: 70,
     left: 65,
   },
-  height: 300,
-  width: 325,
+  height: 450,
+  width: 800,
   labelOffset: 55,
   axisOffset: 16,
   xAxisLabel: 'Airline',
-  yAxisLabel: 'USAGE ($)',
+  formatValue: value => `$${value / 10}`,
+  formatTooltipData: ({ data, label, index, circle }) => {
+    return [
+      {
+        data: `$${data[0] / 10}`,
+        index,
+        label,
+        color: circle.attr('fill'),
+      },
+    ];
+  },
   timeFormat: null,
 };
 
+let resizeInterval;
 storiesOf('BubbleChart', module)
+  .addDecorator(next => {
+    clearInterval(resizeInterval);
+    return next();
+  })
   .addWithInfo(
     'Default',
     `
-      Line Graph.
+      Bubble Chart.
     `,
-    () => <BubbleChart onHover={action('Hover')} {...props} />
+    () => <BubbleChart data={data} onHover={action('Hover')} {...props} />
+  )
+  .addWithInfo(
+    'Resizing',
+    `
+      Auto resizing Bubble Chart.
+    `,
+    () => {
+      let chartRef;
+      const Chart = React.createElement(
+        BubbleChart,
+        {
+          ref: element => (chartRef = element),
+          data,
+          onHover: action('Hover'),
+          ...props,
+        },
+        null
+      );
+
+      resizeInterval = setInterval(() => {
+        if (chartRef && typeof chartRef.resize === 'function') {
+          const height = Math.max(
+            Math.min(Math.random() * 1000, props.height),
+            300
+          );
+          const width = Math.max(
+            Math.min(Math.random() * 1000, props.width),
+            300
+          );
+          chartRef.resize(height, width);
+        }
+      }, 5000);
+
+      return Chart;
+    }
   )
   .addWithInfo(
     'Updating',
