@@ -184,7 +184,7 @@ class PieChart extends Component {
         if (onHover) {
           onHover(false);
         }
-        // ReactDOM.unmountComponentAtNode(tooltipId);
+        ReactDOM.unmountComponentAtNode(tooltipId);
       });
   }
 
