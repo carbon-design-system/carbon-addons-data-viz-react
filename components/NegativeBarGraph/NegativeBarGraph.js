@@ -369,7 +369,7 @@ class NegativeBarGraph extends Component {
     const {
       timeFormat,
       showTooltip,
-      height,
+      margin,
       labelOffsetX,
       seriesLabels,
     } = this.props;
@@ -409,10 +409,15 @@ class NegativeBarGraph extends Component {
       const offsetX = tooltipSize.width / 2;
       const barWidth = parseFloat(mouseData.rect.attr('width'));
       const multiplicator = mouseData.data[0] < 0 ? -1 : 1;
-      const incredibleCalculus =
+      const leftPos =
+        this.xScale(0) + labelOffsetX - offsetX + barWidth * multiplicator / 2;
+      const topPos =
+        -this.height -
+        margin.top -
+        margin.bottom -
+        offsetY +
         this.yScale(yVal) +
         (this.yScale1 ? this.yScale1(mouseData.index) : 0) -
-        offsetY -
         (this.yScale1
           ? this.yScale1.bandwidth() / 2
           : this.yScale.bandwidth() / 2);
@@ -421,14 +426,8 @@ class NegativeBarGraph extends Component {
         .select(this.tooltipId)
         .style('position', 'relative')
         .style('z-index', 1)
-        .style(
-          'left',
-          `${this.xScale(0) +
-            labelOffsetX -
-            offsetX +
-            barWidth * multiplicator / 2}px`
-        )
-        .style('top', `${incredibleCalculus - height}px`);
+        .style('left', `${leftPos}px`)
+        .style('top', `${topPos}px`);
     }
   }
 
