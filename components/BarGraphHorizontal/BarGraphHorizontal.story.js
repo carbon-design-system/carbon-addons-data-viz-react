@@ -9,12 +9,18 @@ class UpdatingBarGraphHorizontalContainer extends Component {
     }),
   };
 
+  interval;
+
   componentDidMount() {
     let i = 0;
-    setInterval(() => {
+    this.interval = setInterval(() => {
       this.updateData(i);
       i++;
     }, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   createGroupedData(num) {
@@ -166,7 +172,7 @@ storiesOf('BarGraphHorizontal', module)
       );
 
       resizeInterval = setInterval(() => {
-        if (typeof componentRef.resize === 'function') {
+        if (componentRef && typeof componentRef.resize === 'function') {
           const height = Math.max(300, Math.min(Math.random() * 1000, 550));
           const width = Math.max(650, Math.min(Math.random() * 1000, 900));
           componentRef.resize(height, width);
