@@ -328,8 +328,8 @@ class BarGraphHorizontal extends Component {
     const {
       timeFormat,
       showTooltip,
-      height,
       labelOffsetX,
+      margin,
       seriesLabels,
     } = this.props;
     const mouseData = this.getMouseData(d, i);
@@ -367,13 +367,15 @@ class BarGraphHorizontal extends Component {
       const leftPos =
         this.xScale(mouseData.data[0]) / 2 + labelOffsetX - offsetX;
       const topPos =
+        -this.height -
+        margin.top -
+        margin.bottom -
+        offsetY +
         this.yScale(yVal) +
         (this.yScale1 ? this.yScale1(mouseData.index) : 0) -
-        offsetY -
         (this.yScale1
           ? this.yScale1.bandwidth() / 2
-          : this.yScale.bandwidth() / 2) -
-        height;
+          : this.yScale.bandwidth() / 2);
 
       d3
         .select(this.tooltipId)
