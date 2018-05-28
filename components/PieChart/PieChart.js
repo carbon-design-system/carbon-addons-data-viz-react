@@ -151,14 +151,15 @@ class PieChart extends Component {
             .node()
             .getBoundingClientRect();
           const pos = path.centroid(d); //[x, y]
-
+          const leftPos = pos[0] + tooltipSize.width / 2 * pos[0] / 100;
+          const topPos = pos[1] + tooltipSize.height * pos[1] / 100;
           d3
             .select(tooltipId)
             .style('position', 'absolute')
             .style('top', `50%`)
             .style('left', `50%`)
-            .style('margin-left', `${pos[0]}px`)
-            .style('margin-top', `${pos[1] - tooltipSize.height}px`)
+            .style('margin-left', `${leftPos}px`)
+            .style('margin-top', `${topPos}px`)
             .style('width', `${tooltipSize.width}px`)
             .style('height', `${tooltipSize.height}px`)
             .style('transform', 'translate(-50%, -50%)');
@@ -183,7 +184,7 @@ class PieChart extends Component {
         if (onHover) {
           onHover(false);
         }
-        ReactDOM.unmountComponentAtNode(tooltipId);
+        // ReactDOM.unmountComponentAtNode(tooltipId);
       });
   }
 

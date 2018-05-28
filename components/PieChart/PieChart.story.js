@@ -12,10 +12,16 @@ class PieUpdater extends Component {
     ],
   };
 
+  interval;
+
   componentDidMount() {
-    setInterval(() => {
+    this.interval = setInterval(() => {
       this.updateData();
     }, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   updateData() {
