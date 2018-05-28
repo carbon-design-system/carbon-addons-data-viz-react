@@ -77,7 +77,7 @@ class BubbleChart extends Component {
       .attr('height', height)
       .append('g')
       .attr('class', 'bx--group-container')
-      .attr('transform', `translate(${margin.left}, 0)`);
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
 
     this.width = width - (margin.left + margin.right);
     this.height = height - (margin.top + margin.bottom);
@@ -168,6 +168,8 @@ class BubbleChart extends Component {
       .selectAll('.bx--axis--x .tick text')
       .attr('y', axisOffset)
       .style('text-anchor', 'middle');
+
+    this.xAxis.scale(this.xScale);
 
     this.svg.select('.bx--axis--x .bx--graph-label').text(xAxisLabel);
 
@@ -266,7 +268,7 @@ class BubbleChart extends Component {
   }
 
   onMouseEnter(d, i) {
-    const { showTooltip, formatTooltipData } = this.props;
+    const { showTooltip, formatTooltipData, margin } = this.props;
     const mouseData = this.getMouseData(d, i);
 
     let circle = this.svg.select(`circle[data-point="${mouseData.index}"]`);
@@ -288,16 +290,18 @@ class BubbleChart extends Component {
         .node()
         .getBoundingClientRect();
 
-      const offsetY = tooltipSize.height / 2.5;
+      const offsetY = tooltipSize.height + 5;
       const offsetX = tooltipSize.width / 2;
       const circleRadius = parseInt(circle.attr('r'), 10);
+      const leftPos = this.xScale(mouseData.data[0]) + margin.left - offsetX;
+      const topPos = -this.height / 2 - margin.bottom - circleRadius - offsetY;
 
       d3
         .select(this.tooltipId)
         .style('position', 'relative')
         .style('z-index', 1)
-        .style('left', `${this.xScale(mouseData.data[0]) + offsetX}px`)
-        .style('top', `${offsetY - circleRadius - this.height}px`);
+        .style('left', `${leftPos}px`)
+        .style('top', `${topPos}px`);
     }
   }
 
@@ -311,7 +315,7 @@ class BubbleChart extends Component {
       .duration(250)
       .attr('fill', () => this.color(mouseData.index));
 
-    ReactDOM.unmountComponentAtNode(this.tooltipId);
+    // ReactDOM.unmountComponentAtNode(this.tooltipId);
   }
 
   updateEmptyState(data) {
