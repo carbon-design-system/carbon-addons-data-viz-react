@@ -315,7 +315,7 @@ class BubbleChart extends Component {
       .duration(250)
       .attr('fill', () => this.color(mouseData.index));
 
-    // ReactDOM.unmountComponentAtNode(this.tooltipId);
+    ReactDOM.unmountComponentAtNode(this.tooltipId);
   }
 
   updateEmptyState(data) {
