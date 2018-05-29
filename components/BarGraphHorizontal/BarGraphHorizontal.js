@@ -260,7 +260,9 @@ class BarGraphHorizontal extends Component {
           .attr('x', 0)
           .attr('y', d => this.yScale(d[1]))
           .attr('data-bar', (d, i) => `${i}-0`)
-          .attr('fill', () => this.color(0))
+          .attr('fill', (d, i) => {
+            return this.color(i % this.props.color.length);
+          })
           .transition()
           .duration(500)
           .delay((d, i) => i * 50)
@@ -398,7 +400,10 @@ class BarGraphHorizontal extends Component {
       .duration(500)
       .attr(
         'fill',
-        () => (this.isGrouped ? this.color(mouseData.index) : this.color(0))
+        () =>
+          this.isGrouped
+            ? this.color(mouseData.index)
+            : this.color(mouseData.index % this.props.color.length)
       );
     ReactDOM.unmountComponentAtNode(this.tooltipId);
   }
