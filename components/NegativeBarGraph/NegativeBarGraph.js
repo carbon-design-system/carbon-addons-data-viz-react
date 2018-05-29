@@ -220,7 +220,7 @@ class NegativeBarGraph extends Component {
   }
 
   renderBars() {
-    const { data } = this.props;
+    const { data, color } = this.props;
 
     const barContainer = this.svg.append('g').attr('class', 'bar-container');
 
@@ -290,8 +290,10 @@ class NegativeBarGraph extends Component {
           .attr('data-bar', (d, i) => `${i}-0`)
           .attr(
             'fill',
-            d =>
-              d[0][0] > 0 ? this.color(0) : d3.color(this.color(0)).darker(1)
+            (d, i) =>
+              d[0][0] > 0
+                ? this.color(i % color.length)
+                : d3.color(this.color(i % color.length)).darker(1)
           )
           .transition()
           .duration(750)
@@ -449,7 +451,7 @@ class NegativeBarGraph extends Component {
         const p = mouseData.data[0] < 0 ? 1 : 0;
         return this.isGrouped
           ? darken(this.color(mouseData.index), p)
-          : darken(this.color(0), p);
+          : darken(this.color(mouseData.index % this.props.color.length), p);
       });
     ReactDOM.unmountComponentAtNode(this.tooltipId);
   }
