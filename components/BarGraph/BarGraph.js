@@ -255,7 +255,7 @@ class BarGraph extends Component {
           .attr('y', this.height)
           .attr('height', 0)
           .attr('width', this.x.bandwidth())
-          .attr('fill', this.color(0))
+          .attr('fill', (d, i) => this.color(i % this.props.color.length))
           .attr('data-bar', (d, i) => `${i}-0`)
           .transition()
           .duration(500)
@@ -390,7 +390,10 @@ class BarGraph extends Component {
       .duration(500)
       .attr(
         'fill',
-        () => (this.isGrouped ? this.color(mouseData.index) : this.color(0))
+        () =>
+          this.isGrouped
+            ? this.color(mouseData.index)
+            : this.color(mouseData.index % this.props.color.length)
       );
     ReactDOM.unmountComponentAtNode(this.tooltipId);
   }
