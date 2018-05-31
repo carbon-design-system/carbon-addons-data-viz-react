@@ -40,6 +40,8 @@ const propTypes = {
   animateAxes: PropTypes.bool,
   showTooltip: PropTypes.bool,
   showLegend: PropTypes.bool,
+  formatValue: PropTypes.func,
+  formatTooltipData: PropTypes.func,
   /**
    * Set this prop to false to prevent x values from being converted to time.
    */
@@ -68,6 +70,17 @@ const defaultProps = {
   yAxisLabel: 'Y Axis',
   onHover: () => {},
   onMouseOut: () => {},
+  formatValue: null,
+  formatTooltipData: ({ data, seriesLabels, index, label, color }) => {
+    return [
+      {
+        data: data[0],
+        label:
+          seriesLabels && seriesLabels.length ? seriesLabels[index] : label,
+        color: color[index],
+      },
+    ];
+  },
   emptyText:
     'There is currently no data available for the parameters selected. Please try a different combination.',
   isUTC: false,
@@ -272,6 +285,7 @@ class LineGraph extends Component {
       data,
       datasets,
       timeFormat,
+      formatValue,
       isUTC,
       isXTime,
       showLegend,
@@ -324,6 +338,10 @@ class LineGraph extends Component {
       .ticks(4)
       .tickSize(-this.width)
       .scale(this.y.nice());
+
+    if (formatValue !== null) {
+      this.yAxis.tickFormat(formatValue);
+    }
 
     this.renderAxes();
     this.renderLabels();
@@ -506,6 +524,7 @@ class LineGraph extends Component {
       labelOffsetX,
       isXTime,
       seriesLabels,
+      formatTooltipData,
     } = this.props;
 
     if (data.length > 2 || _.max(datasets.map(d => d.length)) > 2) {
@@ -535,18 +554,21 @@ class LineGraph extends Component {
             graphYArray: d.slice(0, -1).map(this.y),
           };
 
-          tooltipData = _.dropRight(d).map((p, i) => ({
-            data: _.round(p, 2),
-            label: seriesLabels[i],
-            color: color[i],
-          }));
-
           tooltipHeading =
             d.length > 2
               ? isXTime
                 ? d3.timeFormat(timeFormat)(d[d.length - 1])
                 : d[d.length - 1]
               : null;
+
+          tooltipData = formatTooltipData(
+            Object.assign(mouseData, {
+              index,
+              label: tooltipHeading,
+              seriesLabels,
+              color,
+            })
+          );
         }
       } else {
         const mouseX = this.x(timestamp);
@@ -576,11 +598,14 @@ class LineGraph extends Component {
 
         tooltipHeading = d.length > 2 ? xVal : null;
 
-        tooltipData = _.dropRight(d).map(p => ({
-          data: _.round(p, 2),
-          label: tooltipHeading ? seriesLabels[i] : xVal,
-          color: color[i],
-        }));
+        tooltipData = formatTooltipData(
+          Object.assign(mouseData, {
+            index: i,
+            label: tooltipHeading,
+            seriesLabels,
+            color,
+          })
+        );
       }
 
       this.props.onHover(mouseData);
