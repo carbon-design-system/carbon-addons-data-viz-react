@@ -313,11 +313,15 @@ class LineGraph extends Component {
       .y(d => this.y(d[this.count]))
       .defined(d => !isNaN(d[this.count]));
 
+    const tickFormat = isUTC
+      ? d3.utcFormat(timeFormat)
+      : d3.timeFormat(timeFormat);
+
     this.xAxis = d3
       .axisBottom()
       .scale(this.x)
       .tickSize(0)
-      .tickFormat(isXTime ? d3.timeFormat(timeFormat) : null);
+      .tickFormat(isXTime ? tickFormat : null);
 
     this.yAxis = d3
       .axisLeft()
