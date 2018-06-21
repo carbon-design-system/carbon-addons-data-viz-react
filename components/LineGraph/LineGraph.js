@@ -171,6 +171,16 @@ class LineGraph extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    const { showLegend, seriesLabels } = this.props;
+
+    // If seriesLabels change, remove legend and re-render
+    if (showLegend && seriesLabels.length !== prevProps.seriesLabels.length) {
+      this.svg.selectAll('.legend').remove();
+      this.renderLegend();
+    }
+  }
+
   updateEmptyState(data) {
     if (
       data[0]
