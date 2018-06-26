@@ -20,6 +20,16 @@ const propTypes = {
    * If your data set has multiple series, the seriesLabels array should contain strings labeling your series in the same order that your series appear in either data or datasets props.
    */
   seriesLabels: PropTypes.arrayOf(PropTypes.string),
+  timeFormatLocale: PropTypes.shape({
+    dateTime: PropTypes.string,
+    date: PropTypes.string,
+    time: PropTypes.string,
+    periods: PropTypes.arrayOf(PropTypes.string),
+    days: PropTypes.arrayOf(PropTypes.string),
+    shortDays: PropTypes.arrayOf(PropTypes.string),
+    months: PropTypes.arrayOf(PropTypes.string),
+    shortMonths: PropTypes.arrayOf(PropTypes.string),
+  }),
   height: PropTypes.number,
   width: PropTypes.number,
   id: PropTypes.string,
@@ -174,6 +184,16 @@ class LineGraph extends Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    const { showLegend, seriesLabels } = this.props;
+
+    // If seriesLabels change, remove legend and re-render
+    if (showLegend && seriesLabels.length !== prevProps.seriesLabels.length) {
+      this.svg.selectAll('.legend').remove();
+      this.renderLegend();
+    }
+  }
+
   updateEmptyState(data) {
     if (
       data[0]
@@ -290,6 +310,7 @@ class LineGraph extends Component {
       isXTime,
       showLegend,
       seriesLabels,
+      timeFormatLocale,
     } = this.props;
 
     this.updateEmptyState(data.length > 0 ? data : datasets);
@@ -327,11 +348,19 @@ class LineGraph extends Component {
       .y(d => this.y(d[this.count]))
       .defined(d => !isNaN(d[this.count]));
 
+    if (timeFormatLocale) {
+      d3.timeFormatDefaultLocale(timeFormatLocale);
+    }
+
+    const tickFormat = isUTC
+      ? d3.utcFormat(timeFormat)
+      : d3.timeFormat(timeFormat);
+
     this.xAxis = d3
       .axisBottom()
       .scale(this.x)
       .tickSize(0)
-      .tickFormat(isXTime ? d3.timeFormat(timeFormat) : null);
+      .tickFormat(isXTime ? tickFormat : null);
 
     this.yAxis = d3
       .axisLeft()
@@ -478,7 +507,7 @@ class LineGraph extends Component {
       .attr('class', 'legend')
       .attr('transform', (d, i) => {
         const h = legendRectSize + legendSpacing;
-        const offset = h * seriesLabels.length / 2;
+        const offset = (h * seriesLabels.length) / 2;
         const horz = this.width + 10;
         const vert = i * h - offset + 50;
         return `translate(${horz},${vert})`;
@@ -620,8 +649,7 @@ class LineGraph extends Component {
           .node()
           .getBoundingClientRect();
         const offset = -tooltipSize.width / 2;
-        d3
-          .select(this.tooltipId)
+        d3.select(this.tooltipId)
           .style('position', 'relative')
           .style('left', `${mouseData.graphX + labelOffsetX + offset}px`)
           .style(
