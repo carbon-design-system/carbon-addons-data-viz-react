@@ -1,20 +1,26 @@
 import React, { Component } from 'react';
 import { storiesOf, action } from '@storybook/react';
-import BarGraph from './BarGraph';
+import BarGraphHorizontal from './BarGraphHorizontal';
 
-class UpdatingBarGraphContainer extends Component {
+class UpdatingBarGraphHorizontalContainer extends Component {
   state = {
-    data: this.createGroupedData(6).sort(function(a, b) {
+    data: this.createGroupedData(4).sort(function(a, b) {
       return a[a.length - 1] - b[b.length - 1];
     }),
   };
 
+  interval;
+
   componentDidMount() {
     let i = 0;
-    setInterval(() => {
+    this.interval = setInterval(() => {
       this.updateData(i);
       i++;
     }, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   createGroupedData(num) {
@@ -34,7 +40,7 @@ class UpdatingBarGraphContainer extends Component {
   }
 
   updateData(i) {
-    let data = this.createGroupedData(6).sort(function(a, b) {
+    let data = this.createGroupedData(4).sort(function(a, b) {
       return a[a.length - 1] - b[b.length - 1];
     });
 
@@ -54,7 +60,7 @@ class UpdatingBarGraphContainer extends Component {
         bottom: 75,
         left: 65,
       },
-      height: 300,
+      height: 550,
       width: 800,
       labelOffsetY: 55,
       labelOffsetX: 65,
@@ -62,13 +68,12 @@ class UpdatingBarGraphContainer extends Component {
       yAxisLabel: this.state.yAxisLabel,
       xAxisLabel: this.state.xAxisLabel,
       onHover: action('Hover'),
-      timeFormat: '%b',
       id: this.props.id,
       containerId: this.props.containerId,
       drawLine: this.props.drawLine,
     };
 
-    return <BarGraph data={data} {...props} />;
+    return <BarGraphHorizontal data={data} {...props} />;
   }
 }
 
@@ -76,7 +81,7 @@ function createData(num) {
   let data = [];
   for (let i = 0; i < num; i++) {
     let tempArr = [];
-    let randomNum = Math.floor(Math.random() * 1000 + 1);
+    let randomNum = Math.floor(Math.random() * 1000 * 1000 * 1000 + 1);
     let d = new Date();
     d = d.setDate(d.getDate() + i * 30);
     tempArr.push([randomNum], d);
@@ -103,9 +108,7 @@ function createGroupedData(num) {
   return data;
 }
 
-let data = createData(12).sort(function(a, b) {
-  return a[1] - b[1];
-});
+let data = createData(10);
 
 let groupedData = createGroupedData(3).sort(function(a, b) {
   return a[1] - b[1];
@@ -122,87 +125,93 @@ const props = {
     bottom: 75,
     left: 65,
   },
-  height: 300,
-  width: 800,
+  height: 550,
+  width: 900,
   labelOffsetY: 55,
   labelOffsetX: 65,
   axisOffset: 16,
-  yAxisLabel: 'Amount ($)',
-  xAxisLabel: 'Date',
+  yAxisLabel: 'Date',
+  xAxisLabel: 'Amount ($)',
   onHover: action('Hover'),
   id: 'bar-graph-1',
   containerId: 'bar-graph-container',
 };
 
-storiesOf('BarGraph', module)
+let resizeInterval;
+
+storiesOf('BarGraphHorizontal', module)
+  .addDecorator(next => {
+    clearInterval(resizeInterval);
+    return next();
+  })
+  .addWithInfo('Default', 'Horizontal Bar Graph', () => (
+    <BarGraphHorizontal
+      onHover={action('Hover')}
+      timeFormat="%b"
+      data={data}
+      {...props}
+    />
+  ))
   .addWithInfo(
-    'Default',
+    'Resizing',
     `
-      Bar Graph.
+      Auto resizing Horizontal Bar Graph.
     `,
-    () => (
-      <BarGraph
-        timeFormat="%b"
-        formatValue={value => `$${value / 1000}`}
-        onHover={action('Hover')}
-        data={data}
-        {...props}
-      />
-    )
+    () => {
+      let componentRef;
+      const Component = React.createElement(
+        BarGraphHorizontal,
+        {
+          ref: element => (componentRef = element),
+          onHover: action('Hover'),
+          timeFormat: '%b',
+          data,
+          ...props,
+        },
+        null
+      );
+
+      resizeInterval = setInterval(() => {
+        if (componentRef && typeof componentRef.resize === 'function') {
+          const height = Math.max(300, Math.min(Math.random() * 1000, 550));
+          const width = Math.max(650, Math.min(Math.random() * 1000, 900));
+          componentRef.resize(height, width);
+        }
+      }, 2500);
+      return Component;
+    }
   )
   .addWithInfo(
     'Grouped',
     `
-     Grouped Bar Graph.
+     Grouped Horizontal Bar Graph.
     `,
     () => (
-      <BarGraph
+      <BarGraphHorizontal
         timeFormat="%b"
         onHover={action('Hover')}
         data={groupedData}
         {...props}
-        seriesLabels={[
-          'Series 1',
-          'Series 2',
-          'Series 3',
-          'Series 4',
-          'Series 5',
-        ]}
-      />
-    )
-  )
-  .addWithInfo(
-    'Grouped with Custom Labels',
-    `
-     Grouped Bar Graph with custom labels.
-    `,
-    () => (
-      <BarGraph
-        onHover={action('Hover')}
-        data={[
-          [[6810753.913996485, 322316.83828169684], 'NEW YORK, NY, US'],
-          [[2029509.2509859744, 319256.4128819143], 'LONDON, GB'],
-          [[1180299.5624584288, 98796.86410370439], 'AUSTIN, TX, US'],
-          [[997409.8602056602, 301419.9550709436], 'DALLAS, TX, US'],
-          [[1306600.6748098487, 82748.73011782495], 'DURHAM, NC, US'],
-        ]}
-        yAxisLabel="Amount ($)"
-        xAxisLabel=""
-        seriesLabels={['Fixed Rate', 'Dynamic Rate']}
       />
     )
   )
   .addWithInfo(
     'Updating',
     `
-     Updating Grouped Bar Graph.
+     Updating Horizontal Grouped Bar Graph.
     `,
-    () => <UpdatingBarGraphContainer />
+    () => <UpdatingBarGraphHorizontalContainer />
   )
   .addWithInfo(
     'Empty',
     `
-     Empty Bar Graph.
+     Empty Horizontal Bar Graph.
     `,
-    () => <BarGraph onHover={action('Hover')} data={singleData} {...props} />
+    () => (
+      <BarGraphHorizontal
+        onHover={action('Hover')}
+        data={singleData}
+        {...props}
+      />
+    )
   );

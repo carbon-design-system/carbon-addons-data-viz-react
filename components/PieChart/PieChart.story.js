@@ -12,10 +12,16 @@ class PieUpdater extends Component {
     ],
   };
 
+  interval;
+
   componentDidMount() {
-    setInterval(() => {
+    this.interval = setInterval(() => {
       this.updateData();
     }, 5000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.interval);
   }
 
   updateData() {
@@ -61,6 +67,17 @@ storiesOf('PieChart', module)
       <div>
         <PieChart id="one" {...props} />
         <PieChart id="two" {...props} />
+      </div>
+    )
+  )
+  .addWithInfo(
+    'With totals',
+    `
+      Pie Chart with totals.
+    `,
+    () => (
+      <div>
+        <PieChart id="totals" {...props} showTotals />
       </div>
     )
   )
