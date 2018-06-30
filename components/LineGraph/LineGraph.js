@@ -250,7 +250,10 @@ class LineGraph extends Component {
         .selectAll('.bx--axis--x .tick text')
         .attr('y', axisOffset)
         .style('text-anchor', 'end')
-        .attr('transform', `rotate(-65)`);
+        .style(
+          'transform',
+          `translate3d(-${axisOffset}px, 5px, 0) rotate(-60deg)`
+        );
 
       this.svg
         .select('.bx--axis--y')
@@ -265,7 +268,10 @@ class LineGraph extends Component {
         .selectAll('.bx--axis--x .tick text')
         .attr('y', axisOffset)
         .style('text-anchor', 'end')
-        .attr('transform', `rotate(-65)`);
+        .style(
+          'transform',
+          `translate3d(-${axisOffset}px, 5px, 0) rotate(-60deg)`
+        );
 
       this.svg
         .select('.bx--axis--y')
@@ -423,10 +429,10 @@ class LineGraph extends Component {
       .call(this.xAxis)
       .selectAll('text')
       .attr('y', axisOffset)
-      .style('text-anchor', 'end')
+      .attr('text-anchor', 'end')
       .style(
         'transform',
-        `translate3d(-${axisOffset}px, 5px, 0) rotate(-65deg)`
+        `translate3d(-${axisOffset}px, 5px, 0) rotate(-60deg)`
       );
 
     this.updateStyles();
