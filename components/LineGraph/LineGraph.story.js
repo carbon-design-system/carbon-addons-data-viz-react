@@ -2,42 +2,40 @@ import React, { Component } from 'react';
 import { storiesOf, action } from '@storybook/react';
 import LineGraph from './LineGraph';
 import flatMap from 'lodash/flatMap';
+import flatten from 'lodash/flatten';
 
 const defaultDataSets = [
   [
-    [328432, new Date('2018-01').valueOf()],
-    [528432, new Date('2018-02').valueOf()],
-    [128432, new Date('2018-03').valueOf()],
-    [398432, new Date('2018-04').valueOf()],
-    [728422, new Date('2018-05').valueOf()],
+    [1491, 1506816000000],
+    [1644, 1509494400000],
+    [1019, 1512086400000],
+    [836, 1514764800000],
+    [1009, 1517443200000],
+    [1461, 1519862400000],
   ],
   [
-    [48124, new Date('2018-01').valueOf()],
-    [23842, new Date('2018-02').valueOf()],
-    [13283, new Date('2018-03').valueOf()],
-    [20031, new Date('2018-04').valueOf()],
-    [81241, new Date('2018-05').valueOf()],
+    [185, 1506816000000],
+    [120, 1509494400000],
+    [55, 1512086400000],
+    [89, 1514764800000],
+    [109, 1517443200000],
+    [61, 1519862400000],
   ],
   [
-    [54354123, new Date('2018-01').valueOf()],
-    [23131991, new Date('2018-02').valueOf()],
-    [53802919, new Date('2018-03').valueOf()],
-    [90243290, new Date('2018-04').valueOf()],
-    [58329310, new Date('2018-05').valueOf()],
+    [29.962162162162162, 1506816000000],
+    [43.15833333333333, 1509494400000],
+    [38.30909090909091, 1512086400000],
+    [24.382022471910112, 1514764800000],
+    [58.12, 1517443200000],
+    [91.34, 1519862400000],
   ],
   [
-    [215, new Date('2018-01').valueOf()],
-    [123, new Date('2018-02').valueOf()],
-    [329, new Date('2018-03').valueOf()],
-    [410, new Date('2018-04').valueOf()],
-    [1231, new Date('2018-05').valueOf()],
-  ],
-  [
-    [12, new Date('2018-01').valueOf()],
-    [52, new Date('2018-02').valueOf()],
-    [59, new Date('2018-03').valueOf()],
-    [90, new Date('2018-04').valueOf()],
-    [11, new Date('2018-05').valueOf()],
+    [5543, 1506816000000],
+    [5179, 1509494400000],
+    [2107, 1512086400000],
+    [2170, 1514764800000],
+    [3921, 1517443200000],
+    [4389, 1519862400000],
   ],
 ];
 
@@ -91,10 +89,19 @@ class LineGraphContainer extends Component {
   createDataset(num) {
     const { datasets } = this.props;
     return Array.from({ length: num }, (v, k) =>
-      Array.from({ length: datasets[k].length }, (v, idx) => [
-        Math.floor(Math.random() * 1000 + 1),
-        datasets[k][idx][datasets[k][idx].length - 1],
-      ])
+      Array.from({ length: datasets[k].length }, (v, idx) => {
+        return flatten([
+          datasets[k][idx]
+            .slice(0, datasets[k][idx].length - 1)
+            .map((v, idx) => {
+              if (idx % 2 === 0) {
+                return v + Math.floor(Math.random() * 1000 + 1);
+              }
+              return Math.abs(v - Math.floor(Math.random() * 1000 + 1));
+            }),
+          datasets[k][idx][datasets[k][idx].length - 1],
+        ]);
+      })
     );
   }
 
@@ -279,7 +286,7 @@ storiesOf('LineGraph', module)
   .addWithInfo('Logairthmic - Updating', () => (
     <LineGraphContainer
       datasets={defaultDataSets}
-      scaleType="linear"
+      scaleType="log"
       // onHover={action('Hover')}
       // onMouseOut={action('Mouseout')}
       // onBlur={action('Blur')}
