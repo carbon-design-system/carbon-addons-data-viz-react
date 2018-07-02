@@ -186,10 +186,14 @@ class LineGraph extends Component {
           ? nextProps.data
           : _.flatten(nextProps.datasets);
       this.x.domain(d3.extent(data, d => d[d.length - 1]));
-      this.y.domain([
-        nextProps.scaleType === 'log' ? 0.1 : 0,
-        d3.max(data, d => d3.max(d.slice(0, d.length - 1))),
-      ]);
+      if (nextProps.scaleType === 'log') {
+        this.y.domain([
+          0.1,
+          d3.max(data, d => d3.max(d.slice(0, d.length - 1))),
+        ]);
+      } else {
+        this.y.domain(d3.extent(data, d => d.slice(0, d.length - 1)));
+      }
       this.updateEmptyState(
         nextProps.data.length > 0 ? nextProps.data : nextProps.datasets
       );
@@ -336,7 +340,7 @@ class LineGraph extends Component {
 
     this.updateEmptyState(data.length > 0 ? data : datasets);
     const flatData = data.length > 0 ? data : _.flatten(datasets);
-    const xMaxDomain = d3.max(flatData, d => d3.max(d.slice(0, d.length - 1)));
+    const yMaxDomain = d3.max(flatData, d => d3.max(d.slice(0, d.length - 1)));
     if (isUTC) {
       this.x = d3.scaleUtc();
     } else if (isXTime) {
@@ -359,9 +363,11 @@ class LineGraph extends Component {
       .range([0, this.width]);
 
     if (scaleType === 'log') {
-      this.y = d3.scaleLog().domain([0.1, xMaxDomain]);
+      this.y = d3.scaleLog().domain([0.1, yMaxDomain]);
     } else {
-      this.y = d3.scaleLinear().domain([0, xMaxDomain]);
+      this.y = d3
+        .scaleLinear()
+        .domain(d3.extent(flatData, d => d.slice(0, d.length - 1)));
     }
 
     this.y.range([this.height, 0]);

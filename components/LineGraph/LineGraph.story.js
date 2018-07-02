@@ -250,7 +250,7 @@ storiesOf('LineGraph', module)
   .addWithInfo('Logarithmic', ` Static Example. `, () => (
     <LineGraph
       datasets={defaultDataSets}
-      scaleType="linear"
+      scaleType="log"
       // onHover={action('Hover')}
       // onMouseOut={action('Mouseout')}
       // onBlur={action('Blur')}
@@ -260,21 +260,20 @@ storiesOf('LineGraph', module)
       )}
       showLegend
       hoverOverlay
-      // multiValueTooltip
+      multiValueTooltip
       timeFormat="%b"
       isXTime={true}
-      // formatTooltipData={ ({ datasets, data, seriesLabels, label, color }) => {
-      //   const dataSets = flatMap(
-      //     datasets,
-      //     v => v.filter(d => d.includes(data[data.length - 1]))
-      //   );
-      //   return dataSets.map((dataSet, idx) => ({
-      //     data: dataSet[0],
-      //     label:
-      //       seriesLabels && seriesLabels.length ? seriesLabels[idx] : label,
-      //     color: color[idx],
-      //   }));
-      // } }
+      formatTooltipData={({ datasets, data, seriesLabels, label, color }) => {
+        const dataSets = flatMap(datasets, v =>
+          v.filter(d => d.includes(data[data.length - 1]))
+        );
+        return dataSets.map((dataSet, idx) => ({
+          data: dataSet[0],
+          label:
+            seriesLabels && seriesLabels.length ? seriesLabels[idx] : label,
+          color: color[idx],
+        }));
+      }}
     />
   ))
   .addWithInfo('Logairthmic - Updating', () => (

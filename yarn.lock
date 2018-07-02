@@ -2048,11 +2048,11 @@ caniuse-lite@^1.0.30000792, caniuse-lite@^1.0.30000805, caniuse-lite@^1.0.300008
   version "1.0.30000861"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000861.tgz#a32bb9607c34e4639b497ff37de746fc8a160410"
 
-carbon-components-react@^5.51.5:
-  version "5.52.2"
-  resolved "https://registry.yarnpkg.com/carbon-components-react/-/carbon-components-react-5.52.2.tgz#e024726c8e29913c9c0e43c83ddbc33fda1f2387"
+carbon-components-react@^6.7.4:
+  version "6.7.4"
+  resolved "https://registry.yarnpkg.com/carbon-components-react/-/carbon-components-react-6.7.4.tgz#a8ea0fb8d3ca4058c663368be3ab512ceb87d68a"
   dependencies:
-    classnames "2.2.5"
+    classnames "2.2.6"
     downshift "^1.31.14"
     flatpickr "4.5.0"
     invariant "^2.2.3"
@@ -2062,18 +2062,22 @@ carbon-components-react@^5.51.5:
     warning "^3.0.0"
     window-or-global "^1.0.1"
 
-carbon-components@^8.23.0:
-  version "8.23.0"
-  resolved "https://registry.yarnpkg.com/carbon-components/-/carbon-components-8.23.0.tgz#928a6b600d705b1a9a746de4739074f5599aa271"
+carbon-components@^9.1.8:
+  version "9.1.8"
+  resolved "https://registry.yarnpkg.com/carbon-components/-/carbon-components-9.1.8.tgz#a0e226f89b8c9640a9005f47f3d02b33daf9afc6"
   dependencies:
     carbon-icons "^6.0.4"
     flatpickr "2.6.3"
     lodash.debounce "^4.0.8"
     warning "^3.0.0"
 
-carbon-icons@^6.0.4, carbon-icons@^6.1.0:
+carbon-icons@^6.0.4:
   version "6.3.2"
   resolved "https://registry.yarnpkg.com/carbon-icons/-/carbon-icons-6.3.2.tgz#2cc942225442b0d5c02593e344b50c7ec22edf28"
+
+carbon-icons@^7.0.7:
+  version "7.0.7"
+  resolved "https://registry.yarnpkg.com/carbon-icons/-/carbon-icons-7.0.7.tgz#ebafe3e9fa25df973796a8eca06d8a7c501cc610"
 
 case-sensitive-paths-webpack-plugin@^2.1.2:
   version "2.1.2"
@@ -2184,11 +2188,7 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
-classnames@2.2.5:
-  version "2.2.5"
-  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.5.tgz#fb3801d453467649ef3603c7d61a02bd129bde6d"
-
-classnames@^2.2.5:
+classnames@2.2.6, classnames@^2.2.5:
   version "2.2.6"
   resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.2.6.tgz#43935bffdd291f326dad0a205309b38d00f650ce"
 
