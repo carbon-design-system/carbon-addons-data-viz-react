@@ -339,6 +339,7 @@ class LineGraph extends Component {
     } = this.props;
 
     this.updateEmptyState(data.length > 0 ? data : datasets);
+
     const flatData = data.length > 0 ? data : _.flatten(datasets);
     const yMaxDomain = d3.max(flatData, d => d3.max(d.slice(0, d.length - 1)));
     if (isUTC) {
