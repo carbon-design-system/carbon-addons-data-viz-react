@@ -1,6 +1,6 @@
 {
   "name": "@ibmtm/carbon-addons-data-viz-react",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Carbon Data Visualization for React",
   "main": "cjs/index.js",
   "module": "es/index.js",
@@ -64,7 +64,6 @@
     "react-dom": "^16.4.1"
   },
   "scripts": {
-    "prepublishOnly": "npm run build",
     "commitmsg": "commitlint --extends=@commitlint/config-angular -e",
     "build": "node scripts/build.js",
     "lint": "eslint src",
