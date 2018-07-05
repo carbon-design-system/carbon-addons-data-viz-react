@@ -64,6 +64,7 @@
     "react-dom": "^16.4.1"
   },
   "scripts": {
+    "prepublishOnly": "npm run build",
     "commitmsg": "commitlint --extends=@commitlint/config-angular -e",
     "build": "node scripts/build.js",
     "lint": "eslint src",
