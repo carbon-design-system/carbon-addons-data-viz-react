@@ -1,14 +1,17 @@
 {
-  "name": "carbon-addons-data-viz-react",
-  "version": "0.0.0-development",
-  "description": "Carbon Data Visualization",
+  "name": "@ibmtm/carbon-addons-data-viz-react",
+  "version": "0.1.0",
+  "description": "Carbon Data Visualization for React",
   "main": "cjs/index.js",
   "module": "es/index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git"
-  },
+  "repository": "https://github.ibm.com/IBMTravelManager/carbon-addons-data-viz-react/tree/master",
   "author": "tw15egan <tw15egan@gmail.com>",
+  "contributors": [
+    {
+      "name": "Liviu Dobrea",
+      "email": "liviu.dobrea@ibm.com"
+    }
+  ],
   "license": "Apache-2.0",
   "dependencies": {
     "carbon-components": "^9.1.8",
@@ -61,7 +64,7 @@
     "react-dom": "^16.4.1"
   },
   "scripts": {
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "commitmsg": "commitlint --extends=@commitlint/config-angular -e",
     "build": "node scripts/build.js",
     "lint": "eslint src",

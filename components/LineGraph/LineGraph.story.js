@@ -226,15 +226,13 @@ storiesOf('LineGraph', module)
   )
   .addWithInfo('Static', ` Static Example. `, () => (
     <LineGraph
-      datasets={[
-        [[43, 1507563000000], [27, 1507563900000], [33, 1507564800000]],
-        [
-          [48.633333333333, 1507563004000],
-          [21, 1507563900140],
-          [38, 1507564830000],
-        ],
-      ]}
+      datasets={defaultDataSets}
       showTooltip={false}
+      showLegend
+      seriesLabels={Array.from(
+        { length: defaultDataSets.length },
+        (v, k) => `Series ${k}`
+      )}
       onHover={action('Hover')}
       onMouseOut={action('Mouseout')}
       onBlur={action('Blur')}
@@ -242,14 +240,14 @@ storiesOf('LineGraph', module)
   ))
   .addWithInfo('Number values for X', ` Static Example. `, () => (
     <LineGraph
-      datasets={[
-        [[45, 12], [23, 14], [33, 18], [31, 20], [12, 21]],
-        [[48.633333333333, 11], [21, 15], [38, 16], [21, 19], [31, 21]],
-      ]}
+      datasets={defaultDataSets}
       onHover={action('Hover')}
       onMouseOut={action('Mouseout')}
       onBlur={action('Blur')}
-      seriesLabels={['Series 1', 'Series 2']}
+      seriesLabels={Array.from(
+        { length: defaultDataSets.length },
+        (v, k) => `Series ${k}`
+      )}
       showLegend
       isXTime={false}
     />

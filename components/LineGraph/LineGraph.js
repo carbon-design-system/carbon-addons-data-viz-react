@@ -187,7 +187,7 @@ class LineGraph extends Component {
       } else {
         this.y.domain([
           0,
-          d3.max(data, d => d3.max(d.slice(0, d.length - 1))) || 10,
+          d3.max(_.flatMap(data, d => d.slice(0, d.length - 1))),
         ]);
       }
       this.updateEmptyState(data);
@@ -351,7 +351,10 @@ class LineGraph extends Component {
     } else {
       this.y = d3
         .scaleLinear()
-        .domain([0, d3.max(data, d => d3.max(d.slice(0, d.length - 1))) || 10]);
+        .domain([
+          0,
+          d3.max(_.flatMap(flatData, d => d.slice(0, d.length - 1))),
+        ]);
     }
 
     this.y.range([this.height, 0]);
@@ -521,34 +524,41 @@ class LineGraph extends Component {
 
   renderLegend() {
     const { seriesLabels } = this.props;
-    let legendRectSize = 18;
-    let legendSpacing = 4;
+    let legendRectSize = 10;
+    let legendXSpacing = 10;
+    let legendYSpacing = 14;
 
-    let legend = this.svg
+    const legendContainer = this.svg
+      .append('g')
+      .attr('class', 'legend-container')
+      .style('transform', `translateX(650px)`);
+
+    const legend = legendContainer
       .selectAll('.legend')
       .data(seriesLabels)
       .enter()
       .append('g')
       .attr('class', 'legend')
       .attr('transform', (d, i) => {
-        const h = legendRectSize + legendSpacing;
+        const h = legendRectSize + legendYSpacing;
         const offset = (h * seriesLabels.length) / 2;
-        const horz = this.width + 10;
         const vert = i * h - offset + 50;
-        return `translate(${horz},${vert})`;
+        return `translate(0, ${vert})`;
       });
 
     legend
       .append('rect')
       .attr('width', legendRectSize)
       .attr('height', legendRectSize)
+      .attr('x', 0)
+      .attr('y', 0)
       .style('fill', (d, i) => this.props.color[i])
       .style('stroke', (d, i) => this.props.color[i]);
 
     legend
       .append('text')
-      .attr('x', legendRectSize + legendSpacing)
-      .attr('y', legendRectSize - legendSpacing)
+      .attr('x', legendRectSize + legendXSpacing)
+      .attr('y', legendRectSize)
       .text((d, i) => seriesLabels[i]);
   }
 
