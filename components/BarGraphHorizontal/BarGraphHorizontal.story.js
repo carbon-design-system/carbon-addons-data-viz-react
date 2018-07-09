@@ -196,6 +196,24 @@ storiesOf('BarGraphHorizontal', module)
     )
   )
   .addWithInfo(
+    'Grouped with Custom Labels',
+    `
+     Grouped Horizontal Bar Graph.
+    `,
+    () => (
+      <BarGraphHorizontal
+        timeFormat="%b"
+        seriesLabels={Array.from(
+          { length: groupedData[0][0].length },
+          (v, k) => `Series ${k}`
+        )}
+        onHover={action('Hover')}
+        data={groupedData}
+        {...props}
+      />
+    )
+  )
+  .addWithInfo(
     'Updating',
     `
      Updating Horizontal Grouped Bar Graph.

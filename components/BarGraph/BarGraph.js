@@ -22,6 +22,7 @@ const propTypes = {
   onMouseOut: PropTypes.func,
   emptyText: PropTypes.string,
   color: PropTypes.array,
+  seriesLabels: PropTypes.array,
   showTooltip: PropTypes.bool,
 };
 
@@ -360,8 +361,7 @@ class BarGraph extends Component {
         .getBoundingClientRect();
       const offset = -tooltipSize.width / 2;
 
-      d3
-        .select(this.tooltipId)
+      d3.select(this.tooltipId)
         .style('position', 'relative')
         .style(
           'left',

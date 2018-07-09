@@ -180,11 +180,11 @@ storiesOf('BarGraph', module)
       <BarGraph
         onHover={action('Hover')}
         data={[
-          [[6810753.913996485, 322316.83828169684], 'NEW YORK, NY, US'],
-          [[2029509.2509859744, 319256.4128819143], 'LONDON, GB'],
-          [[1180299.5624584288, 98796.86410370439], 'AUSTIN, TX, US'],
-          [[997409.8602056602, 301419.9550709436], 'DALLAS, TX, US'],
-          [[1306600.6748098487, 82748.73011782495], 'DURHAM, NC, US'],
+          [[681, 32], 'NEW YORK, NY, US'],
+          [[202, 36], 'LONDON, GB'],
+          [[118, 96], 'AUSTIN, TX, US'],
+          [[409, 309], 'DALLAS, TX, US'],
+          [[10, 848], 'DURHAM, NC, US'],
         ]}
         yAxisLabel="Amount ($)"
         xAxisLabel=""
