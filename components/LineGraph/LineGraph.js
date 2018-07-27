@@ -604,7 +604,7 @@ class LineGraph extends Component {
       multiValueTooltip,
     } = this.props;
 
-    if (data.length > 2 || _.max(datasets.map(d => d.length)) > 2) {
+    if (data.length >= 2 || _.max(datasets.map(d => d.length)) >= 2) {
       const bisectDate = d3.bisector(function(d) {
         return d[d.length - 1];
       }).right;

@@ -134,7 +134,12 @@ const props = {
   containerId: 'bar-graph-container',
 };
 
+let resizeInterval;
 storiesOf('BarGraph', module)
+  .addDecorator(next => {
+    clearInterval(resizeInterval);
+    return next();
+  })
   .addWithInfo(
     'Default',
     `
@@ -143,7 +148,15 @@ storiesOf('BarGraph', module)
     () => (
       <BarGraph
         timeFormat="%b"
-        formatValue={value => `$${value / 1000}`}
+        formatValue={value => `$${value / 1000}k`}
+        formatTooltipData={({ data, seriesLabels, label, index, rect }) => [
+          {
+            data: `$${data[0]}`,
+            label:
+              seriesLabels && seriesLabels.length ? seriesLabels[index] : label,
+            color: rect.attr('fill'),
+          },
+        ]}
         onHover={action('Hover')}
         data={data}
         {...props}
@@ -180,11 +193,20 @@ storiesOf('BarGraph', module)
       <BarGraph
         onHover={action('Hover')}
         data={[
-          [[681, 32], 'NEW YORK, NY, US'],
-          [[202, 36], 'LONDON, GB'],
-          [[118, 96], 'AUSTIN, TX, US'],
-          [[409, 309], 'DALLAS, TX, US'],
-          [[10, 848], 'DURHAM, NC, US'],
+          [[681, 214], 'NEW YORK, NY, US'],
+          [[202, 218], 'LONDON, GB'],
+          [[118, 182], 'AUSTIN, TX, US'],
+          [[409, 12], 'DALLAS, TX, US'],
+          [[10, 85], 'DURHAM, NC, US'],
+        ]}
+        formatValue={value => `$${value / 1000}k`}
+        formatTooltipData={({ data, seriesLabels, label, index, rect }) => [
+          {
+            data: `$${data[0]}`,
+            label:
+              seriesLabels && seriesLabels.length ? seriesLabels[index] : label,
+            color: rect.attr('fill'),
+          },
         ]}
         yAxisLabel="Amount ($)"
         xAxisLabel=""
@@ -192,6 +214,49 @@ storiesOf('BarGraph', module)
       />
     )
   )
+  .addWithInfo('Resizing', () => {
+    const chartRef = React.createRef();
+
+    resizeInterval = setInterval(() => {
+      if (chartRef.current && typeof chartRef.current.resize === 'function') {
+        const height = Math.max(
+          Math.min(Math.random() * 1000, props.height),
+          300
+        );
+        const width = Math.max(
+          Math.min(Math.random() * 1000, props.width),
+          300
+        );
+        chartRef.current.resize(height, width);
+      }
+    }, 3500);
+
+    return (
+      <BarGraph
+        ref={chartRef}
+        onHover={action('Hover')}
+        data={[
+          [[681, 214], 'NEW YORK, NY, US'],
+          [[202, 218], 'LONDON, GB'],
+          [[118, 182], 'AUSTIN, TX, US'],
+          [[409, 12], 'DALLAS, TX, US'],
+          [[10, 85], 'DURHAM, NC, US'],
+        ]}
+        formatValue={value => `$${value / 1000}k`}
+        formatTooltipData={({ data, seriesLabels, label, index, rect }) => [
+          {
+            data: `$${data[0]}`,
+            label:
+              seriesLabels && seriesLabels.length ? seriesLabels[index] : label,
+            color: rect.attr('fill'),
+          },
+        ]}
+        yAxisLabel="Amount ($)"
+        xAxisLabel=""
+        seriesLabels={['Fixed Rate', 'Dynamic Rate']}
+      />
+    );
+  })
   .addWithInfo(
     'Updating',
     `

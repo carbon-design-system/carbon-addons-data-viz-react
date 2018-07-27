@@ -40,7 +40,7 @@ class PieChart extends Component {
   componentDidMount() {
     this.width = this.props.radius * 2;
     this.height = this.props.radius * 2 + 24;
-
+    this.radius = this.props.radius;
     this.renderSVG();
   }
 
@@ -54,10 +54,18 @@ class PieChart extends Component {
     return !_.isEqual(this.props, nextProps);
   }
 
+  resize(radius) {
+    this.width = radius * 2;
+    this.height = radius * 2 + 24;
+    this.radius = radius;
+    this.svg.remove();
+
+    this.renderSVG();
+  }
+
   renderSVG() {
     const {
       data,
-      radius,
       formatValue,
       formatTooltipData,
       id,
@@ -73,12 +81,12 @@ class PieChart extends Component {
       .value(d => d[1]);
     const path = d3
       .arc()
-      .outerRadius(radius - 10)
-      .innerRadius(radius - 40);
+      .outerRadius(this.radius - 10)
+      .innerRadius(this.radius - 40);
     const pathTwo = d3
       .arc()
-      .outerRadius(radius)
-      .innerRadius(radius - 40);
+      .outerRadius(this.radius)
+      .innerRadius(this.radius - 40);
 
     if (this.svg) {
       const paths = this.svg.selectAll('path');
@@ -126,8 +134,7 @@ class PieChart extends Component {
     this.svg
       .selectAll('path')
       .on('mouseover', function(d) {
-        d3
-          .select(this)
+        d3.select(this)
           .transition()
           .style('cursor', 'pointer')
           .attr('d', pathTwo);
@@ -150,11 +157,10 @@ class PieChart extends Component {
             .select(tooltipId.children[0])
             .node()
             .getBoundingClientRect();
-          const pos = path.centroid(d); //[x, y]
-          const leftPos = pos[0] + tooltipSize.width / 2 * pos[0] / 100;
-          const topPos = pos[1] + tooltipSize.height * pos[1] / 100;
-          d3
-            .select(tooltipId)
+          const pos = path.centroid(d);
+          const leftPos = pos[0] + ((tooltipSize.width / 2) * pos[0]) / 100;
+          const topPos = pos[1] + (tooltipSize.height * pos[1]) / 100;
+          d3.select(tooltipId)
             .style('position', 'absolute')
             .style('top', `50%`)
             .style('left', `50%`)
@@ -166,19 +172,19 @@ class PieChart extends Component {
         }
       })
       .on('mouseout', function() {
-        d3
-          .select(`#${id} .bx--pie-tooltip`)
-          .style('display', !showTotals && 'none');
-        d3
-          .select(this)
+        d3.select(`#${id} .bx--pie-tooltip`).style(
+          'display',
+          !showTotals && 'none'
+        );
+        d3.select(this)
           .transition()
           .attr('d', path);
         if (showTotals) {
           d3.select(`#${id} .bx--pie-tooltip`).style('display', 'block');
           d3.select(`#${id} .bx--pie-key`).text('Total');
-          d3
-            .select(`#${id} .bx--pie-value`)
-            .text(`${formatValue(totalAmount)}`);
+          d3.select(`#${id} .bx--pie-value`).text(
+            `${formatValue(totalAmount)}`
+          );
         }
 
         if (onHover) {

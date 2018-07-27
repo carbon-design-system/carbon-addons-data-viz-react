@@ -135,7 +135,12 @@ const props = {
   containerId: 'bar-graph-container',
 };
 
+let resizeInterval;
 storiesOf('NegativeBarGraph', module)
+  .addDecorator(next => {
+    clearInterval(resizeInterval);
+    return next();
+  })
   .addWithInfo(
     'Default',
     `
@@ -184,6 +189,34 @@ storiesOf('NegativeBarGraph', module)
       />
     )
   )
+  .addWithInfo('Resizing', () => {
+    const chartRef = React.createRef();
+
+    resizeInterval = setInterval(() => {
+      if (chartRef.current && typeof chartRef.current.resize === 'function') {
+        const height = Math.max(300, Math.min(Math.random() * 1000, 550));
+        const width = Math.max(650, Math.min(Math.random() * 1000, 900));
+        chartRef.current.resize(height, width);
+      }
+    }, 3500);
+
+    return (
+      <NegativeBarGraph
+        ref={chartRef}
+        {...props}
+        onHover={action('Hover')}
+        timeFormat={null}
+        data={[
+          [[6810753.913996485, -322316.83828169684], 'NEW YORK, NY, US'],
+          [[-2029509.2509859744, 319256.4128819143], 'LONDON, GB'],
+          [[-1180299.5624584288, 98796.86410370439], 'AUSTIN, TX, US'],
+          [[-997409.8602056602, 301419.9550709436], 'DALLAS, TX, US'],
+          [[1306600.6748098487, 82748.73011782495], 'DURHAM, NC, US'],
+        ]}
+        yAxisLabel="Amount ($)"
+      />
+    );
+  })
   .addWithInfo(
     'Updating',
     `

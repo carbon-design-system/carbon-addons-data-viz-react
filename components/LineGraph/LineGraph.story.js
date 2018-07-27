@@ -153,7 +153,12 @@ class LineGraphContainer extends Component {
   }
 }
 
+let resizeInterval;
 storiesOf('LineGraph', module)
+  .addDecorator(next => {
+    clearInterval(resizeInterval);
+    return next();
+  })
   .addWithInfo(
     'Updating',
     `
@@ -176,6 +181,33 @@ storiesOf('LineGraph', module)
       </div>
     )
   )
+  .addWithInfo('Resizing', () => {
+    const chartRef = React.createRef();
+
+    resizeInterval = setInterval(() => {
+      if (chartRef.current && typeof chartRef.current.resize === 'function') {
+        const height = Math.max(300, Math.min(Math.random() * 1000, 550));
+        const width = Math.max(650, Math.min(Math.random() * 1000, 900));
+        chartRef.current.resize(height, width);
+      }
+    }, 3500);
+
+    return (
+      <LineGraph
+        ref={chartRef}
+        datasets={defaultDataSets}
+        onHover={action('Hover')}
+        onMouseOut={action('Mouseout')}
+        onBlur={action('Blur')}
+        seriesLabels={Array.from(
+          { length: defaultDataSets.length },
+          (v, k) => `Series ${k}`
+        )}
+        showLegend
+        isXTime={false}
+      />
+    );
+  })
   .addWithInfo(
     'Updating without drawing line',
     `
@@ -227,7 +259,7 @@ storiesOf('LineGraph', module)
   .addWithInfo('Static', ` Static Example. `, () => (
     <LineGraph
       datasets={defaultDataSets}
-      showTooltip={false}
+      showTooltip
       showLegend
       seriesLabels={Array.from(
         { length: defaultDataSets.length },
@@ -254,7 +286,10 @@ storiesOf('LineGraph', module)
   ))
   .addWithInfo('Logarithmic', ` Static Example. `, () => (
     <LineGraph
-      datasets={defaultDataSets}
+      datasets={defaultDataSets.reduce((acc, item) => {
+        acc.push(item.slice(0, 2));
+        return acc;
+      }, [])}
       scaleType="log"
       // onHover={action('Hover')}
       // onMouseOut={action('Mouseout')}

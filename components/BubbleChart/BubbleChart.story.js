@@ -121,23 +121,13 @@ storiesOf('BubbleChart', module)
   .addWithInfo(
     'Resizing',
     `
-      Auto resizing Bubble Chart.
+      Resizing Bubble Chart.
     `,
     () => {
-      let chartRef;
-      const Chart = React.createElement(
-        BubbleChart,
-        {
-          ref: element => (chartRef = element),
-          data,
-          onHover: action('Hover'),
-          ...props,
-        },
-        null
-      );
+      const chartRef = React.createRef();
 
       resizeInterval = setInterval(() => {
-        if (chartRef && typeof chartRef.resize === 'function') {
+        if (chartRef.current && typeof chartRef.current.resize === 'function') {
           const height = Math.max(
             Math.min(Math.random() * 1000, props.height),
             300
@@ -146,11 +136,18 @@ storiesOf('BubbleChart', module)
             Math.min(Math.random() * 1000, props.width),
             300
           );
-          chartRef.resize(height, width);
+          chartRef.current.resize(height, width);
         }
-      }, 5000);
+      }, 3500);
 
-      return Chart;
+      return (
+        <BubbleChart
+          ref={chartRef}
+          data={data}
+          onHover={action('Hover')}
+          {...props}
+        />
+      );
     }
   )
   .addWithInfo(

@@ -57,7 +57,12 @@ const props = {
   data: staticData,
 };
 
+let resizeInterval;
 storiesOf('PieChart', module)
+  .addDecorator(next => {
+    clearInterval(resizeInterval);
+    return next();
+  })
   .addWithInfo(
     'Default',
     `
@@ -75,10 +80,24 @@ storiesOf('PieChart', module)
     `
       Pie Chart with totals.
     `,
-    () => (
-      <div>
-        <PieChart id="totals" {...props} showTotals />
-      </div>
-    )
+    () => <PieChart id="totals" {...props} showTotals />
+  )
+  .addWithInfo(
+    'Resizing',
+    `
+      Auto resizing PieChart.
+    `,
+    () => {
+      const chartRef = React.createRef();
+
+      resizeInterval = setInterval(() => {
+        if (chartRef.current && typeof chartRef.current.resize === 'function') {
+          const radius = Math.max(95, Math.min(Math.random() * 1000, 150));
+          chartRef.current.resize(radius);
+        }
+      }, 3500);
+
+      return <PieChart ref={chartRef} {...props} />;
+    }
   )
   .addWithInfo('Updating', `Pie Chart w/ Updates`, () => <PieUpdater />);

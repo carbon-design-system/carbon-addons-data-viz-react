@@ -158,27 +158,25 @@ storiesOf('BarGraphHorizontal', module)
       Auto resizing Horizontal Bar Graph.
     `,
     () => {
-      let componentRef;
-      const Component = React.createElement(
-        BarGraphHorizontal,
-        {
-          ref: element => (componentRef = element),
-          onHover: action('Hover'),
-          timeFormat: '%b',
-          data,
-          ...props,
-        },
-        null
-      );
+      const chartRef = React.createRef();
 
       resizeInterval = setInterval(() => {
-        if (componentRef && typeof componentRef.resize === 'function') {
+        if (chartRef.current && typeof chartRef.current.resize === 'function') {
           const height = Math.max(300, Math.min(Math.random() * 1000, 550));
           const width = Math.max(650, Math.min(Math.random() * 1000, 900));
-          componentRef.resize(height, width);
+          chartRef.current.resize(height, width);
         }
-      }, 2500);
-      return Component;
+      }, 3500);
+
+      return (
+        <BarGraphHorizontal
+          ref={chartRef}
+          onHover={action('Hover')}
+          timeFormat="%b"
+          data={data}
+          {...props}
+        />
+      );
     }
   )
   .addWithInfo(
