@@ -4,5 +4,9 @@ $css--font-face: true;
 @import '../index';
 
 body {
-  padding: 1rem 3%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }

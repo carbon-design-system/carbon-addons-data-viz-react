@@ -1,21 +1,25 @@
 {
-  "name": "carbon-addons-data-viz-react",
-  "version": "0.0.0-development",
-  "description": "Carbon Data Visualization",
+  "name": "@ibmtm/carbon-addons-data-viz-react",
+  "version": "0.1.0",
+  "description": "Carbon Data Visualization for React",
   "main": "cjs/index.js",
   "module": "es/index.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git"
-  },
+  "repository": "https://github.ibm.com/IBMTravelManager/carbon-addons-data-viz-react/tree/master",
   "author": "tw15egan <tw15egan@gmail.com>",
+  "contributors": [
+    {
+      "name": "Liviu Dobrea",
+      "email": "liviu.dobrea@ibm.com"
+    }
+  ],
   "license": "Apache-2.0",
   "dependencies": {
-    "carbon-components": "^8.0.0",
-    "carbon-components-react": "^5.0.0",
-    "carbon-icons": "^6.1.0",
+    "carbon-components": "^9.1.8",
+    "carbon-components-react": "^6.7.4",
+    "carbon-icons": "^7.0.7",
     "classnames": "^2.2.5",
-    "d3": "^4.10.2",
+    "d3": "^5.5.0",
+    "d3-format": "^1.3.0",
     "lodash": "^4.17.5"
   },
   "devDependencies": {
@@ -23,15 +27,15 @@
     "@commitlint/config-angular": "^3.1.1",
     "@storybook/addon-centered": "^3.1.2",
     "@storybook/addon-info": "^3.1.6",
-    "@storybook/react": "^3.1.6",
+    "@storybook/react": "^3.4.8",
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.0.2",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "bluebird": "^3.5.0",
-    "carbon-components": "^8.0.0",
-    "carbon-components-react": "^5.0.0",
-    "carbon-icons": "^6.1.0",
+    "carbon-components": "^9.1.8",
+    "carbon-components-react": "^6.7.4",
+    "carbon-icons": "^7.0.7",
     "css-loader": "^0.28.4",
     "eslint": "^4.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
@@ -42,10 +46,11 @@
     "in-publish": "^2.0.0",
     "lint-staged": "^4.3.0",
     "ncp": "^2.0.0",
-    "node-sass": "^4.5.3",
+    "node-sass": "^4.9.0",
     "prettier": "^1.7.4",
-    "react": "^15.6.1",
-    "react-dom": "^15.6.1",
+    "prop-types": "^15.6.1",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
     "rimraf": "^2.6.2",
     "sass-loader": "^6.0.6",
     "semantic-release": "^7.0.2",
@@ -53,13 +58,13 @@
     "style-loader": "^0.18.2"
   },
   "peerDependencies": {
-    "carbon-components": "^8.0.0",
-    "carbon-components-react": "^5.19.2",
-    "react": "^15.3.2 || ^16.1.0",
-    "react-dom": "^15.3.2 || ^16.1.0"
+    "carbon-components": "^9.1.8",
+    "carbon-components-react": "^6.7.4",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
   },
   "scripts": {
-    "prepublish": "npm run build",
+    "prepublishOnly": "npm run build",
     "commitmsg": "commitlint --extends=@commitlint/config-angular -e",
     "build": "node scripts/build.js",
     "lint": "eslint src",
