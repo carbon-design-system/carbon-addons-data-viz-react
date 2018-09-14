@@ -352,8 +352,7 @@ class BarGraph extends Component {
         .getBoundingClientRect();
       const offset = -tooltipSize.width / 2;
 
-      d3
-        .select(this.tooltipId)
+      d3.select(this.tooltipId)
         .style('position', 'relative')
         .style(
           'left',
