@@ -27,6 +27,7 @@
     "babel-cli": "^6.26.0",
     "babel-eslint": "^8.0.2",
     "babel-plugin-transform-object-assign": "^6.22.0",
+    "babel-plugin-transform-object-set-prototype-of-to-assign": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "bluebird": "^3.5.0",
     "carbon-components": "^8.0.0",
@@ -124,7 +125,8 @@
       "stage-1"
     ],
     "plugins": [
-      "transform-object-assign"
+      "transform-object-assign",
+      "transform-object-set-prototype-of-to-assign"
     ]
   },
   "prettier": {
