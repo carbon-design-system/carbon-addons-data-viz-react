@@ -6,6 +6,7 @@
   ],
   "plugins": [
     "transform-runtime",
-    "transform-object-assign"
+    "transform-object-assign",
+    "transform-object-set-prototype-of-to-assign"
   ]
 }

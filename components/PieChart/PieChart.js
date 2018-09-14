@@ -79,8 +79,7 @@ class PieChart extends Component {
 
     arcs
       .on('mouseover', function(d) {
-        d3
-          .select(this)
+        d3.select(this)
           .transition()
           .style('cursor', 'pointer')
           .attr('d', pathTwo);
@@ -94,8 +93,7 @@ class PieChart extends Component {
       })
       .on('mouseout', function() {
         d3.select(`#${id} .bx--pie-tooltip`).style('display', 'none');
-        d3
-          .select(this)
+        d3.select(this)
           .transition()
           .attr('d', path);
         if (onHover) {

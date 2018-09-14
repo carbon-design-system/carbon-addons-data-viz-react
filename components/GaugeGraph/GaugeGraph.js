@@ -79,7 +79,7 @@ class GaugeGraph extends Component {
           interpolate = d3.interpolate(d.endAngle, Math.PI * (newAngle / tau));
 
           const line = d3.select(`#${id} .bx--gauge-line`);
-          const percent = newAngle / tau * 100;
+          const percent = (newAngle / tau) * 100;
 
           line.style('fill', () => {
             let color;
@@ -130,8 +130,7 @@ class GaugeGraph extends Component {
   renderLabels() {
     const { valueText, labelText, tooltipId } = this.props;
 
-    d3
-      .select(`#${tooltipId} .bx--gauge-amount`)
+    d3.select(`#${tooltipId} .bx--gauge-amount`)
       .style('opacity', 0)
       .transition()
       .duration(1000)
@@ -139,8 +138,7 @@ class GaugeGraph extends Component {
       .style('opacity', 1)
       .text(`${valueText}`);
 
-    d3
-      .select(`#${tooltipId} .bx--gauge-total`)
+    d3.select(`#${tooltipId} .bx--gauge-total`)
       .style('opacity', 0)
       .transition()
       .duration(1000)
