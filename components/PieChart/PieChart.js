@@ -28,12 +28,6 @@ class PieChart extends Component {
     this.renderSVG();
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!_.isEqual(this.props, nextProps)) {
-      this.renderSVG(nextProps);
-    }
-  }
-
   shouldComponentUpdate(nextProps) {
     return !_.isEqual(this.props, nextProps);
   }
