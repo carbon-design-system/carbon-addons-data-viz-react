@@ -166,6 +166,7 @@ storiesOf('BarGraph', module)
           'Series 4',
           'Series 5',
         ]}
+        showLegend
       />
     )
   )
