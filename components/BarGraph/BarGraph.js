@@ -23,6 +23,7 @@ const propTypes = {
   emptyText: PropTypes.string,
   color: PropTypes.array,
   showTooltip: PropTypes.bool,
+  maxValueY: PropTypes.number,
 };
 
 const defaultProps = {
@@ -89,6 +90,7 @@ class BarGraph extends Component {
   }
 
   componentWillUpdate(nextProps) {
+    const { maxValueY } = this.props;
     if (this.x) {
       this.x.domain(nextProps.data.map(d => d[1]));
 
@@ -97,9 +99,12 @@ class BarGraph extends Component {
         this.x1
           .rangeRound([0, this.x.bandwidth()])
           .domain(d3.range(dataLength));
-        this.y.domain([0, d3.max(nextProps.data, d => d3.max(d[0], i => i))]);
+        this.y.domain([
+          0,
+          maxValueY || d3.max(nextProps.data, d => d3.max(d[0], i => i)),
+        ]);
       } else {
-        this.y.domain([0, d3.max(nextProps.data, d => d[0])]);
+        this.y.domain([0, maxValueY || d3.max(nextProps.data, d => d[0])]);
       }
 
       this.updateEmptyState(nextProps.data);
@@ -112,7 +117,7 @@ class BarGraph extends Component {
   }
 
   initialRender() {
-    const { data, timeFormat } = this.props;
+    const { data, timeFormat, maxValueY } = this.props;
 
     this.updateEmptyState(data);
 
@@ -135,12 +140,12 @@ class BarGraph extends Component {
       this.y = d3
         .scaleLinear()
         .range([this.height, 0])
-        .domain([0, d3.max(data, d => d3.max(d[0], i => i))]);
+        .domain([0, maxValueY || d3.max(data, d => d3.max(d[0], i => i))]);
     } else {
       this.y = d3
         .scaleLinear()
         .range([this.height, 0])
-        .domain([0, d3.max(data, d => d[0])]);
+        .domain([0, maxValueY || d3.max(data, d => d[0])]);
     }
 
     this.xAxis = d3
@@ -379,9 +384,8 @@ class BarGraph extends Component {
     rect
       .transition()
       .duration(500)
-      .attr(
-        'fill',
-        () => (this.isGrouped ? this.color(mouseData.index) : this.color(0))
+      .attr('fill', () =>
+        this.isGrouped ? this.color(mouseData.index) : this.color(0)
       );
     ReactDOM.unmountComponentAtNode(this.tooltipId);
   }

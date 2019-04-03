@@ -65,6 +65,7 @@ class UpdatingBarGraphContainer extends Component {
       id: this.props.id,
       containerId: this.props.containerId,
       drawLine: this.props.drawLine,
+      maxValueY: this.props.maxValueY,
     };
 
     return <BarGraph data={data} {...props} />;
@@ -182,4 +183,16 @@ storiesOf('BarGraph', module)
      Empty Bar Graph.
     `,
     () => <BarGraph onHover={action('Hover')} data={singleData} {...props} />
-  );
+  )
+  .addWithInfo('With Max Y Value', () => (
+    <BarGraph
+      timeFormat="%b"
+      onHover={action('Hover')}
+      data={data}
+      maxValueY={1500}
+      {...props}
+    />
+  ))
+  .addWithInfo('With Max Y Value and Updating', () => (
+    <UpdatingBarGraphContainer maxValueY={1500} />
+  ));
