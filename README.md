@@ -75,6 +75,7 @@ Pie charts show individual values that make up a whole data set so users can com
 | emptyText    | string | There is currently no data available                    |
 | onHover      | func   | () => {}                                                |
 | color        | array  | ['#00a68f', '#3b1a40', '#473793', '#3c6df0', '#56D2BB'] |
+| maxValueY    | number | 1500                                                    |
 
 ### Line Graph
 
