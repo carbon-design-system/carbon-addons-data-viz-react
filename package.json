@@ -6,7 +6,8 @@
   "module": "es/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git"
+    "url":
+      "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git"
   },
   "author": "tw15egan <tw15egan@gmail.com>",
   "license": "Apache-2.0",
@@ -19,16 +20,13 @@
     "lodash": "^4.17.5"
   },
   "devDependencies": {
-    "@babel/core": "^7.5.5",
     "@commitlint/cli": "^3.2.0",
     "@commitlint/config-angular": "^3.1.1",
     "@storybook/addon-centered": "^3.1.2",
     "@storybook/addon-info": "^3.1.6",
-    "@storybook/react": "^3.4.12",
+    "@storybook/react": "^3.1.6",
     "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
     "babel-eslint": "^8.0.2",
-    "babel-loader": "^8.0.6",
     "babel-plugin-transform-object-assign": "^6.22.0",
     "babel-plugin-transform-object-set-prototype-of-to-assign": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
@@ -48,8 +46,8 @@
     "ncp": "^2.0.0",
     "node-sass": "^4.5.3",
     "prettier": "^1.7.4",
-    "react": "^15.6.2",
-    "react-dom": "^15.6.2",
+    "react": "^15.6.1",
+    "react-dom": "^15.6.1",
     "rimraf": "^2.6.2",
     "sass-loader": "^6.0.6",
     "semantic-release": "^7.0.2",
@@ -68,26 +66,17 @@
     "build": "node scripts/build.js",
     "lint": "eslint src",
     "prettier": "prettier --write \"**/*.{scss,css,js}\"",
-    "storybook": "start-storybook -p 8080 -c .storybook",
+    "storybook": "start-storybook -p 9001 -c .storybook",
     "precommit": "lint-staged",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "semantic-release":
+      "semantic-release pre && npm publish && semantic-release post",
     "test": ""
   },
-  "files": [
-    "cjs/**/*",
-    "es/**/*",
-    "scss/**/*"
-  ],
+  "files": ["cjs/**/*", "es/**/*", "scss/**/*"],
   "eslintConfig": {
     "parser": "babel-eslint",
-    "extends": [
-      "eslint:recommended",
-      "plugin:jsx-a11y/recommended"
-    ],
-    "plugins": [
-      "react",
-      "jsx-a11y"
-    ],
+    "extends": ["eslint:recommended", "plugin:jsx-a11y/recommended"],
+    "plugins": ["react", "jsx-a11y"],
     "rules": {
       "react/jsx-uses-vars": 1,
       "react/jsx-uses-react": 1,
@@ -100,14 +89,9 @@
       "jsx-a11y/label-has-for": [
         1,
         {
-          "components": [
-            "Label"
-          ],
+          "components": ["Label"],
           "required": {
-            "some": [
-              "nesting",
-              "id"
-            ]
+            "some": ["nesting", "id"]
           },
           "allowChildren": false
         }
@@ -122,11 +106,7 @@
     }
   },
   "babel": {
-    "presets": [
-      "./scripts/env",
-      "react",
-      "stage-1"
-    ],
+    "presets": ["./scripts/env", "react", "stage-1"],
     "plugins": [
       "transform-object-assign",
       "transform-object-set-prototype-of-to-assign"
@@ -139,14 +119,7 @@
     "trailingComma": "es5"
   },
   "lint-staged": {
-    "*.js": [
-      "prettier",
-      "lint",
-      "git add"
-    ],
-    "*.{css,scss}": [
-      "prettier",
-      "git add"
-    ]
+    "*.js": ["prettier", "lint", "git add"],
+    "*.{css,scss}": ["prettier", "git add"]
   }
 }
