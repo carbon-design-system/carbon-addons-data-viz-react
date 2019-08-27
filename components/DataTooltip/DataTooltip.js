@@ -7,8 +7,9 @@ const propTypes = {
   data: PropTypes.array,
   direction: PropTypes.string,
   id: PropTypes.string,
-  heading: PropTypes.string,
+  heading: PropTypes.array,
   isActive: PropTypes.bool,
+  hasSections: PropTypes.bool,
 };
 
 const defaultProps = {
@@ -17,11 +18,11 @@ const defaultProps = {
   id: 'bx--data-tooltip',
   heading: null,
   isActive: true,
+  hasSections: false,
 };
 
 class DataTooltip extends Component {
-  renderTooltipData() {
-    const { data, heading } = this.props;
+  renderTooltipData(data, heading) {
     const items = data.map((item, i) => {
       let divStyle;
       if (item.color) {
@@ -67,18 +68,8 @@ class DataTooltip extends Component {
 
     return items;
   }
-
-  render() {
-    const {
-      className,
-      direction,
-      heading,
-      isActive,
-      data,
-      ...other
-    } = this.props;
-
-    const tooltipClasses = classNames(
+  getTootlTipClasses(isActive, className) {
+    return classNames(
       'bx--tooltip',
       'bx--data-tooltip',
       {
@@ -86,20 +77,31 @@ class DataTooltip extends Component {
       },
       className
     );
-
-    const tooltipListClasses = classNames('bx--data-tooltip-list', {
+  }
+  getTootleTipListClasses(data) {
+    return classNames('bx--data-tooltip-list', {
       'bx--data-tooltip-list--block': data.length >= 4,
     });
-
-    const listStyle = {
+  }
+  getListStyle(data) {
+    return {
       columnCount: data.length > 3 ? '2' : '1',
       columnGap: '1.25rem',
     };
-
-    const headingClasses = classNames('bx--data-tooltip__label', {
+  }
+  getHeadingClasses(data) {
+    return classNames('bx--data-tooltip__label', {
       'bx--data-tooltip__label--no-margin': data.length === 1,
     });
-
+  }
+  renderTooltipHeading(data, heading) {
+    const headingClasses = this.getHeadingClasses(data);
+    return heading && <p className={headingClasses}>{heading}</p>;
+  }
+  renderTooltipBody(data, heading) {
+    const direction = this.props.direction;
+    const tooltipListClasses = this.getTootleTipListClasses(data);
+    const listStyle = this.getListStyle(data);
     if (data.length === 1 && data[0].color) {
       if (direction === 'top') {
         listStyle.borderTop = `4px solid ${data[0].color}`;
@@ -107,16 +109,55 @@ class DataTooltip extends Component {
         listStyle.borderBottom = `4px solid ${data[0].color}`;
       }
     }
-
+    return (
+      <ul className={tooltipListClasses} style={listStyle}>
+        {this.renderTooltipData(data, heading)}
+      </ul>
+    );
+  }
+  renderTooltipSections(data, heading) {
+    var self = this;
+    return data.map((section, i) => {
+      return (
+        <div>
+          {self.renderTooltipHeading(data, heading[i])}
+          {self.renderTooltipBody(section, heading[i])}
+        </div>
+      );
+    });
+  }
+  renderAllSections(data, heading) {
+    const sections = this.renderTooltipSections(data, heading);
+    return sections.map(section => {
+      return section;
+    });
+  }
+  renderDefault(data, heading) {
+    return (
+      <div>
+        {this.renderTooltipHeading(data, heading)}
+        {this.renderTooltipBody(data, heading)}
+      </div>
+    );
+  }
+  render() {
+    const {
+      className,
+      direction,
+      heading,
+      isActive,
+      data,
+      hasSections,
+      ...other
+    } = this.props;
     return (
       <div
-        className={tooltipClasses}
+        className={this.getTootlTipClasses(isActive, className)}
         data-floating-menu-direction={direction}
         {...other}>
-        {heading && <p className={headingClasses}>{heading}</p>}
-        <ul className={tooltipListClasses} style={listStyle}>
-          {this.renderTooltipData()}
-        </ul>
+        {hasSections
+          ? this.renderAllSections(data, heading)
+          : this.renderDefault(data, heading)}
       </div>
     );
   }

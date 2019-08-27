@@ -70,7 +70,7 @@
     "precommit": "lint-staged",
     "semantic-release":
       "semantic-release pre && npm publish && semantic-release post",
-    "test": ""
+    "test": "echo \"Error: no test specified\" && exit 0"
   },
   "files": ["cjs/**/*", "es/**/*", "scss/**/*"],
   "eslintConfig": {

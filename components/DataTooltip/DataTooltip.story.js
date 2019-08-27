@@ -21,8 +21,27 @@ const data = [
   { data: '$250.17', label: 'CPU', color: '#9b82f3' },
 ];
 
+const sectionData = [
+  [
+    { data: '5.3%', label: 'CPU', color: '#3b1a40' },
+    { data: '8.9%', label: 'CPU', color: '#473793' },
+    { data: '35.1%', label: 'CPU', color: '#3c6df0' },
+    { data: '46.5%', label: 'CPU', color: '#00a68f' },
+    { data: '0.2%', label: 'CPU', color: '#48d4bb' },
+    { data: '25.4%', label: 'CPU', color: '#9b82f3' },
+  ],
+  [
+    { data: '5.3%', label: 'CPU', color: '#3b1a40' },
+    { data: '8.9%', label: 'CPU', color: '#473793' },
+    { data: '35.1%', label: 'CPU', color: '#3c6df0' },
+    { data: '46.5%', label: 'CPU', color: '#00a68f' },
+    { data: '0.2%', label: 'CPU', color: '#48d4bb' },
+    { data: '25.4%', label: 'CPU', color: '#9b82f3' },
+  ],
+];
+const defaultHeading = ['Mar 1 @ 11:26 AM'];
+const sectionsHeading = ['Mar 1 @ 11:26 AM', 'Mar 2 @ 11:26 AM'];
 const props = {
-  heading: 'Mar 1 @ 11:26 AM',
   direction: 'top',
   isActive: true,
 };
@@ -47,33 +66,71 @@ storiesOf('DataTooltip', module)
     `
         Data Tooltip.
       `,
-    () => <DataTooltip data={data.slice(0, data.length - 5)} {...props} />
+    () => (
+      <DataTooltip
+        heading={defaultHeading}
+        data={data.slice(0, data.length - 5)}
+        {...props}
+      />
+    )
   )
   .addWithInfo(
     'Triple',
     `
       Data Tooltip.
     `,
-    () => <DataTooltip data={data.slice(0, data.length - 3)} {...props} />
+    () => (
+      <DataTooltip
+        heading={defaultHeading}
+        data={data.slice(0, data.length - 3)}
+        {...props}
+      />
+    )
   )
   .addWithInfo(
     'Quad',
     `
       Data Tooltip.
     `,
-    () => <DataTooltip data={data.slice(0, data.length - 2)} {...props} />
+    () => (
+      <DataTooltip
+        heading={defaultHeading}
+        data={data.slice(0, data.length - 2)}
+        {...props}
+      />
+    )
   )
   .addWithInfo(
     'Quint',
     `
         Data Tooltip.
       `,
-    () => <DataTooltip data={data.slice(0, data.length - 1)} {...props} />
+    () => (
+      <DataTooltip
+        heading={defaultHeading}
+        data={data.slice(0, data.length - 1)}
+        {...props}
+      />
+    )
   )
   .addWithInfo(
     'Max',
     `
       Data Tooltip.
     `,
-    () => <DataTooltip data={data} {...props} />
+    () => <DataTooltip heading={defaultHeading} data={data} {...props} />
+  )
+  .addWithInfo(
+    'Sections',
+    `
+      Data Tooltip.
+    `,
+    () => (
+      <DataTooltip
+        heading={sectionsHeading}
+        data={sectionData}
+        hasSections={true}
+        {...props}
+      />
+    )
   );
