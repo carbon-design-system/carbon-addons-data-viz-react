@@ -12,9 +12,6 @@
   "author": "tw15egan <tw15egan@gmail.com>",
   "license": "Apache-2.0",
   "dependencies": {
-    "carbon-components": "^8.0.0",
-    "carbon-components-react": "^5.0.0",
-    "carbon-icons": "^6.1.0",
     "classnames": "^2.2.5",
     "d3": "^4.10.2",
     "lodash": "^4.17.5"
@@ -32,8 +29,6 @@
     "babel-plugin-transform-runtime": "^6.23.0",
     "bluebird": "^3.5.0",
     "carbon-components": "^8.0.0",
-    "carbon-components-react": "^5.0.0",
-    "carbon-icons": "^6.1.0",
     "css-loader": "^0.28.4",
     "eslint": "^4.11.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
