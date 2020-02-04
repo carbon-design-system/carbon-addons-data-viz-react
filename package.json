@@ -1,13 +1,12 @@
 {
   "name": "carbon-addons-data-viz-react",
-  "version": "0.0.0-development",
+  "version": "1.24.0",
   "description": "Carbon Data Visualization",
   "main": "cjs/index.js",
   "module": "es/index.js",
   "repository": {
     "type": "git",
-    "url":
-      "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git"
+    "url": "https://github.com/carbon-design-system/carbon-addons-data-viz-react.git"
   },
   "author": "tw15egan <tw15egan@gmail.com>",
   "license": "Apache-2.0",
@@ -63,15 +62,24 @@
     "prettier": "prettier --write \"**/*.{scss,css,js}\"",
     "storybook": "start-storybook -p 9001 -c .storybook",
     "precommit": "lint-staged",
-    "semantic-release":
-      "semantic-release pre && npm publish && semantic-release post",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
     "test": "echo \"Error: no test specified\" && exit 0"
   },
-  "files": ["cjs/**/*", "es/**/*", "scss/**/*"],
+  "files": [
+    "cjs/**/*",
+    "es/**/*",
+    "scss/**/*"
+  ],
   "eslintConfig": {
     "parser": "babel-eslint",
-    "extends": ["eslint:recommended", "plugin:jsx-a11y/recommended"],
-    "plugins": ["react", "jsx-a11y"],
+    "extends": [
+      "eslint:recommended",
+      "plugin:jsx-a11y/recommended"
+    ],
+    "plugins": [
+      "react",
+      "jsx-a11y"
+    ],
     "rules": {
       "react/jsx-uses-vars": 1,
       "react/jsx-uses-react": 1,
@@ -84,9 +92,14 @@
       "jsx-a11y/label-has-for": [
         1,
         {
-          "components": ["Label"],
+          "components": [
+            "Label"
+          ],
           "required": {
-            "some": ["nesting", "id"]
+            "some": [
+              "nesting",
+              "id"
+            ]
           },
           "allowChildren": false
         }
@@ -101,7 +114,11 @@
     }
   },
   "babel": {
-    "presets": ["./scripts/env", "react", "stage-1"],
+    "presets": [
+      "./scripts/env",
+      "react",
+      "stage-1"
+    ],
     "plugins": [
       "transform-object-assign",
       "transform-object-set-prototype-of-to-assign"
@@ -114,7 +131,14 @@
     "trailingComma": "es5"
   },
   "lint-staged": {
-    "*.js": ["prettier", "lint", "git add"],
-    "*.{css,scss}": ["prettier", "git add"]
+    "*.js": [
+      "prettier",
+      "lint",
+      "git add"
+    ],
+    "*.{css,scss}": [
+      "prettier",
+      "git add"
+    ]
   }
 }
