@@ -89,6 +89,14 @@ const defaultProps = {
   isXTime: true,
 };
 
+const getYDomainMin = data => {
+  const dataMin = d3.min(data, d => d3.min(d.slice(0, d.length - 1)));
+  if (dataMin > 0) {
+    return 0;
+  }
+  return dataMin;
+};
+
 class LineGraph extends Component {
   componentDidMount() {
     const {
@@ -162,8 +170,10 @@ class LineGraph extends Component {
           ? nextProps.data
           : _.flatten(nextProps.datasets);
       this.x.domain(d3.extent(data, d => d[d.length - 1]));
-      this.y.domain([0, d3.max(data, d => d3.max(d.slice(0, d.length - 1)))]);
-
+      this.y.domain([
+        getYDomainMin(data),
+        d3.max(data, d => d3.max(d.slice(0, d.length - 1))),
+      ]);
       this.updateEmptyState(
         nextProps.data.length > 0 ? nextProps.data : nextProps.datasets
       );
@@ -324,10 +334,9 @@ class LineGraph extends Component {
       .scaleLinear()
       .range([this.height, 0])
       .domain([
-        0,
+        getYDomainMin(flatData),
         d3.max(flatData, d => d3.max(d.slice(0, d.length - 1))) || 10,
       ]);
-
     this.line = d3
       .line()
       .x(d => this.x(d[d.length - 1]))
