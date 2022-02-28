@@ -1,6 +1,6 @@
 {
   "name": "carbon-addons-data-viz-react",
-  "version": "1.24.0",
+  "version": "1.25.0",
   "description": "Carbon Data Visualization",
   "main": "cjs/index.js",
   "module": "es/index.js",
