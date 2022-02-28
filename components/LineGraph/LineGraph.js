@@ -335,7 +335,7 @@ class LineGraph extends Component {
       .range([this.height, 0])
       .domain([
         getYDomainMin(flatData),
-        d3.max(flatData, d => d3.max(d.slice(0, d.length - 1))),
+        d3.max(flatData, d => d3.max(d.slice(0, d.length - 1))) || 10,
       ]);
     this.line = d3
       .line()
