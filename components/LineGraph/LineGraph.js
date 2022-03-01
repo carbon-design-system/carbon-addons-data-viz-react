@@ -54,8 +54,8 @@ const propTypes = {
    * Set this prop to false to prevent x values from being converted to time.
    */
   isXTime: PropTypes.bool,
-  yAixsTickForamt: PropTypes.func,
-  yAixsTickSize: PropTypes.number,
+  yAxisTickForamt: PropTypes.func,
+  yAxisTickSize: PropTypes.number,
 };
 
 const defaultProps = {

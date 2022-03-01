@@ -185,8 +185,8 @@ storiesOf('LineGraph', module)
             [1, 1507564830000],
           ],
         ]}
-        yAixsTickSize={2}
-        yAixsTickForamt={val => {
+        yAxisTickSize={2}
+        yAxisTickForamt={val => {
           if (val === 1) {
             return 'running';
           }
