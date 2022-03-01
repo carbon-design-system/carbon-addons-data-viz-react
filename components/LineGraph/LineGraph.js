@@ -54,6 +54,8 @@ const propTypes = {
    * Set this prop to false to prevent x values from being converted to time.
    */
   isXTime: PropTypes.bool,
+  yAxisTickFormat: PropTypes.func,
+  yAxisTickSize: PropTypes.number,
 };
 
 const defaultProps = {
@@ -359,10 +361,13 @@ class LineGraph extends Component {
 
     this.yAxis = d3
       .axisLeft()
-      .ticks(4)
+      .ticks(this.props.yAxisTickSize ? this.props.yAxisTickSize : 4)
       .tickSize(-this.width)
       .scale(this.y.nice());
 
+    if (this.props.yAxisTickFormat) {
+      this.yAxis = this.yAxis.tickFormat(this.props.yAxisTickFormat);
+    }
     this.renderAxes();
     this.renderLabels();
     this.renderOverlay();
