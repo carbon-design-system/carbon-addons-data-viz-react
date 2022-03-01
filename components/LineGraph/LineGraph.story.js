@@ -186,7 +186,7 @@ storiesOf('LineGraph', module)
           ],
         ]}
         yAxisTickSize={2}
-        yAxisTickForamt={val => {
+        yAxisTickFormat={val => {
           if (val === 1) {
             return 'running';
           }
