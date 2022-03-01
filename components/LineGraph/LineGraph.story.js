@@ -168,6 +168,42 @@ storiesOf('LineGraph', module)
       onBlur={action('Blur')}
     />
   ))
+  .addWithInfo(
+    'Static Custom Y Axis',
+    ` Static Custom Y Axis' Example. `,
+    () => (
+      <LineGraph
+        datasets={[
+          [
+            [1, 1507563000000],
+            [-1, 1507563900000],
+            [0, 1507564800000],
+          ],
+          [
+            [-1, 1507563004000],
+            [0, 1507563900140],
+            [1, 1507564830000],
+          ],
+        ]}
+        yAixsTickSize={2}
+        yAixsTickForamt={val => {
+          if (val === 1) {
+            return 'running';
+          }
+          if (val === -1) {
+            return 'stopped';
+          }
+          if (val === 0) {
+            return 'unknown';
+          }
+          return '';
+        }}
+        onHover={action('Hover')}
+        onMouseOut={action('Mouseout')}
+        onBlur={action('Blur')}
+      />
+    )
+  )
   .addWithInfo('Number values for X', ` Static Example. `, () => (
     <LineGraph
       datasets={[
